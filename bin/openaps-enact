@@ -6,13 +6,10 @@ import argparse, argcomplete
 import openaps
 
 
-class ToolsApp (object):
-  
-  def __init__ (self, args):
-    self.inputs = args
+from openaps import cli
+class ToolsApp (cli.Base):
 
-  def prep_parser (self):
-    self.parser = argparse.ArgumentParser( )
+  def configure_parser (self, parser):
     self.parser.add_argument('--version', action='version', version='%s %s' % ('%(prog)s', openaps.__version__))
     self.parser.add_argument('report', type=str, nargs='?'
                             , choices=['temp-basal', 'bolus', 'phone', 'sms', 'pipe']
@@ -21,16 +18,6 @@ class ToolsApp (object):
                             , choices=['simulator', 'static-file', 'medtronic', 'dexcom', ]
                             , default='help')
     self.parser.add_argument('args', nargs=argparse.REMAINDER)
-
-  def configure_parser (self, parser):
-    pass
-
-  def __call__ (self):
-    self.prep_parser( )
-    self.configure_parser(self.parser)
-    argcomplete.autocomplete(self.parser);
-    self.args = self.parser.parse_args( )
-    self.run(self.args)
 
   def run (self, args):
     print self.inputs

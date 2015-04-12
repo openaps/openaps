@@ -1,0 +1,23 @@
+#!/usr/bin/env python
+# PYTHON_ARGCOMPLETE_OK
+
+import sys
+import argparse, argcomplete
+import openaps
+
+from openaps import cli
+class ToolsApp (cli.Base):
+
+  def configure_parser (self, parser):
+    pass
+
+  def run (self, args):
+    print self.inputs
+    print args
+
+
+if __name__ == '__main__':
+
+    app = ToolsApp(sys.argv)
+    app( )
+

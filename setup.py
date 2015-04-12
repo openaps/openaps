@@ -9,7 +9,7 @@ def readme():
 
 setup(name='openaps',
     version=openaps.__version__, # http://semver.org/
-    description='Open Source Artificial Pancreas System.',
+    description='DIY Open Source Artificial Pancreas System.',
     long_description=readme(),
     author="OpenAPS",
     author_email="bewest+openaps@gmail.com",
@@ -26,6 +26,7 @@ setup(name='openaps',
     ],
     scripts = [
       'bin/openaps',
+      'bin/openaps-device',
       'bin/openaps-enact',
       'bin/openaps-suggest',
       'bin/openaps-get',

@@ -1,0 +1,138 @@
+#! /usr/bin/env python
+# PYTHON_ARGCOMPLETE_OK
+"""
+usage: openaps [--version] [--exec-path=<path>] [--html-path]
+           [-p|--paginate|--no-pager] [--no-replace-objects]
+           [--bare] [--openaps-dir=<path>] [--work-tree=<path>]
+           [-c <name>=<value>] [--help]
+           <command> [<args>...]
+
+options:
+   -c <name=value>
+   -h, --help
+   -p, --paginate
+
+The most commonly used openaps commands are:
+   get             Get a status report of some kind.
+   suggest         Suggest a possible change to the environment.
+   enact           Execute a suggestion.
+   autocomplete    Print an autocompletion script
+   branch          List, create, or delete branches
+   checkout        Checkout a branch or paths to the working tree
+   clone           Clone a repository into a new directory
+   commit          Record changes to the repository
+   push            Update remote refs along with associated objects
+   remote          Manage set of tracked repositories
+
+See 'openaps help <command>' for more information on a specific command.
+
+"""
+from subprocess import call
+
+import sys, os
+import argparse
+import argcomplete
+import openaps
+
+
+def complete_args (prefix, parsed_args, action, **kwargs):
+  argcomplete.debug("FOO");
+  # argcomplete.debug("kwargs", kwargs);
+  # argcomplete.debug("prefix", prefix);
+  # argcomplete.debug("action", action, action.choices);
+  argcomplete.debug("parsed_args", parsed_args)
+  compline = os.environ['COMP_LINE']
+  argcomplete.debug("compline", compline)
+  point = int(os.environ['COMP_POINT'])
+  argcomplete.debug("COMP_POINT", point)
+  argcomplete.debug("parsed_args", parsed_args)
+  if parsed_args.command is None:
+    return [ ] or action.choices or [ 'some' ]
+  if True or parsed_args.command not in ['help', None]:
+    # return [ 'debug' ]
+    shell_cmd = ['openaps-%s' % parsed_args.command ] + parsed_args.args + [ prefix ]
+    other_prog = shell_cmd[0]
+    point = len(parsed_args.command)
+    # os.environ['COMP_POINT'] = str(len(' '.join([parsed_args.command] + parsed_args.args)) + 1)
+    # os.environ['COMP_LINE'] = str(len(' '.join(shell_cmd)) + 1)
+    old_name = compline.split(' ')
+    compline = ' '.join([other_prog] + parsed_args.args + [ prefix ])
+    os.environ['COMP_LINE'] = compline
+    os.environ['PROGNAME'] = other_prog
+    argcomplete.debug("subshell", shell_cmd, os.environ.keys( ))
+    os.execvp(shell_cmd[0], shell_cmd[1:])
+    # call(['openaps-%s' % parsed_args.command ] + parsed_args.args)
+    # call(['openaps-%s' % parsed_args.command ] + parsed_args.args)
+    sys.exit(0)
+  return ['debug' ]
+
+class BaseApp (object):
+  
+  def __init__ (self, args):
+    self.inputs = args
+
+  def prep_parser (self):
+    self.parser = argparse.ArgumentParser( )
+    self.parser.add_argument('-c', nargs=2)
+    self.parser.add_argument('--version', action='version', version='%s %s' % ('%(prog)s', openaps.__version__))
+    self.parser.add_argument('command', nargs='?'
+                            , choices=['init', 'alias', 'help', 'get', 'suggest', 'enact' ]
+                            , default=None).completer = complete_args
+    self.parser.add_argument('args', nargs=argparse.REMAINDER).completer = complete_args
+
+  def configure_parser (self, parser):
+    pass
+
+  def __call__ (self):
+    self.prep_parser( )
+    self.configure_parser(self.parser)
+    argcomplete.autocomplete(self.parser);
+    self.args = self.parser.parse_args( )
+    self.run(self.args)
+
+  def run (self, args):
+    print self.inputs
+    print args
+    if args.command in ['help', None]:
+      self.parser.print_help( )
+    elif args.command in ['init', 'alias']:
+      pass
+    elif args.command in ['get', 'suggest', ]:
+      exit(call(['openaps-%s' % args.command ] + args.args))
+    elif args.command:
+      exit(call(['openaps-%s' % args.command ] + args.args))
+
+
+if __name__ == '__main__':
+
+
+    app = BaseApp(sys.argv)
+    app( )
+    sys.exit(0)
+
+    from docopt import docopt
+    args = docopt(__doc__,
+                  version='openaps version {0}'.format(openaps.__version__),
+                  options_first=True)
+    print('global arguments:')
+    print(args)
+    print('command arguments:')
+
+    argv = [args['<command>']] + args['<args>']
+    if args['<command>'] == 'add':
+        # In case subcommand is implemented as python module:
+        import openaps_add
+        print(docopt(openaps_add.__doc__, argv=argv))
+    elif args['<command>'] == 'branch':
+        # In case subcommand is a script in some other programming language:
+        exit(call(['python', 'openaps_branch.py'] + argv))
+    elif args['<command>'] in 'checkout clone commit push remote'.split():
+        # For the rest we'll just keep DRY:
+        exit(call(['python', 'openaps_%s.py' % args['<command>']] + argv))
+    elif args['<command>'] in 'get suggest enact'.split():
+        # For the rest we'll just keep DRY:
+        exit(call(['openaps-%s' % args['<command>']] + argv))
+    elif args['<command>'] in ['help', None]:
+        exit(call(['python', 'openaps', '--help']))
+    else:
+        exit("%r is not a openaps.py command. See 'openaps help'." % args['<command>'])

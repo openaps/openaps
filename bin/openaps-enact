@@ -1,0 +1,44 @@
+#!/usr/bin/python
+# PYTHON_ARGCOMPLETE_OK
+
+import sys
+import argparse, argcomplete
+import openaps
+
+
+class ToolsApp (object):
+  
+  def __init__ (self, args):
+    self.inputs = args
+
+  def prep_parser (self):
+    self.parser = argparse.ArgumentParser( )
+    self.parser.add_argument('--version', action='version', version='%s %s' % ('%(prog)s', openaps.__version__))
+    self.parser.add_argument('report', type=str, nargs='?'
+                            , choices=['temp-basal', 'bolus', 'phone', 'sms', 'pipe']
+                            , default='help')
+    self.parser.add_argument('devices', type=str, nargs='?'
+                            , choices=['simulator', 'static-file', 'medtronic', 'dexcom', ]
+                            , default='help')
+    self.parser.add_argument('args', nargs=argparse.REMAINDER)
+
+  def configure_parser (self, parser):
+    pass
+
+  def __call__ (self):
+    self.prep_parser( )
+    self.configure_parser(self.parser)
+    argcomplete.autocomplete(self.parser);
+    self.args = self.parser.parse_args( )
+    self.run(self.args)
+
+  def run (self, args):
+    print self.inputs
+    print args
+
+
+if __name__ == '__main__':
+
+    app = ToolsApp(sys.argv)
+    app( )
+

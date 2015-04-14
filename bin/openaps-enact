@@ -8,6 +8,11 @@ import openaps
 
 from openaps import cli
 class ToolsApp (cli.Base):
+  """
+  Send changes out into the world.
+
+  Make a phone call, send SMS/TEXT, send messages to devices and people.
+  """
 
   def configure_parser (self, parser):
     self.parser.add_argument('--version', action='version', version='%s %s' % ('%(prog)s', openaps.__version__))

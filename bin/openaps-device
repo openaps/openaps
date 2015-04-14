@@ -1,19 +1,46 @@
 #!/usr/bin/env python
 # PYTHON_ARGCOMPLETE_OK
 
-import sys
+import sys, os, os.path
 import argparse, argcomplete
 import openaps
 
+from openaps import config
 from openaps import cli
-class ToolsApp (cli.Base):
+from openaps import devices
+class ConfigApp (cli.Base):
+  def read_config (self):
+    cfg_file = os.environ.get('OPENAPS_CONFIG', 'openaps.ini')
+    if not os.path.exists(cfg_file):
+      print "Not an openaps environment, run: openaps init"
+      sys.exit(1)
+    self.config = config.Config.Read(cfg_file)
+
+  def prolog (self):
+    self.read_config( )
+    # print str(self.config)
+    # print self.config.sections( )
+    # if 'devices' not in self.config.sections( ):
+    #   self.config.add_section('devices')
+    # self.config.write(sys.stderr)
+
+class ToolsApp (ConfigApp):
+  """
+  openaps-device - Manage device configurations.
+
+    list    - lists all known devices
+    add     - add a new device
+    remove  - remove a device
+  """
 
   def configure_parser (self, parser):
-    pass
+    # subparsers = parser.add_subparsers(help="Operation", dest='command')
+    self.commands = devices.configure_commands(parser)
 
   def run (self, args):
-    print self.inputs
-    print args
+    print self.commands
+    self.selected = self.commands[args.command]
+    self.commands[args.command](args, self)
 
 
 if __name__ == '__main__':

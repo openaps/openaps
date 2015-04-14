@@ -30,6 +30,7 @@ setup(name='openaps',
       'bin/openaps-enact',
       'bin/openaps-suggest',
       'bin/openaps-get',
+      'bin/git-openaps-init',
     ],
     classifiers = [
         'Development Status :: 3 - Alpha',

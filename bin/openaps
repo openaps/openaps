@@ -59,10 +59,17 @@ def complete_args (prefix, parsed_args, action, **kwargs):
   os.execvp(shell_cmd[0], shell_cmd[1:])
   sys.exit(0)
 
+from openaps import builtins
 class BaseApp (cli.Base):
+  """
+  openaps - openaps: a toolkit for DIY artificial pancreas system
+
+  Utilities for developing an artificial pancreas system.
+  """
   
   def configure_parser (self, parser):
     self.parser.add_argument('-c', nargs=2)
+    self.parser.add_argument('-C', '--config', default=None)
     self.parser.add_argument('--version', action='version', version='%s %s' % ('%(prog)s', openaps.__version__))
     self.parser.add_argument('command', nargs='?'
                             # , choices=['init', 'alias', 'help', 'get', 'suggest', 'enact' ]
@@ -72,10 +79,12 @@ class BaseApp (cli.Base):
   def run (self, args):
     print self.inputs
     print args
+    if args.config:
+      os.environ['OPENAPS_CONFIG'] = args.config
     if args.command in ['help', None]:
       self.parser.print_help( )
-    elif args.command in ['init', 'alias']:
-      pass
+    elif builtins.is_builtin(args.command):
+      builtins.dispatch(args, self)
     elif args.command in ['get', 'suggest', ]:
       exit(call(['openaps-%s' % args.command ] + args.args))
     elif args.command:

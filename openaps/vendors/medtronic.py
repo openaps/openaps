@@ -20,7 +20,7 @@ class Config (object):
       attrs = { }
       if name.startswith('device "medtronic"'):
         devices.push(name)
-     return devices
+    return devices
 
   def lint (self):
     return True

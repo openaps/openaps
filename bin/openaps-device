@@ -28,15 +28,18 @@ class ToolsApp (ConfigApp):
   """
   openaps-device - Manage device configurations.
 
-    list    - lists all known devices
+    show    - lists all known devices
     add     - add a new device
     remove  - remove a device
   """
 
   def configure_parser (self, parser):
-    # subparsers = parser.add_subparsers(help="Operation", dest='command')
+    self.read_config( )
     self.commands = devices.configure_commands(parser)
+    # parser.add_argument('name', default=None).completer = self.name_completer
 
+  def name_completer (self, prefix, **kwargs):
+    return [ ]
   def run (self, args):
     print self.commands
     self.selected = self.commands[args.command]

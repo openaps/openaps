@@ -6,6 +6,7 @@ import textwrap
 
 class Base (object):
   
+  always_complete_options = True
   def __init__ (self, args):
     self.inputs = args
 
@@ -34,7 +35,7 @@ class Base (object):
   def __call__ (self):
     self.prep_parser( )
     self.configure_parser(self.parser)
-    argcomplete.autocomplete(self.parser);
+    argcomplete.autocomplete(self.parser, always_complete_options=self.always_complete_options);
     self.args = self.parser.parse_args( )
     self.prolog( )
     self.run(self.args)

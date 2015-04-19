@@ -32,7 +32,7 @@ class CommandMapApp (object):
   def get (self, name):
     return self.commands[name]
   def makeSubcommand (self, ctx):
-      app = self.Subcommand(ctx)
+      app = self.Subcommand(ctx, parent=self.parent)
       parser = app.configure_subparser(self.subparsers)
       app.configure_parser(parser)
       self.commands[app.name] = app

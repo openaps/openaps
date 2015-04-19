@@ -40,7 +40,7 @@ def complete_args (prefix, parsed_args, action, **kwargs):
   # argcomplete.debug("parsed_args", parsed_args)
   compline = os.environ['COMP_LINE']
   argcomplete.debug("compline", compline)
-  # point = int(os.environ['COMP_POINT'])
+  point = int(os.environ['COMP_POINT'])
   # argcomplete.debug("COMP_POINT", point)
   argcomplete.debug("parsed_args", parsed_args)
   if parsed_args.command is None:
@@ -50,14 +50,19 @@ def complete_args (prefix, parsed_args, action, **kwargs):
   shell_cmd = ['openaps-%s' % parsed_args.command ] + parsed_args.args + [ prefix ]
   other_prog = shell_cmd[0]
   # point = len(parsed_args.command)
-  # os.environ['COMP_POINT'] = str(len(' '.join([parsed_args.command] + parsed_args.args)) + 1)
+  # os.environ['COMP_POINT'] = str(point + len(' '.join([ ] + shell_cmd[2:])))
   old_name = compline.split(' ')
   compline = ' '.join([other_prog] + parsed_args.args + [ prefix ])
   os.environ['COMP_LINE'] = compline
+  os.environ['COMP_POINT'] = str(len(compline))
   os.environ['PROGNAME'] = other_prog
   argcomplete.debug("subshell", shell_cmd, os.environ.keys( ))
   os.execvp(shell_cmd[0], shell_cmd[1:])
   sys.exit(0)
+
+def no_complete (prefix, parsed_args, action, **kwargs):
+  if parsed_args.command:
+    return [ ]
 
 from openaps import builtins
 class BaseApp (cli.Base):
@@ -66,11 +71,11 @@ class BaseApp (cli.Base):
 
   Utilities for developing an artificial pancreas system.
   """
-  
+  always_complete_options = False
   def configure_parser (self, parser):
-    self.parser.add_argument('-c', nargs=2)
-    self.parser.add_argument('-C', '--config', default=None)
-    self.parser.add_argument('--version', action='version', version='%s %s' % ('%(prog)s', openaps.__version__))
+    self.parser.add_argument('-c', nargs=2).completer = no_complete
+    self.parser.add_argument('-C', '--config', default=None).completer = no_complete
+    self.parser.add_argument('--version', action='version', version='%s %s' % ('%(prog)s', openaps.__version__)).completer = no_complete
     self.parser.add_argument('command', nargs='?'
                             # , choices=['init', 'alias', 'help', 'get', 'suggest', 'enact' ]
                             , default=None).completer = complete_args

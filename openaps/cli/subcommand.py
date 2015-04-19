@@ -1,8 +1,9 @@
 
 class Subcommand (object):
-  def __init__ (self, method=None):
+  def __init__ (self, method=None, parent=None):
     self.method = method
     self.name = method.__name__.split('.').pop( )
+    self.parent = parent
 
   def setup_application (self):
     getattr(self.method, 'configure_app', self._no_op_setup)(self, self.parser)

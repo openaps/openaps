@@ -12,6 +12,9 @@ class Config (SafeConfigParser):
                                                 # by any # space/tab
           r'(?P<value>.*)$'                     # everything up to eol
           )
+  def save (self):
+    with open('openaps.ini', 'wb') as configfile:
+      self.write(configfile)
   @classmethod
   def Read (klass, name=None, defaults=['openaps.ini', '~/.openaps.ini', '/etc/openaps/openaps.ini']):
     config = Config( )

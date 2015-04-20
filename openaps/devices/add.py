@@ -20,12 +20,10 @@ def main (args, app):
   vendor = vendors.lookup(args.vendor)
   print "MY vendor", vendor
   print args
-  device = Device(args.name, app.config)
-  app.config.add_section(device.section_name( ))
-  vendor.set_config(args, device)
-  print device
+  device = Device(args.name, vendor)
+  device.read(args=args)
+  app.config.add_device(device)
+  print device, device.items( )
   app.config.write(sys.stdout)
   app.config.save( )
-  # vendor.from_args(args)
-  # app.config
 

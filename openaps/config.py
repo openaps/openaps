@@ -15,6 +15,15 @@ class Config (SafeConfigParser):
   def save (self):
     with open('openaps.ini', 'wb') as configfile:
       self.write(configfile)
+  def add_device (self, device):
+    section = device.section_name( )
+    self.add_section(section)
+    for k, v in device.items( ):
+      self.set(section, k, v)
+
+  def remove_device (self, device):
+    section = device.section_name( )
+    self.remove_section(section)
   @classmethod
   def Read (klass, name=None, defaults=['openaps.ini', '~/.openaps.ini', '/etc/openaps/openaps.ini']):
     config = Config( )

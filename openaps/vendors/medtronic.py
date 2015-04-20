@@ -29,3 +29,6 @@ class CGM (Device):
 
 def set_config (args, device):
   device.add_option('serial', args.serial)
+
+def display_device (device):
+  return ''

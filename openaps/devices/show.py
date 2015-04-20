@@ -9,6 +9,7 @@ from openaps import vendors
 def configure_app (app, parser):
   parser.set_defaults(name='*')
   parser._actions[-1].nargs = '?'
+  parser._actions[-1].choices.append('*')
 def main (args, app):
   print args
   for device in Device.FromConfig(vendors, app.config):

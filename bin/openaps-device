@@ -19,7 +19,7 @@ class ToolsApp (cli.ConfigApp):
 
   def configure_parser (self, parser):
     self.read_config( )
-    self.commands = devices.configure_commands(parser)
+    self.commands = devices.configure_commands(parser, parent=self)
     # parser.add_argument('name', default=None).completer = self.name_completer
 
   def name_completer (self, prefix, **kwargs):

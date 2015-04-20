@@ -7,6 +7,7 @@ from openaps.devices.device import Device
 import sys
 
 def configure_app (app, parser):
+  parser._actions[-1].choices = None
   commands = vendors.get_configurable_devices(app)
   app.vendors = commands
   commands.configure_commands(parser)

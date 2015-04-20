@@ -69,10 +69,10 @@ class ConfigApp (Base):
     self.repo = Repo(os.getcwd( ))
     if self.repo.index.diff(None):
       git = self.repo.git
-      msg = """{0:s}
+      msg = """{0:s} {1:s}
 
       TODO: better change descriptions
-      {1:s}
-      """.format(self.parser.prog, ' '.join(sys.argv))
+      {2:s}
+      """.format(self.parser.prog, ' '.join(sys.argv[1:]), ' '.join(sys.argv))
       git.commit('-avm', msg)
 

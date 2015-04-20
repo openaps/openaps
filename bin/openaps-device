@@ -8,23 +8,7 @@ import openaps
 from openaps import config
 from openaps import cli
 from openaps import devices
-class ConfigApp (cli.Base):
-  def read_config (self):
-    cfg_file = os.environ.get('OPENAPS_CONFIG', 'openaps.ini')
-    if not os.path.exists(cfg_file):
-      print "Not an openaps environment, run: openaps init"
-      sys.exit(1)
-    self.config = config.Config.Read(cfg_file)
-
-  def prolog (self):
-    self.read_config( )
-    # print str(self.config)
-    # print self.config.sections( )
-    # if 'devices' not in self.config.sections( ):
-    #   self.config.add_section('devices')
-    # self.config.write(sys.stderr)
-
-class ToolsApp (ConfigApp):
+class ToolsApp (cli.ConfigApp):
   """
   openaps-device - Manage device configurations.
 

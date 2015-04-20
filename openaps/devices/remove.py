@@ -11,5 +11,5 @@ def main (args, app):
       app.config.remove_device(device)
       app.config.save( )
       print 'removed', device.format_url( )
-      sys.exit(0)
+      break
 

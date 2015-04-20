@@ -45,3 +45,34 @@ class Base (object):
     print self.inputs
     print args
 
+from openaps import config
+class ConfigApp (Base):
+  def read_config (self):
+    cfg_file = os.environ.get('OPENAPS_CONFIG', 'openaps.ini')
+    if not os.path.exists(cfg_file):
+      print "Not an openaps environment, run: openaps init"
+      sys.exit(1)
+    self.config = config.Config.Read(cfg_file)
+
+  def prolog (self):
+    self.read_config( )
+    # print str(self.config)
+    # print self.config.sections( )
+    # if 'devices' not in self.config.sections( ):
+    #   self.config.add_section('devices')
+    # self.config.write(sys.stderr)
+
+  def epilog (self):
+    self.create_git_commit( )
+  def create_git_commit (self):
+    from git import Repo
+    self.repo = Repo(os.getcwd( ))
+    if self.repo.index.diff(None):
+      git = self.repo.git
+      msg = """{0:s}
+
+      TODO: better change descriptions
+      {1:s}
+      """.format(self.parser.prog, ' '.join(sys.argv))
+      git.commit('-avm', msg)
+

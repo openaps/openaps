@@ -31,6 +31,7 @@ setup(name='openaps',
       'bin/openaps-enact',
       'bin/openaps-suggest',
       'bin/openaps-get',
+      'bin/openaps-use',
       'bin/git-openaps-init',
     ],
     classifiers = [

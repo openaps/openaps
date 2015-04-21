@@ -44,7 +44,7 @@ def complete_args (prefix, parsed_args, action, **kwargs):
   # argcomplete.debug("COMP_POINT", point)
   argcomplete.debug("parsed_args", parsed_args)
   if parsed_args.command is None:
-    return [ ] or action.choices or ['init', 'alias', 'help', 'get', 'suggest', 'enact', 'device' ]
+    return [ ] or action.choices or ['init', 'alias', 'help', 'get', 'use', 'suggest', 'enact', 'device' ]
   # if True or parsed_args.command not in ['help', None]:
   # return [ 'debug' ]
   shell_cmd = ['openaps-%s' % parsed_args.command ] + parsed_args.args + [ prefix ]

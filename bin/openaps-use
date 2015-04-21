@@ -1,0 +1,60 @@
+#!/usr/bin/python
+# PYTHON_ARGCOMPLETE_OK
+
+import sys
+import argparse, argcomplete
+import openaps
+
+from openaps import cli
+from openaps import devices
+from openaps import uses
+class UseToolApp (cli.ConfigApp):
+  """ openaps-use - use a registered device
+
+  Once a device is registered in openaps.ini, it can be used.
+  """
+
+  name = 'use'
+  def configure_parser (self, parser):
+    self.read_config( )
+    available = devices.get_device_map(self.config)
+    self.devices = available
+    choices = available.keys( )
+    choices.sort( )
+    self.parser.add_argument('--version', action='version', version='%s %s' % ('%(prog)s', openaps.__version__))
+
+    """
+    self.parser.add_argument('device' #, nargs='1'
+                            , choices=choices
+                            , default='Use a device')
+    """
+    self.configure_devices( )
+    # self.parser.add_argument('args', nargs=argparse.REMAINDER)
+    # self.commands = uses.configure_commands(parser, parent=self)
+  def configure_devices (self):
+    allowed = [ ]
+    self.commands = uses.UseDeviceCommands(self.devices, parent=self)
+    self.commands.configure_commands(self.parser)
+    """
+    for n, device in self.devices.items( ):
+      uses.get_uses_for(device, self)
+      pass
+      # device.register_uses(uses.get_uses_for(device, self))
+    """
+  def prolog (self):
+    super(UseToolApp, self).prolog( )
+
+  def epilog (self):
+    super(UseToolApp, self).epilog( )
+
+  def run (self, args):
+    print self.inputs
+    print args
+    self.commands.selected(args)(args, self)
+
+
+if __name__ == '__main__':
+
+    app = UseToolApp(sys.argv)
+    app( )
+

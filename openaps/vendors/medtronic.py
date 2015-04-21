@@ -2,6 +2,11 @@
 """
 Medtronic - openaps driver for Medtronic
 """
+from openaps.uses.use import Use
+
+def configure_use_app (app, parser):
+  pass
+  # parser.add_argument('foobar', help="LOOK AT ME")
 
 def configure_add_app (app, parser):
   parser.add_argument('serial')
@@ -15,8 +20,15 @@ def main (args, app):
   print "MEDTRONIC", args, app
   print "app commands", app.selected.name
 
-class Session (object):
-  pass
+class Session (Use):
+  """ session for pump
+  """
+  def main (self, args, app):
+    print "I'm medtronic session command"
+    print self.method, self.method.name, self.method.fields
+    print args
+    print app
+    print app.config
 
 class Device (object):
   pass
@@ -32,3 +44,12 @@ def set_config (args, device):
 
 def display_device (device):
   return ''
+
+known_uses = [
+  Session
+]
+def get_uses (device, config):
+  return  known_uses[:]
+
+
+

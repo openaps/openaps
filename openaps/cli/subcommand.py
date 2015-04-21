@@ -6,7 +6,9 @@ class Subcommand (object):
     self.parent = parent
 
   def setup_application (self):
+    name = 'configure_%s_app' % self.parent.name
     getattr(self.method, 'configure_app', self._no_op_setup)(self, self.parser)
+    getattr(self.method, name, self._no_op_setup)(self, self.parser)
   def get_description (self):
     return ''.join(self.method.__doc__.split("\n\n")[0:1])
 

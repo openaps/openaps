@@ -5,6 +5,7 @@ class Device (object):
   required = ['name', 'vendor']
   optional = [ ]
   prefix = 'device'
+  _uses = [ ]
 
   def __init__ (self, name, vendor):
     self.name = name
@@ -33,6 +34,11 @@ class Device (object):
     parts = ['{0:s}://{1:s}'.format(self.vendor.__name__.split('.').pop( ), self.name), ]
     parts.append(self.vendor.display_device(self))
     return ' '.join(parts)
+
+  def register_uses (self, uses):
+    for u in uses.usages:
+      if u not in self._uses:
+        self._uses.append(u)
 
   @classmethod
   def FromConfig (klass, vendors, config):

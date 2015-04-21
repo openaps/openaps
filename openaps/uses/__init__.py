@@ -1,0 +1,83 @@
+
+from openaps.cli.subcommand import Subcommand
+from openaps.cli.commandmapapp import CommandMapApp
+
+def no_uses (device, config):
+  return [ ]
+
+def known_uses (config, device):
+  return getattr(device.vendor, 'get_uses', no_uses)(device, config)
+
+def plugin_uses (config, device):
+  return [ ]
+
+def all_uses (config, device):
+  return known_uses(config, device) + plugin_uses(config, device)
+
+class DeviceUsageTask (Subcommand):
+  """ One use
+  """
+  def __init__ (self, method=None, parent=None):
+    self.usage = method
+    self.name = method.__name__.split('.').pop( )
+    self.method = method(parent.device, parent)
+    self.parent = parent
+  def setup_application (self):
+    self.method.parser = self.parser
+    self.configure_parser(self.parser)
+
+
+class DeviceUsageMap (CommandMapApp):
+  """ Map of uses for specific device
+  """
+  Subcommand = DeviceUsageTask
+  def get_dest (self):
+    return 'use'
+  def __init__ (self, device=None, parent=None):
+    self.device = device
+    # self.usages = [ X( ) for X in all_uses(parent.parent.config, device)]
+    self.usages = all_uses(parent.parent.config, device)
+    super(DeviceUsageMap, self).__init__(parent)
+  def get_commands (self):
+    return self.usages
+
+# TODO: rename KnownDeviceUsages
+class UseDeviceTask (Subcommand):
+  """ Manage device usage
+
+  Per vendor usage tasks for a device.
+  """
+  def __init__ (self, method=None, parent=None):
+    super(UseDeviceTask, self).__init__(method=method.vendor, parent=parent)
+    self.device = method
+    self.method = method.vendor
+    self.name = method.name
+
+  def setup_application (self):
+    name = 'configure_%s_app' % self.parent.name
+    getattr(self.method, 'configure_app', self._no_op_setup)(self, self.parser)
+    getattr(self.method, name, self._no_op_setup)(self, self.parser)
+    self.app = DeviceUsageMap(self.device, self)
+    self.app.configure_commands(self.parser)
+  def __call__ (self, args, app):
+    return self.app.selected(args)(args, app)
+
+# TODO: rename KnownDeviceCommandMap
+class UseDeviceCommands (CommandMapApp):
+  """ device - which device to use """
+  Subcommand = UseDeviceTask
+  def __init__ (self, devices=None, parent=None):
+    self.devices = devices
+    super(UseDeviceCommands, self).__init__(parent)
+  def get_dest (self):
+    return 'device'
+  def get_commands (self):
+    choices = self.devices.keys( )
+    choices.sort( )
+    return [ self.devices[choice] for choice in choices ]
+
+def get_uses_for (device, parent=None):
+  return all_uses(parent.config, device)
+  # uses = UseDeviceCommands(device, parent)
+  # uses.configure_commands (parent.parser)
+  return uses

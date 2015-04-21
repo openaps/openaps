@@ -5,7 +5,6 @@ import sys, os, os.path
 import argparse, argcomplete
 import openaps
 
-from openaps import config
 from openaps import cli
 from openaps import devices
 class ToolsApp (cli.ConfigApp):

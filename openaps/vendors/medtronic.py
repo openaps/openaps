@@ -3,6 +3,7 @@
 Medtronic - openaps driver for Medtronic
 """
 from openaps.uses.use import Use
+import decocare
 
 def configure_use_app (app, parser):
   pass
@@ -20,23 +21,50 @@ def main (args, app):
   print "MEDTRONIC", args, app
   print "app commands", app.selected.name
 
+
+__USES__ = { }
+def use ( ):
+  def decorator (cls):
+    if cls.__name__ not in __USES__:
+      __USES__[cls.__name__] = cls
+    return cls
+  return decorator
+
+@use( )
+class scan (Use):
+  """ scan for usb stick """
+  def scanner (self):
+    from decocare.scan import scan
+    return scan( )
+  def main (self, args, app):
+    print self.scanner( )
+
 class Session (Use):
   """ session for pump
   """
   def main (self, args, app):
-    print "I'm medtronic session command"
+    print "I'm medtronic %s command" % self.name
     print self.method, self.method.name, self.method.fields
     print args
     print app
     print app.config
 
-class Device (object):
+@use( )
+class Device (Session):
+  """ Made up fae command
+  """
   pass
 
-class Pump (Device):
+@use( )
+class Pump (Session):
+  """ Query pump model
+  """
   pass
 
-class CGM (Device):
+@use( )
+class CGM (Session):
+  """ Query CGM model
+  """
   pass
 
 def set_config (args, device):
@@ -46,8 +74,9 @@ def display_device (device):
   return ''
 
 known_uses = [
-  Session
-]
+  Session,
+  # Device, Pump, CGM
+] + __USES__.values( )
 def get_uses (device, config):
   return  known_uses[:]
 

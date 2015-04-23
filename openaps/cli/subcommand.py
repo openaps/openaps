@@ -8,8 +8,14 @@ class Subcommand (object):
       self.config = parent.config
 
   def setup_application (self):
+    """ Allows us to use method, injected as dependency earlier to set
+    up argparser before autocompletion/running the app.
+    """
+    # figure out precise method name, specific to this use
     name = 'configure_%s_app' % self.parent.name
+    # call generic set up method
     getattr(self.method, 'configure_app', self._no_op_setup)(self, self.parser)
+    # call specific set up method
     getattr(self.method, name, self._no_op_setup)(self, self.parser)
   def get_description (self):
     return ''.join(self.method.__doc__.split("\n\n")[0:1])

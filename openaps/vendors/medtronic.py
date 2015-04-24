@@ -37,9 +37,23 @@ class scan (Use):
     from decocare.scan import scan
     return scan( )
   def main (self, args, app):
-    print self.scanner( )
+    return self.scanner( )
 
-class Session (Use):
+class MedtronicTask (scan):
+  requires_session = True
+  record_stats = True
+  def before_main (self, args, app):
+    self.setup_medtronic( )
+    pass
+  def setup_medtronic (self):
+    self.uart = stick.Stick(link.Link(self.scanner( )))
+    self.uart.open( )
+    serial = self.device.fields['serial']
+    self.pump = session.Pump(self.uart, serial)
+    stats = uart.interface_stats( )
+  def main (self, args, app):
+    return self.scanner( )
+class Session (MedtronicTask):
   """ session for pump
   """
   def main (self, args, app):

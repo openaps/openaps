@@ -48,9 +48,11 @@ class UseToolApp (cli.ConfigApp):
     super(UseToolApp, self).epilog( )
 
   def run (self, args):
-    print self.inputs
-    print args
-    self.commands.selected(args)(args, self)
+    # print self.inputs
+    # print args
+    app = self.commands.selected(args)
+    output = app(args, self)
+    print output
 
 
 if __name__ == '__main__':

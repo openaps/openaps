@@ -35,7 +35,6 @@ class DeviceUsageMap (CommandMapApp):
     return 'use'
   def __init__ (self, device=None, parent=None):
     self.device = device
-    # self.usages = [ X( ) for X in all_uses(parent.parent.config, device)]
     self.usages = all_uses(parent.parent.config, device)
     super(DeviceUsageMap, self).__init__(parent)
   def get_commands (self):
@@ -50,15 +49,20 @@ class UseDeviceTask (Subcommand):
   def __init__ (self, method=None, parent=None):
     super(UseDeviceTask, self).__init__(method=method.vendor, parent=parent)
     self.device = method
-    self.method = method.vendor
+    self.method = DeviceUsageMap(self.device, self)
+    # self.method = method
+    # self.method = method.vendor
     self.name = method.name
+
+  def get_description (self):
+    return ''.join(self.device.vendor.__doc__.split("\n\n")[0:1])
 
   def setup_application (self):
     name = 'configure_%s_app' % self.parent.name
     getattr(self.method, 'configure_app', self._no_op_setup)(self, self.parser)
     getattr(self.method, name, self._no_op_setup)(self, self.parser)
-    self.app = DeviceUsageMap(self.device, self)
-    self.app.configure_commands(self.parser)
+    # self.app = DeviceUsageMap(self.device, self)
+    self.method.configure_commands(self.parser)
   def __call__ (self, args, app):
     return self.app.selected(args)(args, app)
 
@@ -66,8 +70,11 @@ class UseDeviceTask (Subcommand):
 class UseDeviceCommands (CommandMapApp):
   """ device - which device to use """
   Subcommand = UseDeviceTask
-  def __init__ (self, devices=None, parent=None):
+  def __init__ (self, devices=None, parent=None, config=None):
     self.devices = devices
+    self.config = config
+    if parent and getattr(parent, 'config', config) is None:
+      self.config = parent.config
     super(UseDeviceCommands, self).__init__(parent)
   def get_dest (self):
     return 'device'

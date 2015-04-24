@@ -8,6 +8,16 @@ class Use (Subcommand):
     self.method = method
     self.name = self.__class__.__name__.split('.').pop( )
     self.parent = parent
+    self.device = parent.device
   def main (self, args, app):
     print "HAHA", args, app
 
+  def before_main (self, args, app):
+    pass
+  def after_main (self, args, app):
+    pass
+  def __call__ (self, args, app):
+    self.before_main(args, app)
+    output = self.method.main(args, app)
+    self.after_main(args, app)
+    return output

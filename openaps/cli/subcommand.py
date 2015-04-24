@@ -4,6 +4,8 @@ class Subcommand (object):
     self.method = method
     self.name = method.__name__.split('.').pop( )
     self.parent = parent
+    if parent and parent.config:
+      self.config = parent.config
 
   def setup_application (self):
     name = 'configure_%s_app' % self.parent.name
@@ -27,7 +29,7 @@ class Subcommand (object):
     pass
 
   def __call__ (self, args, app):
-    self.method.main(args, app)
+    return self.method.main(args, app)
 
   def configure_parser (self, parser):
     getattr(self.method, 'configure_parser', self._no_op_config)(parser)

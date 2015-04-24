@@ -30,5 +30,5 @@ class scan (Use):
   def scanner (self):
     return readdata.Dexcom.FindDevice( )
   def main (self, args, app):
-    print self.scanner( ) or ''
+    return self.scanner( ) or ''
 

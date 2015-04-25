@@ -36,6 +36,9 @@ def use ( ):
 @use( )
 class scan (Use):
   """ scan for usb stick """
+  def configure_app (self, app, parser):
+    pass
+    # print "hahaha"
   def scanner (self):
     from decocare.scan import scan
     return scan( )
@@ -79,8 +82,9 @@ class Session (MedtronicTask):
 class model (MedtronicTask):
   """ Get model number
   """
-  def configure_app (self):
-    print "hahaha"
+  def configure_app (self, app, parser):
+    pass
+    # print "hahaha"
   def main (self, args, app):
     model = self.pump.read_model( ).getData( )
     return model

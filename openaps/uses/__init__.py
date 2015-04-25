@@ -24,6 +24,8 @@ class DeviceUsageTask (Subcommand):
     self.parent = parent
   def setup_application (self):
     self.method.parser = self.parser
+    super(DeviceUsageTask, self).setup_application( )
+    # self.method.setup_application( )
     # self.configure_parser(self.parser)
   def __call__ (self, args, app):
     return self.method(args, app)

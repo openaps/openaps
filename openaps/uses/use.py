@@ -18,6 +18,6 @@ class Use (Subcommand):
     pass
   def __call__ (self, args, app):
     self.before_main(args, app)
-    output = self.method.main(args, app)
+    output = self.main(args, app)
     self.after_main(args, app)
     return output

@@ -24,7 +24,9 @@ class DeviceUsageTask (Subcommand):
     self.parent = parent
   def setup_application (self):
     self.method.parser = self.parser
-    self.configure_parser(self.parser)
+    # self.configure_parser(self.parser)
+  def __call__ (self, args, app):
+    return self.method(args, app)
 
 
 class DeviceUsageMap (CommandMapApp):
@@ -64,7 +66,7 @@ class UseDeviceTask (Subcommand):
     # self.app = DeviceUsageMap(self.device, self)
     self.method.configure_commands(self.parser)
   def __call__ (self, args, app):
-    return self.app.selected(args)(args, app)
+    return self.method.selected(args)(args, app)
 
 # TODO: rename KnownDeviceCommandMap
 class UseDeviceCommands (CommandMapApp):

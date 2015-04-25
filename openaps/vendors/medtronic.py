@@ -4,6 +4,9 @@ Medtronic - openaps driver for Medtronic
 """
 from openaps.uses.use import Use
 import decocare
+from decocare import stick, session, link
+from datetime import datetime
+from dateutil import relativedelta
 
 def configure_use_app (app, parser):
   pass
@@ -44,30 +47,43 @@ class MedtronicTask (scan):
   record_stats = True
   def before_main (self, args, app):
     self.setup_medtronic( )
-    pass
   def setup_medtronic (self):
     self.uart = stick.Stick(link.Link(self.scanner( )))
     self.uart.open( )
     serial = self.device.fields['serial']
     self.pump = session.Pump(self.uart, serial)
-    stats = uart.interface_stats( )
+    stats = self.uart.interface_stats( )
   def main (self, args, app):
     return self.scanner( )
+
 class Session (MedtronicTask):
   """ session for pump
   """
+  def configure_parser (self, parser):
+    parser.add_argument('--minutes', type=int, default='10')
+  def setup_application (self):
+    print self.parser, self
   def main (self, args, app):
-    print "I'm medtronic %s command" % self.name
-    print self.method, self.method.name, self.method.fields
-    print args
-    print app
-    print app.config
+    self.pump.power_control(minutes=args.minutes)
+    offset = relativedelta.relativedelta(minutes=args.minutes)
+    created_at = datetime.now( )
+    out = dict(device=self.device.name
+      , vendor=__name__
+      , created_at=created_at
+      , started=created_at
+      , expires=created_at + offset
+      )
+    return out
 
 @use( )
-class Device (Session):
-  """ Made up fae command
+class model (MedtronicTask):
+  """ Get model number
   """
-  pass
+  def configure_app (self):
+    print "hahaha"
+  def main (self, args, app):
+    model = self.pump.read_model( ).getData( )
+    return model
 
 @use( )
 class Pump (Session):

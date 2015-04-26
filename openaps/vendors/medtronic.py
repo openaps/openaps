@@ -55,6 +55,8 @@ class MedtronicTask (scan):
     self.setup_medtronic( )
     if self.requires_session:
       self.check_session(app)
+    else:
+      self.pump.setModel(number=self.device.fields.get('model', ''))
   def after_main (self, args, app):
     if self.save_session:
       self.device.store(app.config)
@@ -159,23 +161,36 @@ class settings (MedtronicTask):
 
 
 @use( )
-class read_temp_basal (MedtronicTask):
+class yyyxread_temp_basal (MedtronicTask):
   """ Get pump remaining insulin
   """
   def main (self, args, app):
     return self.pump.model.read_temp_basal( )
 
 @use( )
-class Pump (Session):
-  """ Query pump model
+class mytest (MedtronicTask):
+  """ Get pump remaining insulin
   """
-  pass
+  requires_session = False
+  def main (self, args, app):
+    return self.pump.model.my_read_settings( )
 
 @use( )
-class CGM (Session):
-  """ Query CGM model
+class read_clock (MedtronicTask):
+  """ Get pump remaining insulin
   """
-  pass
+  def main (self, args, app):
+    return self.pump.model.read_clock( )
+
+class SameNameCommand (MedtronicTask):
+  def main (self, args, app):
+    name = self.__class__.__name__.split('.').pop( )
+    return getattr(self.pump.model, name)( )
+
+@use( )
+class read_temp_basal (SameNameCommand):
+  """ Read temporary basal rates. """
+
 
 def set_config (args, device):
   device.add_option('serial', args.serial)
@@ -185,10 +200,9 @@ def display_device (device):
 
 known_uses = [
   Session,
-  # Device, Pump, CGM
-] + __USES__.values( )
+]
 def get_uses (device, config):
-  return  known_uses[:]
+  return  known_uses[:] + __USES__.values( )
 
 
 

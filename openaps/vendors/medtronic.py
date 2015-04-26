@@ -154,22 +154,14 @@ class reservoir (MedtronicTask):
 
 @use( )
 class settings (MedtronicTask):
-  """ Get pump remaining insulin
+  """ Get pump settings
   """
   def main (self, args, app):
     return self.pump.model.read_settings( )
 
-
-@use( )
-class yyyxread_temp_basal (MedtronicTask):
-  """ Get pump remaining insulin
-  """
-  def main (self, args, app):
-    return self.pump.model.read_temp_basal( )
-
 @use( )
 class mytest (MedtronicTask):
-  """ Get pump remaining insulin
+  """ Testing read_settings
   """
   requires_session = False
   def main (self, args, app):
@@ -177,7 +169,7 @@ class mytest (MedtronicTask):
 
 @use( )
 class read_clock (MedtronicTask):
-  """ Get pump remaining insulin
+  """ Read date/time of pump
   """
   def main (self, args, app):
     return self.pump.model.read_clock( )
@@ -190,6 +182,10 @@ class SameNameCommand (MedtronicTask):
 @use( )
 class read_temp_basal (SameNameCommand):
   """ Read temporary basal rates. """
+
+@use( )
+class read_settings (SameNameCommand):
+  """ Read settings. """
 
 
 def set_config (args, device):

@@ -1,6 +1,6 @@
 import json
-class Device (object):
-  name = None
+from openaps.configurable import Configurable
+class Device (Configurable):
   vendor = None
   required = ['name', 'vendor']
   optional = [ ]
@@ -11,16 +11,6 @@ class Device (object):
     self.name = name
     self.vendor = vendor
     self.fields = dict(vendor=vendor.__name__)
-  def section_name (self):
-    return '%s "%s"' % (self.prefix, self.name)
-  def add_option (self, k, v):
-    # section = self.section_name( )
-    # self._config.set(section, k, v)
-    self.fields[k] = v
-    if k not in self.required + self.optional:
-      self.optional.append(k)
-  def items (self):
-    return self.fields.items( )
 
   def read (self, args=None, config=None):
     if args:

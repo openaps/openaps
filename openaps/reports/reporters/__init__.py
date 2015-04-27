@@ -12,7 +12,7 @@ class Reporter (object):
   def __init__ (self, report):
     ""
     self.report = report
-    self.method = get_reporter_map( )[report.fields['reporter']]
+    self.method = get_reporter_map( )[report.fields['reporter'].lower( )]
     self.output = getattr(self.method, 'get_output_stream', default_prep_stream)(self)
 
   def serialize (self, data):

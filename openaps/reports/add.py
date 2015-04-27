@@ -13,6 +13,7 @@ def configure_app (app, parser):
   reports = reporters.get_reporters( )
   parser.add_argument('reporter', choices=[r.__name__.split('.').pop( ) for r in reports])
   commands = uses.UseDeviceCommands(app.parent.devices, parent=app, config=app.parent.config)
+  app.usages = commands
   commands.configure_commands(parser)
   return commands
 

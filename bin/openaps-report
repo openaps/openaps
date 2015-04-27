@@ -38,7 +38,7 @@ class ReportToolApp (cli.ConfigApp):
       This example removes the report "my-results.json" from the openaps
       environment.
 
-    openaps report exec basals
+    openaps report invoke basals
                    <action> <name>
     
 

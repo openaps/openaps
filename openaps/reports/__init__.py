@@ -1,5 +1,5 @@
 
-import add, remove, show
+import add, remove, show, invoke
 
 from openaps.cli.subcommand import Subcommand
 from openaps.cli.commandmapapp import CommandMapApp
@@ -34,5 +34,5 @@ class ReportManagementActions (CommandMapApp):
   def get_dest (self):
     return 'action'
   def get_commands (self):
-    return [ add, remove, show ]
+    return [ add, remove, show, invoke ]
 

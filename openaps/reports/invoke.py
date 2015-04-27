@@ -31,7 +31,7 @@ def main (args, app):
   print report.name, report.fields
   print report.format_url( )
   repo = app.git_repo( )
-  reporter = reporters.Reporter(report)
+  reporter = reporters.Reporter(report, device, task)
   reporter(task.method(args, app))
   print report.name
   repo.index.add([report.name])

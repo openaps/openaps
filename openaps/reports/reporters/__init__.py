@@ -9,15 +9,20 @@ def default_close_stream (reporter):
 class Reporter (object):
   """
   """
-  def __init__ (self, report):
+  def __init__ (self, report, device, task):
     ""
+    self.task   = task
     self.report = report
+    self.device = device
     self.method = get_reporter_map( )[report.fields['reporter'].lower( )]
     self.output = getattr(self.method, 'get_output_stream', default_prep_stream)(self)
 
+  def no_op_serialize (self, data):
+    return data
   def serialize (self, data):
-    print self.method.__name__, self.method
-    return self.method.serialize(data, self)
+    name = 'prerender_' + self.report.fields['reporter']
+    render = getattr(self.task.method, name, self.no_op_serialize)
+    return self.method.serialize(render(data), self)
   def __call__ (self, data):
     self.blob = self.serialize(data)
     self.output.write(self.blob)
@@ -27,7 +32,7 @@ class Reporter (object):
     
 
 def get_reporter_map ( ):
-  return dict([(r.__name__.split('.').pop( ).lower( ), r) for r in get_reporters( ) ])
+  return dict([ (r.__name__.split('.').pop( ).lower( ), r) for r in get_reporters( ) ])
 
 def get_reporters ( ):
   return [ base, text, stdout, JSON ]

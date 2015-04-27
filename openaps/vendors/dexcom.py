@@ -37,8 +37,15 @@ class scan (Use):
 
 @use( )
 class glucose (scan):
-  """  glucose """
+  """ glucose
+
+  This is a good example of what is needed for new commands.
+  To add additional commands, subclass from scan as shown.
+  """
+  def prerender_stdout (self, data):
+    return self.prerender_text(data)
   def prerender_text (self, data):
+    """ turn everything into a string """
     out = [ ]
     for item in data:
       line = map(str, [
@@ -49,10 +56,19 @@ class glucose (scan):
       out.append(' '.join(line))
     return "\n".join(out)
   def prerender_JSON (self, data):
+    """ since everything is a dict/strings/ints, we can pass thru to json """
     return data
   def main (self, args, app):
+    """
+    Implement a main method that takes args and app as parameters.
+    Use self.dexcom.Read... to get data.
+    Return the resulting data for this task/command.
+    The data will be passed to prerender_<format> by the reporting system.
+    """
     records = self.dexcom.ReadRecords('EGV_DATA')
+    # return list of dicts, easier for json
     out = [ ]
     for item in records:
+      # turn everything into dict
       out.append(item.to_dict( ))
     return out

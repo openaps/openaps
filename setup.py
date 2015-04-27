@@ -15,7 +15,7 @@ setup(name='openaps',
     author_email="bewest+openaps@gmail.com",
     # url="https://github.com/openaps/openaps",
     url="https://openaps.org/",
-    packages=['openaps'],
+    packages=find_packages( ),
     include_package_data = True,
     install_requires = [
       'pyserial', 'python-dateutil', 'argcomplete',

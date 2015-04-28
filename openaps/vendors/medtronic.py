@@ -152,19 +152,6 @@ class read_history_data (MedtronicTask):
     return history
 
 @use( )
-class read_glucose_data (MedtronicTask):
-  """ Read pump glucose page
-  """
-  def configure_app (self, app, parser):
-    parser.add_argument('page', type=int, default=0)
-
-  def get_params (self, args):
-    return dict(page=int(args.page))
-  def main (self, args, app):
-    glucose = self.pump.model.read_glucose_data(**self.get_params(args))
-    return glucose
-
-@use( )
 class status (MedtronicTask):
   """ Get pump status
   """
@@ -203,7 +190,7 @@ class read_clock (MedtronicTask):
 class SameNameCommand (MedtronicTask):
   def main (self, args, app):
     name = self.__class__.__name__.split('.').pop( )
-    return getattr(self.pump.model, name)( )
+    return getattr(self.pump.model, name)(**self.get_params(args))
 
 @use( )
 class read_temp_basal (SameNameCommand):
@@ -224,6 +211,16 @@ class read_current_glucose_pages (SameNameCommand):
 @use( )
 class read_current_history_pages (SameNameCommand):
   """ Read current history pages. """
+
+@use( )
+class read_glucose_data (SameNameCommand):
+  """ Read pump glucose page
+  """
+  def configure_app (self, app, parser):
+    parser.add_argument('page', type=int, default=0)
+
+  def get_params (self, args):
+    return dict(page=int(args.page))
 
 
 

@@ -12,6 +12,8 @@ class Use (Subcommand):
   def main (self, args, app):
     print "HAHA", args, app
 
+  def get_params (self, args):
+    return dict( )
   def before_main (self, args, app):
     pass
   def after_main (self, args, app):

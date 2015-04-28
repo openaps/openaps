@@ -142,11 +142,13 @@ class model (MedtronicTask):
 class read_history_data (MedtronicTask):
   """ Read pump history page
   """
+  def get_params (self, args):
+    return dict(page=int(args.page))
   def configure_app (self, app, parser):
     parser.add_argument('page', type=int, default=0)
 
   def main (self, args, app):
-    history = self.pump.model.read_history_data(page=args.page)
+    history = self.pump.model.read_history_data(**self.get_params(args))
     return history
 
 @use( )
@@ -156,8 +158,10 @@ class read_glucose_data (MedtronicTask):
   def configure_app (self, app, parser):
     parser.add_argument('page', type=int, default=0)
 
+  def get_params (self, args):
+    return dict(page=int(args.page))
   def main (self, args, app):
-    glucose = self.pump.model.read_glucose_data(page=args.page)
+    glucose = self.pump.model.read_glucose_data(**self.get_params(args))
     return glucose
 
 @use( )

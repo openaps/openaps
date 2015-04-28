@@ -139,6 +139,18 @@ class model (MedtronicTask):
     return model
 
 @use( )
+class read_history_data (MedtronicTask):
+  """ Read pump history page
+  """
+  def configure_app (self, app, parser):
+    parser.add_argument('page', type=int, default=0)
+
+  def main (self, args, app):
+    print args.page
+    history = self.pump.model.read_history_data(page=args.page)
+    return history
+
+@use( )
 class status (MedtronicTask):
   """ Get pump status
   """

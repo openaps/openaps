@@ -222,6 +222,44 @@ class read_glucose_data (SameNameCommand):
   def get_params (self, args):
     return dict(page=int(args.page))
 
+@use( )
+class read_glucose_data (SameNameCommand):
+  """ Read pump glucose page
+  """
+  def configure_app (self, app, parser):
+    parser.add_argument('page', type=int, default=0)
+
+  def get_params (self, args):
+    return dict(page=int(args.page))
+
+
+@use( )
+class iter_glucose (MedtronicTask):
+  """ Read latest 100 records
+  """
+  def main (self, args, app):
+    num = 0
+    records = [ ]
+    for rec in self.pump.model.iter_glucose_pages( ):
+      records.append(rec)
+      num = num + 1
+      if num > 99:
+        break
+    return records
+
+@use( )
+class iter_pump (MedtronicTask):
+  """ Read latest 100 records
+  """
+  def main (self, args, app):
+    num = 0
+    records = [ ]
+    for rec in self.pump.model.iter_history_pages( ):
+      records.append(rec)
+      num = num + 1
+      if num > 99:
+        break
+    return records
 
 
 def set_config (args, device):

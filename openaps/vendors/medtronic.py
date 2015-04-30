@@ -80,9 +80,9 @@ class MedtronicTask (scan):
     return out
   def create_session (self):
     minutes = int(self.device.fields.get('minutes', 10))
+    now = datetime.now( )
     self.pump.power_control(minutes=minutes)
     model = self.get_model( )
-    now = datetime.now( )
     offset = relativedelta.relativedelta(minutes=minutes)
     out = dict(device=self.device.name
       , model=model

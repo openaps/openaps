@@ -120,7 +120,7 @@ explore the live help system.
 
 ##### Sample `use` commands
 
-###### `medtronic
+###### `medtronic`
 
 Assuming device is named `pump`:
 

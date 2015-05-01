@@ -1,30 +1,6 @@
 #! /usr/bin/env python
 # PYTHON_ARGCOMPLETE_OK
 """
-usage: openaps [--version] [--exec-path=<path>] [--html-path]
-           [-p|--paginate|--no-pager] [--no-replace-objects]
-           [--bare] [--openaps-dir=<path>] [--work-tree=<path>]
-           [-c <name>=<value>] [--help]
-           <command> [<args>...]
-
-options:
-   -c <name=value>
-   -h, --help
-   -p, --paginate
-
-The most commonly used openaps commands are:
-   get             Get a status report of some kind.
-   suggest         Suggest a possible change to the environment.
-   enact           Execute a suggestion.
-   autocomplete    Print an autocompletion script
-   branch          List, create, or delete branches
-   checkout        Checkout a branch or paths to the working tree
-   clone           Clone a repository into a new directory
-   commit          Record changes to the repository
-   push            Update remote refs along with associated objects
-   remote          Manage set of tracked repositories
-
-See 'openaps help <command>' for more information on a specific command.
 
 """
 from subprocess import call
@@ -70,6 +46,85 @@ class BaseApp (cli.Base):
   openaps - openaps: a toolkit for DIY artificial pancreas system
 
   Utilities for developing an artificial pancreas system.
+  openaps helps you manage and structure reports for various devices.
+
+Common workflows:
+
+Getting started:
+
+openaps init <name>    - create a new instance of openaps
+openaps init myopenaps - this creates an instance of openaps in a new
+                         directory, called myopenaps
+
+cd myopenaps - change directory to root of new repo
+
+A valid instance of openaps is a git repo with a file called
+openaps.ini present.
+
+openaps will track configuration and some status information inside of
+openaps.ini.  If you already have a git repo which you would like to
+become a valid openaps environent, in the root of your repo, run:
+    
+    touch openaps.ini
+    git add openaps.ini
+    git commit -avm 'init openaps'
+
+Now, wth a valid openaps environment, you can register devices for
+use.  A device is implemented by a vendor.  openaps [will] provide a
+modular, language and process independent environment for creating
+vendors and devices, but for now the only two are dexcom and
+medtronic.
+
+To register devices for use, see:
+  openaps device -h
+  openaps device add <name> <vendor> [opts...]
+  eg:
+  # register a medtronic device named pump
+  openaps device add pump medtronic 665455
+  # register a dexcom device named cgm
+  openaps device add cgm dexcom
+
+Now that devices are known, and we have a variety of commands
+available.  We can explore how to produce reports by using devices
+with the openaps use command:
+
+    openaps use <device-name> <use-name> [opts]
+
+openaps use commands can only be used after devices have been added to
+the openaps.ini config using openaps device add.
+Eg:
+    openaps use pump -h        - show available commands for the
+                                 device known as "pump"
+    openaps use pump iter_pump - get last 100 pump history records
+                                 from the device called pump
+    openaps use cgm -h         - show available commands for the
+                                 device known as "cgm"
+    openaps use cgm glucose
+
+After experimenting with openaps use commands, users can save reports
+using the openaps report commands.
+openaps repoort commands map openaps use commands to filenames:
+
+    openaps report add <report-name> <report-formatter> <device> <use> [opts]
+
+    # add a report, saved in a file called pump-history.json, which is
+    # JSON format, from device pump using use iter_pump.
+    openaps report add pump-history.json JSON pump iter_pump
+
+    # add a report, saved in a file called glucose.json, which is
+    # JSON format, from device cgm using use glucose.
+    openaps report add glucose.json JSON cgm glucose
+
+    # invoke the report to create glucose.json
+    openaps report invoke glucose.json
+
+    # invoke the report to create pump-history.json
+    openaps report invoke pump-history.json
+
+
+  All commands support tab completion, and -h help options to help
+  explore the live help system.
+
   """
   always_complete_options = False
   def configure_parser (self, parser):

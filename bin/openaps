@@ -103,7 +103,7 @@ Eg:
 
 After experimenting with openaps use commands, users can save reports
 using the openaps report commands.
-openaps repoort commands map openaps use commands to filenames:
+openaps report commands map openaps use commands to filenames:
 
     openaps report add <report-name> <report-formatter> <device> <use> [opts]
 

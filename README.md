@@ -116,3 +116,51 @@ using the `openaps report` commands.
 
 All commands support tab completion, and -h help options to help
 explore the live help system.
+
+
+##### Sample `use` commands
+###### `medtronic
+Assuming device is named `pump`:
+
+    usage: openaps-use pump [-h]
+                            {Session,status,read_clock,iter_pump,read_current_history_pages,read_temp_basal,reservoir,settings,mytest,scan,iter_glucose,read_current_glucose_pages,read_history_data,read_carb_ratios,read_settings,model,read_glucose_data}
+                            ...
+
+    positional arguments:
+      {Session,status,read_clock,iter_pump,read_current_history_pages,read_temp_basal,reservoir,settings,mytest,scan,iter_glucose,read_current_glucose_pages,read_history_data,read_carb_ratios,read_settings,model,read_glucose_data}
+                            Operation
+        Session             session for pump
+        status              Get pump status
+        read_clock          Read date/time of pump
+        iter_pump           Read latest 100 records
+        read_current_history_pages
+                            Read current history pages.
+        read_temp_basal     Read temporary basal rates.
+        reservoir           Get pump remaining insulin
+        settings            Get pump settings
+        mytest              Testing read_settings
+        scan                scan for usb stick
+        iter_glucose        Read latest 100 records
+        read_current_glucose_pages
+                            Read current glucose pages.
+        read_history_data   Read pump history page
+        read_carb_ratios    Read carb_ratios.
+        read_settings       Read settings.
+        model               Get model number
+        read_glucose_data   Read pump glucose page
+
+    optional arguments:
+      -h, --help            show this help message and exit
+
+###### `dexcom`
+
+    usage: openaps-use cgm [-h] {glucose,scan} ...
+
+    positional arguments:
+      {glucose,scan}  Operation
+        glucose       glucose
+        scan          scan for usb stick
+
+    optional arguments:
+      -h, --help      show this help message and exit
+

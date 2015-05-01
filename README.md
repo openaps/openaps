@@ -119,7 +119,9 @@ explore the live help system.
 
 
 ##### Sample `use` commands
+
 ###### `medtronic
+
 Assuming device is named `pump`:
 
     usage: openaps-use pump [-h]

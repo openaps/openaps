@@ -26,7 +26,7 @@ def main (args, app):
   # usage = selected_usage(available, report.fields['use'])
   # print usage
   task = app.actions.commands['add'].usages.commands[device.name].method.commands[report.fields['use']]
-  print task.name, task.usage, task.method
+  # print task.name, task.usage, task.method
   # print device.name, device
   # print report.name, report.fields
   # XXX.bewest: very crude, need to prime the Use's args from the config

@@ -19,12 +19,13 @@ def main (args, app):
   # print "adding", app.selected.vendors.selected(args).method
   # device = app.selected.vendors.selected(args)(args, app)
   vendor = vendors.lookup(args.vendor)
-  print "MY vendor", vendor
-  print args
+  print "vendor", vendor
+  # print args
   device = Device(args.name, vendor)
   device.read(args=args)
   app.config.add_device(device)
   print device, device.items( )
-  app.config.write(sys.stdout)
+  # app.config.write(sys.stdout)
   app.config.save( )
+  print "added", device.format_url( )
 

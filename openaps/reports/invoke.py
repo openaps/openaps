@@ -17,7 +17,7 @@ def configure_app (app, parser):
   parser._actions[-1].nargs = '?'
   if parser._actions[-1].choices:
     parser._actions[-1].choices.append('*')
-  print 'app', app.reports
+  # print 'app', app.reports
 def main (args, app):
   # reports = reporters.get_reporters( )
   report =  app.actions.selected(args).reports[args.report]
@@ -40,9 +40,4 @@ def main (args, app):
   reporter(task.method(args, app))
   print 'reporting', report.name
   repo.index.add([report.name])
-  """
-  with app.environment as repo:
-  """
-  # reporter(task.method(args, app))
-  # report.exec
 

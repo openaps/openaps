@@ -8,6 +8,17 @@ import openaps
 from openaps import cli
 from openaps import devices
 from openaps import uses
+from openaps.reports import reporters
+from openaps.reports.report import Report
+
+class Output (reporters.Reporter):
+  def __init__ (self, args, formatter, task):
+    ""
+    self.task = task
+    self.report = Report(self.__class__.__name__, args.format, args.device, args.use )
+    self.method = formatter
+    self.output = args.output
+
 class UseToolApp (cli.ConfigApp):
   """ openaps-use - use a registered device
 
@@ -19,8 +30,11 @@ class UseToolApp (cli.ConfigApp):
     self.read_config( )
     available = devices.get_device_map(self.config)
     self.devices = available
+    self.reporters = reporters.get_reporter_map( )
     choices = available.keys( )
     choices.sort( )
+    self.parser.add_argument('--format', choices=self.reporters.keys(), default='json')
+    self.parser.add_argument('--output', type=argparse.FileType('w'), default='-')
     self.parser.add_argument('--version', action='version', version='%s %s' % ('%(prog)s', openaps.__version__))
 
     """
@@ -47,13 +61,15 @@ class UseToolApp (cli.ConfigApp):
   def epilog (self):
     super(UseToolApp, self).epilog( )
 
+  def get_report (self, args):
+    report = self.reporters['stdout']
+    reporter = reporters.Reporter(report, device, task)
   def run (self, args):
     # print self.inputs
-    # print args
     app = self.commands.selected(args)
+    reporter = Output(args, self.reporters.get(args.format), app)
     output = app(args, self)
-    print output
-
+    reporter(output)
 
 if __name__ == '__main__':
 

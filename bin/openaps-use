@@ -15,7 +15,7 @@ class Output (reporters.Reporter):
   def __init__ (self, args, formatter, task):
     ""
     self.task = task
-    self.report = Report(self.__class__.__name__, args.format, args.device, args.use )
+    self.report = Report(self.__class__.__name__, args.format, args.device, args.use)
     self.method = formatter
     self.output = args.output
 
@@ -43,27 +43,17 @@ class UseToolApp (cli.ConfigApp):
                             , default='Use a device')
     """
     self.configure_devices( )
-    # self.parser.add_argument('args', nargs=argparse.REMAINDER)
-    # self.commands = uses.configure_commands(parser, parent=self)
+
   def configure_devices (self):
-    allowed = [ ]
     self.commands = uses.UseDeviceCommands(self.devices, parent=self)
     self.commands.configure_commands(self.parser)
-    """
-    for n, device in self.devices.items( ):
-      uses.get_uses_for(device, self)
-      pass
-      # device.register_uses(uses.get_uses_for(device, self))
-    """
+
   def prolog (self):
     super(UseToolApp, self).prolog( )
 
   def epilog (self):
     super(UseToolApp, self).epilog( )
 
-  def get_report (self, args):
-    report = self.reporters['stdout']
-    reporter = reporters.Reporter(report, device, task)
   def run (self, args):
     # print self.inputs
     app = self.commands.selected(args)

@@ -13,5 +13,6 @@ def configure_app (app, parser):
 def main (args, app):
   # print args
   for device in Device.FromConfig(vendors, app.config):
-    print device.format_url( )
+    if args.name in [ '*', device.name ]:
+      print device.format_url( )
 

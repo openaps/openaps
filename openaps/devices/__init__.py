@@ -42,4 +42,3 @@ def configure_commands (parser, parent=None):
 
     return commands
 
-

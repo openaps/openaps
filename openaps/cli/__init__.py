@@ -56,11 +56,6 @@ class ConfigApp (Base):
 
   def prolog (self):
     self.read_config( )
-    # print str(self.config)
-    # print self.config.sections( )
-    # if 'devices' not in self.config.sections( ):
-    #   self.config.add_section('devices')
-    # self.config.write(sys.stderr)
 
   def epilog (self):
     self.create_git_commit( )
@@ -71,7 +66,6 @@ class ConfigApp (Base):
     
   def create_git_commit (self):
     self.git_repo( )
-    # if self.repo.index.diff(None):
     if self.repo.is_dirty( ) or self.repo.index.diff(None):
       git = self.repo.git
       msg = """{0:s} {1:s}

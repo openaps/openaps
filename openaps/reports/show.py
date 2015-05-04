@@ -11,6 +11,7 @@ def configure_app (app, parser):
   parser._actions[-1].nargs = '?'
   if parser._actions[-1].choices:
     parser._actions[-1].choices.append('*')
+
 def main (args, app):
   for device in Report.FromConfig(app.config):
     if args.report in [ '*', device.name ]:

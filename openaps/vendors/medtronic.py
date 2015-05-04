@@ -19,12 +19,16 @@ def configure_add_app (app, parser):
 
 def configure_app (app, parser):
   if app.parent.name == 'add':
+    """
     print "CONFIG INNER", app, app.parent.name, app.name
+    """
 def configure_parser (parser):
   pass
 def main (args, app):
+  """
   print "MEDTRONIC", args, app
   print "app commands", app.selected.name
+  """
 
 
 __USES__ = { }
@@ -113,7 +117,9 @@ class Session (MedtronicTask):
   def configure_parser (self, parser):
     parser.add_argument('--minutes', type=int, default='10')
   def setup_application (self):
+    """
     print self.parser, self
+    """
   def main (self, args, app):
     self.pump.power_control(minutes=args.minutes)
     model = self.pump.read_model( ).getData( )

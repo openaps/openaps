@@ -24,7 +24,7 @@ class ToolsApp (cli.ConfigApp):
   def name_completer (self, prefix, **kwargs):
     return [ ]
   def run (self, args):
-    print self.commands
+    # print self.commands
     self.selected = self.commands[args.command]
     self.commands[args.command](args, self)
 

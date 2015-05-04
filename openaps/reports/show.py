@@ -12,7 +12,7 @@ def configure_app (app, parser):
   if parser._actions[-1].choices:
     parser._actions[-1].choices.append('*')
 def main (args, app):
-  print args
+  # print args
   for device in Report.FromConfig(app.config):
     print device.format_url( )
 

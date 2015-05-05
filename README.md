@@ -43,6 +43,12 @@ Common workflows:
 
 Getting started:
 
+Installation:
+
+    sudo  python setup.py develop   - necessary for installation
+
+Setup of new instance:  
+
     openaps init <name>    - create a new instance of openaps
     openaps init myopenaps - this creates an instance of openaps in a new
                              directory, called myopenaps

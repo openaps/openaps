@@ -32,6 +32,13 @@ clone this repo, and issue:
     sudo  python setup.py develop
 
 
+This installs `openaps` system wide.
+Do not use `openaps` commands in the the openaps repo.  Only use the
+`openaps` directory for hacking on the core library, or for managing
+upgrades through git.  Running `openaps` inside of the openaps
+source directory will error in the best case, and mess up your
+`openaps` install in the worst case.
+
 ### Usage
 
     usage: openaps [-h] [-c C C] [-C CONFIG] [--version] [command] ...
@@ -84,6 +91,11 @@ optional arguments:
 
 ### Init new openaps environment
 
+Do not use `openaps` commands in the the openaps repo.  Only use the
+`openaps` directory for hacking on the core library, or for managing
+upgrades through git.  Instead change to a new directory, not managed
+by git: `cd ~/Documents`.
+
 Setup of new instance:  
 
     openaps init <name>    - create a new instance of openaps
@@ -99,6 +111,7 @@ A valid instance of openaps is a git repo with a file called
 `openaps.ini`.
 
 ### Init existing git repo as openaps-environment 
+
 If you already have a git repo which you would like to
 become a valid openaps environent, in the root of your repo, run:
 

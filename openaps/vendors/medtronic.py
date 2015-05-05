@@ -241,29 +241,25 @@ class read_history_data (MedtronicTask):
 class iter_glucose (MedtronicTask):
   """ Read latest 100 glucose records
   """
+  def range (self):
+    return self.pump.model.iter_glucose_pages( )
+  maxCount = 99
   def main (self, args, app):
     num = 0
     records = [ ]
-    for rec in self.pump.model.iter_glucose_pages( ):
+    for rec in self.range( ):
       records.append(rec)
       num = num + 1
-      if num > 99:
+      if num > self.maxCount:
         break
     return records
 
 @use( )
-class iter_pump (MedtronicTask):
+class iter_pump (iter_glucose):
   """ Read latest 100 pump records
   """
-  def main (self, args, app):
-    num = 0
-    records = [ ]
-    for rec in self.pump.model.iter_history_pages( ):
-      records.append(rec)
-      num = num + 1
-      if num > 99:
-        break
-    return records
+  def range (self):
+    return self.pump.model.iter_history_pages( )
 
 
 def set_config (args, device):

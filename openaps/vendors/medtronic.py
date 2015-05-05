@@ -3,6 +3,7 @@
 Medtronic - openaps driver for Medtronic
 """
 from openaps.uses.use import Use
+from openaps.uses.registry import Registry
 from openaps.configurable import Configurable
 import decocare
 from decocare import stick, session, link, commands, history
@@ -32,12 +33,7 @@ def main (args, app):
 
 
 __USES__ = { }
-def use ( ):
-  def decorator (cls):
-    if cls.__name__ not in __USES__:
-      __USES__[cls.__name__] = cls
-    return cls
-  return decorator
+use = Registry( )
 
 @use( )
 class scan (Use):
@@ -284,7 +280,7 @@ known_uses = [
   Session,
 ]
 def get_uses (device, config):
-  return  known_uses[:] + __USES__.values( )
+  return  known_uses[:] + __USES__.values( ) + use.__USES__.values( )
 
 
 

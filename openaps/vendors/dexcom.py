@@ -3,6 +3,7 @@
 Dexcom - openaps driver for dexcom
 """
 from openaps.uses.use import Use
+from openaps.uses.registry import Registry
 import dexcom_reader
 from dexcom_reader import readdata
 
@@ -12,17 +13,11 @@ def set_config (args, device):
 def display_device (device):
   return ''
 
-__USES__ = { }
-def use ( ):
-  def decorator (cls):
-    if cls.__name__ not in __USES__:
-      __USES__[cls.__name__] = cls
-    return cls
-  return decorator
+use = Registry( )
 
 known_uses = [ ]
 def get_uses (device, config):
-  return  known_uses[:] + __USES__.values( )
+  return  known_uses[:] + use.__USES__.values( )
 
 @use( )
 class scan (Use):

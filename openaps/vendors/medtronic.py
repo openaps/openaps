@@ -198,6 +198,22 @@ class read_carb_ratios (SameNameCommand):
   """ Read carb_ratios. """
 
 @use( )
+class read_basal_profile_std (SameNameCommand):
+  """ Read default basal profile. """
+
+@use( )
+class read_basal_profile_A (SameNameCommand):
+  """ Read basal profile A. """
+
+@use( )
+class read_basal_profile_B (SameNameCommand):
+  """ Read basal profile B. """
+
+@use( )
+class read_selected_basal_profile (SameNameCommand):
+  """ Fetch the currently selected basal profile. """
+
+@use( )
 class read_current_glucose_pages (SameNameCommand):
   """ Read current glucose pages. """
 

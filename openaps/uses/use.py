@@ -10,7 +10,10 @@ class Use (Subcommand):
     self.parent = parent
     self.device = parent.device
   def main (self, args, app):
+    """
+    Put main app logic here.
     print "HAHA", args, app
+    """
 
   def get_params (self, args):
     return dict( )

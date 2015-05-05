@@ -8,10 +8,8 @@ from openaps import uses
 import reporters
 
 def configure_app (app, parser):
-  parser.set_defaults(report='*')
-  parser._actions[-1].nargs = '?'
-  if parser._actions[-1].choices:
-    parser._actions[-1].choices.append('*')
+  """
+  """
 
 def main (args, app):
   report =  app.actions.selected(args).reports[args.report]

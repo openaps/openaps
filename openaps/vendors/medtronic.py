@@ -243,7 +243,7 @@ class read_history_data (MedtronicTask):
 
 @use( )
 class iter_glucose (MedtronicTask):
-  """ Read latest 100 records
+  """ Read latest 100 glucose records
   """
   def main (self, args, app):
     num = 0
@@ -257,7 +257,7 @@ class iter_glucose (MedtronicTask):
 
 @use( )
 class iter_pump (MedtronicTask):
-  """ Read latest 100 records
+  """ Read latest 100 pump records
   """
   def main (self, args, app):
     num = 0

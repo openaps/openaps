@@ -8,18 +8,21 @@ class Configurable (object):
   def __init__ (self, name, **kwargs):
     self.name = name
     self.fields = kwargs
+
   def section_name (self):
     return '%s "%s"' % (self.prefix, self.name)
+
   def add_option (self, k, v):
-    # section = self.section_name( )
-    # self._config.set(section, k, v)
     self.fields[k] = v
     if k not in self.required + self.optional:
       self.optional.append(k)
+
   def items (self):
     return self.fields.items( )
+
   def format_url (self):
     return self.url_template.format(name=self.name, **self.fields)
+
   def store  (self, config):
     if not config.has_section(self.section_name( )):
       config.add_device(self)

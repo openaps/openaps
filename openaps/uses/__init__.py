@@ -65,7 +65,6 @@ class UseDeviceTask (Subcommand):
     name = 'configure_%s_app' % self.parent.name
     getattr(self.method, 'configure_app', self._no_op_setup)(self, self.parser)
     getattr(self.method, name, self._no_op_setup)(self, self.parser)
-    # self.app = DeviceUsageMap(self.device, self)
     self.method.configure_commands(self.parser)
   def __call__ (self, args, app):
     return self.method.selected(args)(args, app)
@@ -89,6 +88,4 @@ class UseDeviceCommands (CommandMapApp):
 
 def get_uses_for (device, parent=None):
   return all_uses(parent.config, device)
-  # uses = UseDeviceCommands(device, parent)
-  # uses.configure_commands (parent.parser)
-  return uses
+

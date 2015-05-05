@@ -37,8 +37,8 @@ class VendorConfigurations (CommandMapApp):
 
   def get_vendor (self, vendor):
     return self.commands[vendor]
+
 def get_configurable_devices (ctx):
-  print "CTX", ctx.name
   vendors = VendorConfigurations(ctx)
   return vendors
 

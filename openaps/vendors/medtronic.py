@@ -19,12 +19,16 @@ def configure_add_app (app, parser):
 
 def configure_app (app, parser):
   if app.parent.name == 'add':
+    """
     print "CONFIG INNER", app, app.parent.name, app.name
+    """
 def configure_parser (parser):
   pass
 def main (args, app):
+  """
   print "MEDTRONIC", args, app
   print "app commands", app.selected.name
+  """
 
 
 __USES__ = { }
@@ -80,9 +84,9 @@ class MedtronicTask (scan):
     return out
   def create_session (self):
     minutes = int(self.device.fields.get('minutes', 10))
+    now = datetime.now( )
     self.pump.power_control(minutes=minutes)
     model = self.get_model( )
-    now = datetime.now( )
     offset = relativedelta.relativedelta(minutes=minutes)
     out = dict(device=self.device.name
       , model=model
@@ -113,7 +117,9 @@ class Session (MedtronicTask):
   def configure_parser (self, parser):
     parser.add_argument('--minutes', type=int, default='10')
   def setup_application (self):
+    """
     print self.parser, self
+    """
   def main (self, args, app):
     self.pump.power_control(minutes=args.minutes)
     model = self.pump.read_model( ).getData( )
@@ -137,19 +143,6 @@ class model (MedtronicTask):
   def main (self, args, app):
     model = self.pump.read_model( ).getData( )
     return model
-
-@use( )
-class read_history_data (MedtronicTask):
-  """ Read pump history page
-  """
-  def get_params (self, args):
-    return dict(page=int(args.page))
-  def configure_app (self, app, parser):
-    parser.add_argument('page', type=int, default=0)
-
-  def main (self, args, app):
-    history = self.pump.model.read_history_data(**self.get_params(args))
-    return history
 
 @use( )
 class status (MedtronicTask):
@@ -223,14 +216,17 @@ class read_glucose_data (SameNameCommand):
     return dict(page=int(args.page))
 
 @use( )
-class read_glucose_data (SameNameCommand):
-  """ Read pump glucose page
+class read_history_data (MedtronicTask):
+  """ Read pump history page
   """
+  def get_params (self, args):
+    return dict(page=int(args.page))
   def configure_app (self, app, parser):
     parser.add_argument('page', type=int, default=0)
 
-  def get_params (self, args):
-    return dict(page=int(args.page))
+  def main (self, args, app):
+    history = self.pump.model.read_history_data(**self.get_params(args))
+    return history
 
 
 @use( )

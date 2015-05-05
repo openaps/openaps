@@ -8,6 +8,17 @@ import openaps
 from openaps import cli
 from openaps import devices
 from openaps import uses
+from openaps.reports import reporters
+from openaps.reports.report import Report
+
+class Output (reporters.Reporter):
+  def __init__ (self, args, formatter, task):
+    ""
+    self.task = task
+    self.report = Report(self.__class__.__name__, args.format, args.device, args.use)
+    self.method = formatter
+    self.output = args.output
+
 class UseToolApp (cli.ConfigApp):
   """ openaps-use - use a registered device
 
@@ -19,28 +30,19 @@ class UseToolApp (cli.ConfigApp):
     self.read_config( )
     available = devices.get_device_map(self.config)
     self.devices = available
+    self.reporters = reporters.get_reporter_map( )
     choices = available.keys( )
     choices.sort( )
+    self.parser.add_argument('--format', choices=self.reporters.keys(), default='json')
+    self.parser.add_argument('--output', type=argparse.FileType('w'), default='-')
     self.parser.add_argument('--version', action='version', version='%s %s' % ('%(prog)s', openaps.__version__))
 
-    """
-    self.parser.add_argument('device' #, nargs='1'
-                            , choices=choices
-                            , default='Use a device')
-    """
     self.configure_devices( )
-    # self.parser.add_argument('args', nargs=argparse.REMAINDER)
-    # self.commands = uses.configure_commands(parser, parent=self)
+
   def configure_devices (self):
-    allowed = [ ]
     self.commands = uses.UseDeviceCommands(self.devices, parent=self)
     self.commands.configure_commands(self.parser)
-    """
-    for n, device in self.devices.items( ):
-      uses.get_uses_for(device, self)
-      pass
-      # device.register_uses(uses.get_uses_for(device, self))
-    """
+
   def prolog (self):
     super(UseToolApp, self).prolog( )
 
@@ -49,11 +51,10 @@ class UseToolApp (cli.ConfigApp):
 
   def run (self, args):
     # print self.inputs
-    # print args
     app = self.commands.selected(args)
+    reporter = Output(args, self.reporters.get(args.format), app)
     output = app(args, self)
-    print output
-
+    reporter(output)
 
 if __name__ == '__main__':
 

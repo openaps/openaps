@@ -72,3 +72,21 @@ class glucose (scan):
       # turn everything into dict
       out.append(item.to_dict( ))
     return out
+@use( )
+class iter_glucose (glucose):
+  """ glucose
+  """
+  def get_params (self, args):
+    return dict(count=int(args.count))
+  def configure_app (self, app, parser):
+    parser.add_argument('count', type=int, default=100)
+
+  def main (self, args, app):
+    records = [ ]
+    for item in self.dexcom.iter_records('EGV_DATA'):
+      records.append(item.to_dict( ))
+      # print len(records)
+      if len(records) >= self.get_params(args)['count']:
+        break
+    return records
+

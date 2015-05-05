@@ -1,13 +1,4 @@
 
-__USES__ = { }
-def use ( ):
-  def decorator (cls):
-    if cls.__name__ not in __USES__:
-      __USES__[cls.__name__] = cls
-    return cls
-  return decorator
-
-
 class Registry (object):
   def __init__ (self):
     self.__USES__ = { }
@@ -18,3 +9,4 @@ class Registry (object):
         self.__USES__[cls.__name__] = cls
       return cls
     return decorator
+

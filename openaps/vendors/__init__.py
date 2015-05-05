@@ -5,11 +5,9 @@ from openaps.cli.subcommand import Subcommand
 from openaps.cli.commandmapapp import CommandMapApp
 
 class ChangeVendorApp (Subcommand):
-
-  def setup_application (self):
-    name = 'configure_%s_app' % self.parent.name
-    getattr(self.method, 'configure_app', self._no_op_setup)(self, self.parser)
-    getattr(self.method, name, self._no_op_setup)(self, self.parser)
+  """
+  Allow subcommand to handle setup_application
+  """
 
 def find_plugins ( ):
   return [ ]

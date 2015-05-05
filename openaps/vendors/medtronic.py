@@ -32,7 +32,6 @@ def main (args, app):
   """
 
 
-__USES__ = { }
 use = Registry( )
 
 @use( )
@@ -272,7 +271,7 @@ known_uses = [
   Session,
 ]
 def get_uses (device, config):
-  return  known_uses[:] + __USES__.values( ) + use.__USES__.values( )
+  return  known_uses[:] + use.__USES__.values( )
 
 
 

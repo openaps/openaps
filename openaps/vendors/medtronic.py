@@ -70,14 +70,19 @@ class MedtronicTask (scan):
       )
     if expires is None or parse(expires) < now:
       fields = self.create_session( )
-      self.device.add_option('expires', fields['expires'].isoformat( ))
-      self.device.add_option('model', fields['model'])
-      out['expires'] = fields['expires']
-      out['model'] = fields['model']
+      out.update(**self.update_session_info(fields))
     else:
       out['expires'] = parse(expires)
       out['model'] = self.get_model( )
     return out
+  def update_session_info (self, fields):
+    out = { }
+    self.device.add_option('expires', fields['expires'].isoformat( ))
+    self.device.add_option('model', fields['model'])
+    out['expires'] = fields['expires']
+    out['model'] = fields['model']
+    return out
+    
   def create_session (self):
     minutes = int(self.device.fields.get('minutes', 10))
     now = datetime.now( )
@@ -110,25 +115,16 @@ class MedtronicTask (scan):
 class Session (MedtronicTask):
   """ session for pump
   """
+  requires_session = False
   def configure_parser (self, parser):
     parser.add_argument('--minutes', type=int, default='10')
   def setup_application (self):
     """
-    print self.parser, self
     """
   def main (self, args, app):
-    self.pump.power_control(minutes=args.minutes)
-    model = self.pump.read_model( ).getData( )
-    offset = relativedelta.relativedelta(minutes=args.minutes)
-    created_at = datetime.now( )
-    out = dict(device=self.device.name
-      , model=model
-      , vendor=__name__
-      , created_at=created_at
-      , started=created_at
-      , expires=created_at + offset
-      )
-    return out
+    info = self.create_session( )
+    info.update(**self.update_session_info(info))
+    return info
 
 @use( )
 class model (MedtronicTask):

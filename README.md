@@ -4,6 +4,11 @@
 These are the [core utilities][proposal] needed to develop an open source
 artificial pancreas.
 
+See our [wiki for more information][wiki], including how to
+[get started with openaps][GettingStarted].
+
+[GettingStarted]: https://github.com/openaps/openaps/wiki/GettingStarted
+[wiki]: https://github.com/openaps/openaps/wiki
 [proposal]: https://gist.github.com/bewest/a690eaf35c69be898711
 
 This is not an artificial pancreas, but rather tools which independently allow:
@@ -17,6 +22,14 @@ This is not an artificial pancreas, but rather tools which independently allow:
 * control - Can enact changes in the world: emails, placing phone calls, SMS,
   issuing commands to pumps.
 
+
+## Install
+
+See [GettingStarted][GettingStarted] for more important information
+about versions of software dependencies, but to install from source
+clone this repo, and issue:
+
+    sudo  python setup.py develop
 
 
 ### Usage
@@ -39,13 +52,37 @@ optional arguments:
   Utilities for developing an artificial pancreas system.
   openaps helps you manage and structure reports for various devices.
 
-Common workflows:
+## Common workflows:
 
-Getting started:
+    openaps init
+    openaps device <cmd>
+      
+      Device commands allow you to match a device driver, with a name
+      and a configuration.
+      
+      add     - add device config to `openaps.ini`
+      remove  - remove device from `openaps.ini`
+      show    - print device uri, list all by default
 
-Installation:
+    openaps use [--format <json,stdout,text>]
+                [--output <filename>]
+            <device>
+            <use>
+            [use-args...]
 
-    sudo  python setup.py develop   - necessary for installation
+      For each device registered, the vendor implementation provides a
+      number of uses.  This allows users to experiment with reports.
+
+    openaps report <cmd>
+
+      Reports match a device use to a format and filename.
+
+      add     - add report config to `openaps.ini`
+      remove  - remove report from `openaps.ini`
+      show    - print report uri, list all by default
+      invoke  - run and save report in file
+
+### Init new openaps environment
 
 Setup of new instance:  
 
@@ -59,7 +96,10 @@ A valid instance of openaps is a git repo with a file called
 `openaps.ini` present.
 
 `openaps` will track configuration and some status information inside of
-`openaps.ini`.  If you already have a git repo which you would like to
+`openaps.ini`.
+
+### Init existing git repo as openaps-environment 
+If you already have a git repo which you would like to
 become a valid openaps environent, in the root of your repo, run:
 
     touch openaps.ini
@@ -72,6 +112,8 @@ modular, language and process independent environment for creating
 vendors and devices, but for now the only two are dexcom and
 medtronic.
 
+### Managing devices
+
 To register devices for use, see `openaps device` commands:
 
     openaps device -h
@@ -82,6 +124,7 @@ To register devices for use, see `openaps device` commands:
     # register a dexcom device named cgm
     openaps device add cgm dexcom
 
+### Using devices
 Now that devices are known, and we have a variety of commands
 available.  We can explore how to produce reports by using devices
 with the `openaps use` command:
@@ -100,6 +143,7 @@ Eg:
                                  device known as "cgm"
     openaps use cgm glucose
 
+### Save reports
 After experimenting with `openaps use` commands, users can save reports
 using the `openaps report` commands.
 `openaps report` commands map `openaps use` commands to filenames:

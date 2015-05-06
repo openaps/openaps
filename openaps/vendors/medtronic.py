@@ -213,6 +213,18 @@ class read_current_history_pages (SameNameCommand):
   """ Read current history pages. """
 
 @use( )
+class suspend_pump (SameNameCommand):
+  """ Suspend pumping. """
+  def main (self, args, app):
+    result = super(suspend_pump, self).main(args, app)
+    result.update(enacted_at=datetime.now( ))
+    return result
+
+@use( )
+class resume_pump (suspend_pump):
+  """ resume pumping. """
+
+@use( )
 class read_glucose_data (SameNameCommand):
   """ Read pump glucose page
   """

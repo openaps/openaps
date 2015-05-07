@@ -6,6 +6,8 @@ from openaps.uses.use import Use
 from openaps.uses.registry import Registry
 from openaps.configurable import Configurable
 import decocare
+import argparse
+import json
 from decocare import stick, session, link, commands, history
 from datetime import datetime
 from dateutil import relativedelta
@@ -233,6 +235,20 @@ class read_glucose_data (SameNameCommand):
 
   def get_params (self, args):
     return dict(page=int(args.page))
+
+@use( )
+class set_temp_basal (MedtronicTask):
+  """ Set temporary basal rates.
+  """
+  def get_params (self, args):
+    return dict(input=args.input)
+  def configure_app (self, app, parser):
+    parser.add_argument('input', default='-')
+  def main (self, args, app):
+    params = self.get_params(args)
+    program = json.load(argparse.FileType('r')(params.get('input')))
+    program.update(observed_at=datetime.now( ), **self.pump.model.set_temp_basal(**program))
+    return program
 
 @use( )
 class read_history_data (MedtronicTask):

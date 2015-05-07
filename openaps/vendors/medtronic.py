@@ -237,6 +237,11 @@ class resume_pump (suspend_pump):
   """ resume pumping. """
 
 @use( )
+class read_battery_status (SameNameCommand):
+  """ Check battery status. """
+
+
+@use( )
 class read_glucose_data (SameNameCommand):
   """ Read pump glucose page
   """

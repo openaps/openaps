@@ -257,7 +257,7 @@ class set_temp_basal (MedtronicTask):
 
 @use( )
 class bolus (MedtronicTask):
-  """ Set temporary basal rates.
+  """ Send bolus.
   """
   def get_params (self, args):
     return dict(input=args.input)

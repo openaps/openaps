@@ -187,35 +187,76 @@ explore the live help system.
 
 Assuming device is named `pump`:
 
+
     usage: openaps-use pump [-h]
-                            {Session,status,read_clock,iter_pump,read_current_history_pages,read_temp_basal,reservoir,settings,mytest,scan,iter_glucose,read_current_glucose_pages,read_history_data,read_carb_ratios,read_settings,model,read_glucose_data}
+                            {Session, bolus, iter_glucose, iter_pump,
+                            model, mytest, read_basal_profile_A,
+                            read_basal_profile_B,
+                            read_basal_profile_std, read_carb_ratios,
+                            read_clock, read_current_glucose_pages,
+                            read_current_history_pages,
+                            read_glucose_data, read_history_data,
+                            read_selected_basal_profile,
+                            read_settings, read_status,
+                            read_temp_basal, reservoir, resume_pump,
+                            scan, set_temp_basal, settings, status,
+                            suspend_pump}
                             ...
 
     positional arguments:
-      {Session,status,read_clock,iter_pump,read_current_history_pages,read_temp_basal,reservoir,settings,mytest,scan,iter_glucose,read_current_glucose_pages,read_history_data,read_carb_ratios,read_settings,model,read_glucose_data}
+      {Session, bolus, iter_glucose, iter_pump, model, mytest,
+      read_basal_profile_A, read_basal_profile_B,
+      read_basal_profile_std, read_carb_ratios, read_clock,
+      read_current_glucose_pages, read_current_history_pages,
+      read_glucose_data, read_history_data,
+      read_selected_basal_profile, read_settings, read_status,
+      read_temp_basal, reservoir, resume_pump, scan, set_temp_basal,
+      settings, status, suspend_pump}
                             Operation
         Session             session for pump
-        status              Get pump status
-        read_clock          Read date/time of pump
-        iter_pump           Read latest 100 records
-        read_current_history_pages
-                            Read current history pages.
-        read_temp_basal     Read temporary basal rates.
-        reservoir           Get pump remaining insulin
-        settings            Get pump settings
+        bolus               Set temporary basal rates.
+        iter_glucose        Read latest 100 glucose records
+        iter_pump           Read latest 100 pump records
+        model               Get model number
         mytest              Testing read_settings
-        scan                scan for usb stick
-        iter_glucose        Read latest 100 records
+        read_basal_profile_A
+                            Read basal profile A.
+        read_basal_profile_B
+                            Read basal profile B.
+        read_basal_profile_std
+                            Read default basal profile.
+        read_carb_ratios    Read carb_ratios.
+        read_clock          Read date/time of pump
         read_current_glucose_pages
                             Read current glucose pages.
-        read_history_data   Read pump history page
-        read_carb_ratios    Read carb_ratios.
-        read_settings       Read settings.
-        model               Get model number
+        read_current_history_pages
+                            Read current history pages.
         read_glucose_data   Read pump glucose page
+        read_history_data   Read pump history page
+        read_selected_basal_profile
+                            Fetch the currently selected basal profile.
+        read_settings       Read settings.
+        read_status         Get pump status
+        read_temp_basal     Read temporary basal rates.
+        reservoir           Get pump remaining insulin
+        resume_pump         resume pumping.
+        scan                scan for usb stick
+        set_temp_basal      Set temporary basal rates.
+        settings            Get pump settings
+        status              Get pump status (alias for read_status)
+        suspend_pump        Suspend pumping.
 
     optional arguments:
       -h, --help            show this help message and exit
+
+Some commands like `read_glucose_data`, `read_history_data` take a
+`page` parameter, describing which page to fetch.
+
+Some commands like `bolus`, `set_temp_basal`, take an `input`
+parameter which may be `-` for `stdin` or a filename containing a json
+data structure which represents the request.
+
+All commands support `-h` and `--help` output.
 
 ###### `dexcom`
 

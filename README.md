@@ -187,6 +187,8 @@ output, most commonly, a filename is used as the output.
     # JSON format, from device cgm using use glucose.
     openaps report add glucose.json JSON cgm glucose
 
+### `invoke` reports to run and save the results of the `use`
+
 #### `openaps report invoke`
 
 Invoking a report means running a `use` command according to it's

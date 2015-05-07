@@ -287,10 +287,15 @@ class read_history_data (MedtronicTask):
 class iter_glucose (MedtronicTask):
   """ Read latest 100 glucose records
   """
+  def get_params (self, args):
+    return dict(count=int(args.count))
+  def configure_app (self, app, parser):
+    parser.add_argument('count', type=int, default=99)
   def range (self):
     return self.pump.model.iter_glucose_pages( )
   maxCount = 99
   def main (self, args, app):
+    self.maxCount = self.get_params(args).get('count', self.maxCount)
     num = 0
     records = [ ]
     for rec in self.range( ):

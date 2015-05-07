@@ -138,11 +138,16 @@ class model (MedtronicTask):
     return model
 
 @use( )
-class status (MedtronicTask):
+class read_status (MedtronicTask):
   """ Get pump status
   """
   def main (self, args, app):
     return self.pump.model.read_status( )
+
+@use( )
+class status (read_status):
+  """ Get pump status (alias for read_status)
+  """
 
 @use( )
 class reservoir (MedtronicTask):
@@ -248,6 +253,20 @@ class set_temp_basal (MedtronicTask):
     params = self.get_params(args)
     program = json.load(argparse.FileType('r')(params.get('input')))
     program.update(timestamp=datetime.now( ), **self.pump.model.set_temp_basal(**program))
+    return program
+
+@use( )
+class bolus (MedtronicTask):
+  """ Set temporary basal rates.
+  """
+  def get_params (self, args):
+    return dict(input=args.input)
+  def configure_app (self, app, parser):
+    parser.add_argument('input', default='-')
+  def main (self, args, app):
+    params = self.get_params(args)
+    program = json.load(argparse.FileType('r')(params.get('input')))
+    program.update(timestamp=datetime.now( ), **self.pump.model.bolus(**program))
     return program
 
 @use( )

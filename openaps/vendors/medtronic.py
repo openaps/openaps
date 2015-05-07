@@ -247,7 +247,7 @@ class set_temp_basal (MedtronicTask):
   def main (self, args, app):
     params = self.get_params(args)
     program = json.load(argparse.FileType('r')(params.get('input')))
-    program.update(observed_at=datetime.now( ), **self.pump.model.set_temp_basal(**program))
+    program.update(timestamp=datetime.now( ), **self.pump.model.set_temp_basal(**program))
     return program
 
 @use( )

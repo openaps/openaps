@@ -59,6 +59,17 @@ optional arguments:
   Utilities for developing an artificial pancreas system.
   openaps helps you manage and structure reports for various devices.
 
+
+All of the `device` and `report` `add` and `show` commands modify
+`openaps.ini` in the current working directory, which is assumed to be
+a git repo explicitily dedicated to helping develop and configure a
+`DIY` artificial pancreas system.  This means `openaps` is an SDK for
+an artificial pancreas system, not an artificial pancreas system.
+
+See `openaps init` for setting up a brand new instance of your own
+`openaps`, or see the notes below for details on how to convert an
+existing git repo into an instance of `openaps`.
+
 ## Common workflows:
 
     openaps init
@@ -161,6 +172,11 @@ After experimenting with `openaps use` commands, users can save reports
 using the `openaps report` commands.
 `openaps report` commands map `openaps use` commands to filenames:
 
+#### `openaps report add`
+
+Adding a report means configuring a `use` command with a format and a
+output, most commonly, a filename is used as the output.
+
     openaps report add <report-name> <report-formatter> <device> <use> [opts]
 
     # add a report, saved in a file called pump-history.json, which is
@@ -170,6 +186,11 @@ using the `openaps report` commands.
     # add a report, saved in a file called glucose.json, which is
     # JSON format, from device cgm using use glucose.
     openaps report add glucose.json JSON cgm glucose
+
+#### `openaps report invoke`
+
+Invoking a report means running a `use` command according to it's
+configuration.
 
     # invoke the report to create glucose.json
     openaps report invoke glucose.json
@@ -181,9 +202,9 @@ All commands support tab completion, and -h help options to help
 explore the live help system.
 
 
-##### Sample `use` commands
+### Sample `use` commands
 
-###### `medtronic`
+#### `medtronic`
 
 Assuming device is named `pump`:
 
@@ -258,7 +279,7 @@ data structure which represents the request.
 
 All commands support `-h` and `--help` output.
 
-###### `dexcom`
+#### `dexcom`
 
     usage: openaps-use cgm [-h] {glucose,scan} ...
 

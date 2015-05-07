@@ -17,7 +17,9 @@ use = Registry( )
 
 known_uses = [ ]
 def get_uses (device, config):
-  return  known_uses[:] + use.__USES__.values( )
+  all_uses = known_uses[:] + use.__USES__.values( )
+  all_uses.sort(key=lambda usage: getattr(usage, 'sortOrder', usage.__name__))
+  return all_uses
 
 @use( )
 class scan (Use):
@@ -67,6 +69,7 @@ class glucose (scan):
       # turn everything into dict
       out.append(item.to_dict( ))
     return out
+
 @use( )
 class iter_glucose (glucose):
   """ glucose

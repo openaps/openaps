@@ -7,6 +7,8 @@ import openaps
 
 from openaps import cli
 class ToolsApp (cli.Base):
+  """
+  """
 
   def configure_parser (self, parser):
     self.parser.add_argument('--version', action='version', version='%s %s' % ('%(prog)s', openaps.__version__))

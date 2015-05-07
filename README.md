@@ -282,13 +282,16 @@ All commands support `-h` and `--help` output.
 
 #### `dexcom`
 
-    usage: openaps-use cgm [-h] {glucose,scan} ...
+
+    usage: openaps-use cgm [-h] {glucose,iter_glucose,scan} ...
 
     positional arguments:
-      {glucose,scan}  Operation
-        glucose       glucose
-        scan          scan for usb stick
+      {glucose,iter_glucose,scan}
+                            Operation
+        glucose             glucose
+        iter_glucose        glucose
+        scan                scan for usb stick
 
     optional arguments:
-      -h, --help      show this help message and exit
+      -h, --help            show this help message and exit
 

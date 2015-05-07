@@ -210,7 +210,6 @@ explore the live help system.
 
 Assuming device is named `pump`:
 
-
     usage: openaps-use pump [-h]
                             {Session, bolus, iter_glucose, iter_pump,
                             model, mytest, read_basal_profile_A,
@@ -237,7 +236,7 @@ Assuming device is named `pump`:
       settings, status, suspend_pump}
                             Operation
         Session             session for pump
-        bolus               Set temporary basal rates.
+        bolus               Send bolus.
         iter_glucose        Read latest 100 glucose records
         iter_pump           Read latest 100 pump records
         model               Get model number

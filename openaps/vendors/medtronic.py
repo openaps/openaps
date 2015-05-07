@@ -270,6 +270,21 @@ class bolus (MedtronicTask):
     return program
 
 @use( )
+class filter_glucose_date (SameNameCommand):
+  """ Search for glucose pages including begin and end dates (iso 8601).
+  """
+  def get_params (self, args):
+    return dict(begin=args.begin, end=args.end)
+  def configure_app (self, app, parser):
+    parser.add_argument('begin', default='')
+    parser.add_argument('end', default='')
+
+@use( )
+class filter_isig_date (filter_glucose_date):
+  """ Search for isig pages including begin and end dates (iso 8601).
+  """
+
+@use( )
 class read_history_data (MedtronicTask):
   """ Read pump history page
   """

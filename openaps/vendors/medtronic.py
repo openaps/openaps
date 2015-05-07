@@ -48,6 +48,8 @@ class scan (Use):
   def main (self, args, app):
     return self.scanner( )
 
+import logging
+import logging.handlers
 class MedtronicTask (scan):
   requires_session = True
   save_session = True
@@ -105,6 +107,9 @@ class MedtronicTask (scan):
     model = self.pump.read_model( ).getData( )
     return model
   def setup_medtronic (self):
+    log = logging.getLogger(decocare.__name__)
+    log.setLevel(logging.INFO)
+    log.addHandler(logging.handlers.SysLogHandler(address='/dev/log'))
     self.uart = stick.Stick(link.Link(self.scanner( )))
     self.uart.open( )
     serial = self.device.fields['serial']

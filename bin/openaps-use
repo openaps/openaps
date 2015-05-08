@@ -52,7 +52,8 @@ class UseToolApp (cli.ConfigApp):
   def run (self, args):
     # print self.inputs
     app = self.commands.selected(args)
-    reporter = Output(args, self.reporters.get(args.format), app)
+    task = app.method.selected(args)
+    reporter = Output(args, self.reporters.get(args.format), task)
     output = app(args, self)
     reporter(output)
 

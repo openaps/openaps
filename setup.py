@@ -34,6 +34,7 @@ setup(name='openaps',
       'bin/openaps-get',
       'bin/openaps-use',
       'bin/openaps-report',
+      'bin/openaps-vendor',
       'bin/git-openaps-init',
     ],
     classifiers = [

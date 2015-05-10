@@ -20,7 +20,6 @@ class Vendor (Configurable):
     import imp
     import importlib
     import site
-    print 'XX', self.name, self.fields
     site.addsitedir(self.fields.get('path'))
     return importlib.import_module(self.name)
     fp, pathname, description = imp.find_module(self.name)

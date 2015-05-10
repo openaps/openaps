@@ -17,18 +17,10 @@ class Vendor (Configurable):
     self.fields = dict(**kwds)
 
   def get_module (self):
-    import imp
     import importlib
     import site
     site.addsitedir(self.fields.get('path'))
     return importlib.import_module(self.name)
-    fp, pathname, description = imp.find_module(self.name)
-    try:
-      module = imp.load_module(self.name, fp, pathname, description)
-      return module
-    finally:
-      if fp:
-        fp.close( )
 
 class ChangeVendorApp (Subcommand):
   """

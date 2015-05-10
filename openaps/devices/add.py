@@ -16,7 +16,7 @@ def configure_parser (parser):
   pass
 
 def main (args, app):
-  vendor = vendors.lookup(args.vendor)
+  vendor = vendors.lookup(args.vendor, app.config)
   device = Device(args.name, vendor)
   device.read(args=args)
   app.config.add_device(device)

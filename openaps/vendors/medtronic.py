@@ -240,6 +240,14 @@ class resume_pump (suspend_pump):
 class read_battery_status (SameNameCommand):
   """ Check battery status. """
 
+@use( )
+class read_bg_targets (SameNameCommand):
+  """ Read bg targets. """
+
+@use( )
+class read_insulin_sensitivies (SameNameCommand):
+  """ Read insulin sensitivies. """
+
 
 @use( )
 class read_glucose_data (SameNameCommand):

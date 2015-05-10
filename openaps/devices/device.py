@@ -36,7 +36,7 @@ class Device (Configurable):
     for candidate in config.sections( ):
       if candidate.startswith(klass.prefix):
         name = json.loads(candidate.split(' ').pop( ))
-        vendor = vendors.lookup(config.get(candidate, 'vendor').split('.').pop( ))
+        vendor = vendors.lookup(config.get(candidate, 'vendor').split('.').pop( ), config)
         device = klass(name, vendor)
         device.read(config=config)
         devices.append(device)

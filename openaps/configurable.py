@@ -41,7 +41,7 @@ class Configurable (object):
         name = json.loads(candidate.split(' ').pop( ))
         # for f in klass.required:
         fields = dict(config.items(candidate))
-        report = klass(report=name, **fields)
+        report = klass(name=name, **fields)
         items.append(report)
     return items
 

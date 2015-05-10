@@ -37,9 +37,6 @@ class ChangeVendorApp (Subcommand):
 
 def find_plugins (config):
   vendors = Vendor.FromConfig(config)
-  for v in vendors:
-    print v, v.name, v.fields
-  print vendors
   return [ v.get_module( ) for v in vendors ]
 
 def get_vendors ( ):

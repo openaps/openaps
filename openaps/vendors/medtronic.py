@@ -360,7 +360,7 @@ known_uses = [
   Session,
 ]
 def get_uses (device, config):
-  all_uses = known_uses[:] + use.__USES__.values( )
+  all_uses = known_uses[:] + use.get_uses(device, config)
   all_uses.sort(key=lambda usage: getattr(usage, 'sortOrder', usage.__name__))
   return all_uses
 

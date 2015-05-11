@@ -11,7 +11,10 @@ from plugins.vendor import Vendor
 from openaps.uses.use import Use
 from openaps.uses.registry import Registry
 
+# create a usage registry/decorator
 use = Registry( )
+# custom registry, to track usages
+get_uses = use.get_uses
 
 def configure_add_app (app, parser):
   parser.add_argument('cmd')
@@ -19,24 +22,13 @@ def configure_add_app (app, parser):
   parser.add_argument('args', nargs=argparse.REMAINDER)
   # .completer = complete_args
 
-def configure_use_app (app, parser):
-  print "HEY"
-def configure_app (app, parser):
-  print "HEY"
-  pass
-
-def main (args, app):
-  print "dkljsdkljHEY"
-  print "HEY"
-
-
 def set_config (args, device):
   device.add_option('cmd', args.cmd)
   device.add_option('args', ' '.join(args.args))
   device.add_option('fields', ' '.join(args.require))
 
 def display_device (device):
-  return ''
+  return '/{cmd:s}/{args:s}'.format(**device.fields)
 
 @use( )
 class shell (Use):
@@ -62,13 +54,4 @@ class shell (Use):
     command = shlex.split(' '.join(command))
     output = check_output(command)
     return output
-
-
-known_uses = [
-]
-
-def get_uses (device, config):
-  all_uses = known_uses[:] + use.__USES__.values( )
-  all_uses.sort(key=lambda usage: getattr(usage, 'sortOrder', usage.__name__))
-  return all_uses
 

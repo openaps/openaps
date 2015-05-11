@@ -23,7 +23,7 @@ class Device (Configurable):
   def format_url (self):
     parts = ['{0:s}://{1:s}'.format(self.vendor.__name__.split('.').pop( ), self.name), ]
     parts.append(self.vendor.display_device(self))
-    return ' '.join(parts)
+    return ''.join(parts)
 
   def register_uses (self, uses):
     for u in uses.usages:

@@ -28,7 +28,7 @@ def configure_app (app, parser):
 def main (args, app):
   print "dkljsdkljHEY"
   print "HEY"
-  
+
 
 def set_config (args, device):
   device.add_option('cmd', args.cmd)

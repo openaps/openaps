@@ -20,7 +20,7 @@ def get_report_map (conf):
 
 class ReportAction (Subcommand):
   def setup_application (self):
-    
+
     self.reports = get_report_map(self.config)
     choices = self.reports.keys( )
     choices.sort( )

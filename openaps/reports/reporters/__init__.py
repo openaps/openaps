@@ -29,7 +29,7 @@ class Reporter (object):
     self.close( )
   def close (self):
     getattr(self.method, 'close_output_stream', default_close_stream)(self)
-    
+
 
 def get_reporter_map ( ):
   return dict([ (r.__name__.split('.').pop( ).lower( ), r) for r in get_reporters( ) ])

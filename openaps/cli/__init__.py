@@ -5,7 +5,7 @@ import argcomplete
 import textwrap
 
 class Base (object):
-  
+
   always_complete_options = True
   def __init__ (self, args):
     self.inputs = args
@@ -63,7 +63,7 @@ class ConfigApp (Base):
     from git import Repo
     self.repo = getattr(self, 'repo', Repo(os.getcwd( )))
     return self.repo
-    
+
   def create_git_commit (self):
     self.git_repo( )
     if self.repo.is_dirty( ) or self.repo.index.diff(None):

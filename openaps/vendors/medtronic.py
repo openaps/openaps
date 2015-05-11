@@ -54,16 +54,19 @@ class MedtronicTask (scan):
   requires_session = True
   save_session = True
   record_stats = True
+
   def before_main (self, args, app):
     self.setup_medtronic( )
     if self.requires_session:
       self.check_session(app)
     else:
       self.pump.setModel(number=self.device.fields.get('model', ''))
+
   def after_main (self, args, app):
     if self.save_session:
       self.device.store(app.config)
       app.config.save( )
+
   def get_session_info (self):
     expires = self.device.fields.get('expires', None)
     now = datetime.now( )
@@ -78,6 +81,7 @@ class MedtronicTask (scan):
       out['expires'] = parse(expires)
       out['model'] = self.get_model( )
     return out
+
   def update_session_info (self, fields):
     out = { }
     self.device.add_option('expires', fields['expires'].isoformat( ))
@@ -85,7 +89,7 @@ class MedtronicTask (scan):
     out['expires'] = fields['expires']
     out['model'] = fields['model']
     return out
-    
+
   def create_session (self):
     minutes = int(self.device.fields.get('minutes', 10))
     now = datetime.now( )

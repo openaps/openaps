@@ -16,7 +16,7 @@ class CommandMapApp (object):
 
   def get_commands (self):
     return [ ]
-    
+
   def configure_commands (self, parser):
       subparsers = parser.add_subparsers(help=self.get_help( ), dest=self.get_dest( ))
       self.subparsers = subparsers

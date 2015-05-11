@@ -28,7 +28,7 @@ def lookup (name, config=None):
 
 def all_vendors (config=None):
   return get_vendors( ) + find_plugins(config)
- 
+
 class VendorConfigurations (CommandMapApp):
   Subcommand = ChangeVendorApp
   def get_dest (self):

@@ -40,8 +40,6 @@ def complete_args (prefix, parsed_args, action, **kwargs):
 
 def no_complete (prefix, parsed_args, action, **kwargs):
   return None
-  if parsed_args.command:
-    return [ ]
 
 from openaps import builtins
 class BaseApp (cli.Base):

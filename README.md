@@ -161,7 +161,7 @@ Eg:
 
     openaps use pump -h        - show available commands for the
                                  device known as "pump"
-    openaps use pump iter_pump - get last 100 pump history records
+    openaps use pump iter_pump 100 - get last 100 pump history records
                                  from the device called pump
     openaps use cgm -h         - show available commands for the
                                  device known as "cgm"
@@ -288,8 +288,8 @@ All commands support `-h` and `--help` output.
     positional arguments:
       {glucose,iter_glucose,scan}
                             Operation
-        glucose             glucose
-        iter_glucose        glucose
+        glucose             glucose (will pull all records)
+        iter_glucose <n>       glucose ('n' for the number of records you want)
         scan                scan for usb stick
 
     optional arguments:

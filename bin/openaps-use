@@ -15,7 +15,7 @@ class Output (reporters.Reporter):
   def __init__ (self, args, formatter, task):
     ""
     self.task = task
-    self.report = Report(self.__class__.__name__, args.format, args.device, args.use)
+    self.report = Report(name=self.__class__.__name__, reporter=args.format, device=args.device, use=args.use)
     self.method = formatter
     self.output = args.output
 

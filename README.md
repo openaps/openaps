@@ -109,9 +109,9 @@ by git: `cd ~/Documents`.
 
 Setup of new instance:  
 
-    openaps init <name>    - create a new instance of openaps
-    openaps init myopenaps - this creates an instance of openaps in a new
-                             directory, called myopenaps
+    openaps init myopenaps    - this creates an instance of openaps in a new
+                         directory, called myopenaps
+    
 
     cd myopenaps - change directory to root of new repo
 
@@ -161,7 +161,7 @@ Eg:
 
     openaps use pump -h        - show available commands for the
                                  device known as "pump"
-    openaps use pump iter_pump - get last 100 pump history records
+    openaps use pump iter_pump 100 - get last 100 pump history records
                                  from the device called pump
     openaps use cgm -h         - show available commands for the
                                  device known as "cgm"
@@ -181,7 +181,7 @@ output, most commonly, a filename is used as the output.
 
     # add a report, saved in a file called pump-history.json, which is
     # JSON format, from device pump using use iter_pump.
-    openaps report add pump-history.json JSON pump iter_pump
+    openaps report add pump-history.json JSON pump iter_pump 100
 
     # add a report, saved in a file called glucose.json, which is
     # JSON format, from device cgm using use glucose.
@@ -288,8 +288,8 @@ All commands support `-h` and `--help` output.
     positional arguments:
       {glucose,iter_glucose,scan}
                             Operation
-        glucose             glucose
-        iter_glucose        glucose
+        glucose             glucose (will pull all records)
+        iter_glucose <n>       glucose ('n' for the number of records you want)
         scan                scan for usb stick
 
     optional arguments:

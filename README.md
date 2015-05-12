@@ -181,7 +181,7 @@ output, most commonly, a filename is used as the output.
 
     # add a report, saved in a file called pump-history.json, which is
     # JSON format, from device pump using use iter_pump.
-    openaps report add pump-history.json JSON pump iter_pump
+    openaps report add pump-history.json JSON pump iter_pump 100
 
     # add a report, saved in a file called glucose.json, which is
     # JSON format, from device cgm using use glucose.

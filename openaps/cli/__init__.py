@@ -21,7 +21,10 @@ class Base (object):
   def prep_parser (self):
     epilog = textwrap.dedent(self._get_epilog( ))
     description = self._get_description( )
-    self.parser = argparse.ArgumentParser(description=description, epilog=epilog, formatter_class=argparse.RawDescriptionHelpFormatter)
+    self.parser = argparse.ArgumentParser(
+                  description=description
+                , epilog=epilog
+                , formatter_class=argparse.RawDescriptionHelpFormatter)
 
   def configure_parser (self, parser):
     pass

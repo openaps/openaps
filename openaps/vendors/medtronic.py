@@ -263,33 +263,36 @@ class read_glucose_data (SameNameCommand):
   def get_params (self, args):
     return dict(page=int(args.page))
 
-@use( )
-class set_temp_basal (MedtronicTask):
-  """ Set temporary basal rates.
-  """
+class InputProgramRequired (MedtronicTask):
+  def upload_program (self, program):
+    raise NotImplementedError( )
   def get_params (self, args):
     return dict(input=args.input)
   def configure_app (self, app, parser):
     parser.add_argument('input', default='-')
-  def main (self, args, app):
+  def get_program (self, args):
     params = self.get_params(args)
     program = json.load(argparse.FileType('r')(params.get('input')))
-    program.update(timestamp=datetime.now( ), **self.pump.model.set_temp_basal(**program))
+    return program
+  def main (self, args, app):
+    program = self.get_program(args)
+    results = self.upload_program(program)
+    program.update(timestamp=datetime.now( ), **results)
     return program
 
 @use( )
-class bolus (MedtronicTask):
+class set_temp_basal (InputProgramRequired):
+  """ Set temporary basal rates.
+  """
+  def upload_program (self, program):
+    return self.pump.model.set_temp_basal(**program)
+
+@use( )
+class bolus (InputProgramRequired):
   """ Send bolus.
   """
-  def get_params (self, args):
-    return dict(input=args.input)
-  def configure_app (self, app, parser):
-    parser.add_argument('input', default='-')
-  def main (self, args, app):
-    params = self.get_params(args)
-    program = json.load(argparse.FileType('r')(params.get('input')))
-    program.update(timestamp=datetime.now( ), **self.pump.model.bolus(**program))
-    return program
+  def upload_program (self, program):
+    return self.pump.model.bolus(**program)
 
 @use( )
 class filter_glucose_date (SameNameCommand):

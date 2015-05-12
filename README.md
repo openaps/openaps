@@ -109,9 +109,9 @@ by git: `cd ~/Documents`.
 
 Setup of new instance:  
 
-    openaps init <name>    - create a new instance of openaps
-    openaps init myopenaps - this creates an instance of openaps in a new
-                             directory, called myopenaps
+    openaps init myopenaps    - this creates an instance of openaps in a new
+                         directory, called myopenaps
+    
 
     cd myopenaps - change directory to root of new repo
 

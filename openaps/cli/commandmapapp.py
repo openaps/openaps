@@ -5,6 +5,7 @@ class CommandMapApp (object):
 
   Subcommand = Subcommand
   commands = { }
+  metavar = None
   def __init__ (self, parent):
     self.parent = parent
     self.commands = { }
@@ -14,11 +15,25 @@ class CommandMapApp (object):
   def get_dest (self):
     return 'command'
 
+  def get_description (self):
+    return getattr(self, '__doc__', None)
+
+  def get_title (self):
+    return getattr(self, 'title', '## ' + getattr(self, 'title', self.__class__.__name__))
+
   def get_commands (self):
     return [ ]
 
+  def get_metavar (self):
+    return self.metavar
+
   def configure_commands (self, parser):
-      subparsers = parser.add_subparsers(help=self.get_help( ), dest=self.get_dest( ))
+      subparsers = parser.add_subparsers(title=self.get_title( ),
+                    description=self.get_description( ),
+                    help=self.get_help( ),
+                    metavar=self.get_metavar( ),
+                    dest=self.get_dest( )
+                    )
       self.subparsers = subparsers
 
       for ctx in self.get_commands( ):

@@ -68,12 +68,16 @@ class glucose (scan):
 
 @use( )
 class iter_glucose (glucose):
-  """ glucose
+  """ read last <count> glucose records, default 100, eg:
+
+* iter_glucose   - read last 100 records
+* iter_glucose 2 - read last 2 records
   """
   def get_params (self, args):
     return dict(count=int(args.count))
   def configure_app (self, app, parser):
-    parser.add_argument('count', type=int, default=100)
+    parser.add_argument('count', type=int, nargs='?', default=100,
+                        help="Number of glucose records to read.")
 
   def main (self, args, app):
     records = [ ]

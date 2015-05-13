@@ -41,6 +41,34 @@ class DeviceUsageMap (CommandMapApp):
     self.device = device
     self.usages = all_uses(parent.parent.config, device)
     super(DeviceUsageMap, self).__init__(parent)
+
+  def get_help (self):
+    return """Usage"""
+  def get_title (self):
+    return getattr(self, 'title', '## Device %s' % self.device.name)
+  def get_metavar (self):
+    return None
+    # return '\n'.join(['  * %s' % u.__name__ for u in self.usages])
+    usages = '\n'.join(['  * %s' % u.__name__ for u in self.usages])
+    print self.device, self.device.name
+    return "usage"
+    return ', '.join(usages)
+    template = """\
+  openaps use {name:s}
+    """
+    # {usages:s}
+    return template.format(name=self.device.name,
+          docs=self.device.vendor.__doc__,
+          vendor=self.device.vendor.__name__,
+          # usages="\n".join([ '{0:s}'.format( u.__name__ ) for u in self.usages])
+        )
+  def get_description (self):
+    template = """\
+vendor {vendor:s}
+{docs:s}
+    """
+    return template.format(name=self.device.name, docs=self.device.vendor.__doc__, vendor=self.device.vendor.__name__, usages=', '.join([u.__name__ for u in self.usages]))
+    return getattr(self, 'description', 'All usages? long long description %s' % self.__class__.__name__)
   def get_commands (self):
     return self.usages
 
@@ -58,8 +86,11 @@ class UseDeviceTask (Subcommand):
     # self.method = method.vendor
     self.name = method.name
 
+  def get_help (self):
+    return ''.join(self.device.vendor.__doc__.split("\n\n")[:1])
   def get_description (self):
-    return ''.join(self.device.vendor.__doc__.split("\n\n")[0:1])
+    return None
+    return ''.join(self.device.vendor.__doc__.split("\n\n")[:])
 
   def setup_application (self):
     name = 'configure_%s_app' % self.parent.name
@@ -79,6 +110,12 @@ class UseDeviceCommands (CommandMapApp):
     if parent and getattr(parent, 'config', config) is None:
       self.config = parent.config
     super(UseDeviceCommands, self).__init__(parent)
+  def get_title (self):
+    return 'Known Devices Menu'
+  def get_description (self):
+    return """\
+These are the devices openaps knows about:\
+    """
   def get_dest (self):
     return 'device'
   def get_commands (self):

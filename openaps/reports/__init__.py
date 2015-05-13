@@ -19,6 +19,7 @@ def get_report_map (conf):
   return reports
 
 class ReportAction (Subcommand):
+
   def setup_application (self):
 
     self.reports = get_report_map(self.config)

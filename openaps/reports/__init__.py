@@ -32,6 +32,7 @@ class ReportManagementActions (CommandMapApp):
   """ reports - manage report configurations """
   Subcommand = ReportAction
   name = 'action'
+  title = '## Reports Menu'
   def get_dest (self):
     return 'action'
   def get_commands (self):

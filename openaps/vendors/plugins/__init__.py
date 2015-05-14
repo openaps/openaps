@@ -32,6 +32,7 @@ class VendorManagementActions (CommandMapApp):
   """ vendors - manage vendor plugin configurations """
   Subcommand = VendorAction
   name = 'command'
+  title = '## Vendors Menu'
   def get_dest (self):
     return 'command'
   def get_commands (self):

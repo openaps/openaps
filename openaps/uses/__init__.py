@@ -43,11 +43,11 @@ class DeviceUsageMap (CommandMapApp):
     super(DeviceUsageMap, self).__init__(parent)
 
   def get_help (self):
-    return """Usage"""
+    return """Usage Details"""
   def get_title (self):
     return getattr(self, 'title', '## Device %s' % self.device.name)
   def get_metavar (self):
-    return None
+    return 'USAGE'
     # return '\n'.join(['  * %s' % u.__name__ for u in self.usages])
     usages = '\n'.join(['  * %s' % u.__name__ for u in self.usages])
     print self.device, self.device.name
@@ -104,6 +104,7 @@ class UseDeviceTask (Subcommand):
 class UseDeviceCommands (CommandMapApp):
   """ device - which device to use """
   Subcommand = UseDeviceTask
+  metavar = 'device'
   def __init__ (self, devices=None, parent=None, config=None):
     self.devices = devices
     self.config = config
@@ -118,6 +119,8 @@ These are the devices openaps knows about:\
     """
   def get_dest (self):
     return 'device'
+  def get_help (self):
+    return """Name and description:"""
   def get_commands (self):
     choices = self.devices.keys( )
     choices.sort( )

@@ -130,11 +130,10 @@ become a valid openaps environent, in the root of your repo, run:
     git add openaps.ini
     git commit -avm 'init openaps'
 
-Now, wth a valid `openaps` environment, you can register devices for
-use.  A device is implemented by a vendor.  `openaps` [will] provide a
+Now, wth a valid `openaps` environment, you can register **device**s for
+use.  A **device** is implemented by a **vendor**.  `openaps` provides a
 modular, language and process independent environment for creating
-vendors and devices, but for now the only two are dexcom and
-medtronic.
+vendors and devices.
 
 ### Managing devices
 

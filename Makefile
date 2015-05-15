@@ -2,8 +2,9 @@
 TESTS = $(wildcard openaps/*.py openaps/*/*.py)
 
 test:
+	python -m unittest openaps
 	openaps -h
-	python -m doctest -v ${TESTS}
+	# python -m doctest discover
 	# do the test dance
 
 ci-test: test

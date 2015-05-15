@@ -1,15 +1,16 @@
 box: wercker/python
 
 build:
-  - script:
-      name: 'install'
-      code: |
-        sudo python setup.py install
+    steps:
+      - script:
+          name: 'install'
+          code: |
+            sudo python setup.py install
 
-  - script:
-      name: 'test'
-      code: |
-        make ci-test
+      - script:
+          name: 'test'
+          code: |
+            make ci-test
 
 
 

@@ -38,6 +38,7 @@ setup(name='openaps',
       'bin/openaps-report',
       'bin/openaps-vendor',
       'bin/git-openaps-init',
+      'bin/openaps-install-udev-rules',
     ],
     classifiers = [
         'Development Status :: 3 - Alpha',

@@ -24,7 +24,7 @@ setup(name='openaps',
     ],
     dependency_links = [
       'http://github.com/compbrain/dexcom_reader/tarball/master#egg=dexcom_reader-master',
-      'https://github.com/bewest/dexcom_reader/tarball/master#egg=dexcom_reader-dev',
+      'https://github.com/bewest/dexcom_reader/tarball/master#egg=dexcom_reader-0.0.6-dev',
       'https://github.com/bewest/decoding-carelink/tarball/master#egg=decocare-master',
       'https://github.com/bewest/decoding-carelink/tarball/bewest/dev#egg=decocare-dev',
     ],

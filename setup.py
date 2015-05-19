@@ -20,13 +20,13 @@ setup(name='openaps',
     install_requires = [
       'pyserial', 'python-dateutil', 'argcomplete',
       'gitpython',
-      'decocare', 'dexcom_reader > 0.0.1'
+      'decocare > 0.0.13', 'dexcom_reader > 0.0.5'
     ],
     dependency_links = [
       'http://github.com/compbrain/dexcom_reader/tarball/master#egg=dexcom_reader-master',
-      'https://github.com/bewest/dexcom_reader/tarball/master#egg=dexcom_reader-0.0.6-dev-1',
+      'https://github.com/bewest/dexcom_reader/tarball/master#egg=dexcom_reader-0.0.7-dev-1',
       'https://github.com/bewest/decoding-carelink/tarball/master#egg=decocare-master',
-      'https://github.com/bewest/decoding-carelink/tarball/bewest/dev#egg=decocare-0.0.14-dev-1',
+      'https://github.com/bewest/decoding-carelink/tarball/bewest/dev#egg=decocare-0.0.15-dev-1',
     ],
     scripts = [
       'bin/openaps',

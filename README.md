@@ -25,12 +25,28 @@ This is not an artificial pancreas, but rather tools which independently allow:
 
 ## Install
 
+There are two ways to install openaps, from source, and as a python package via
+setuptools.
+
+#### From source
+
 See [GettingStarted][GettingStarted] for more important information
 about versions of software dependencies, but to install from source
 clone this repo, and issue:
 
-    sudo  python setup.py develop
+    sudo python setup.py develop
 
+#### From pypi
+
+To [install from pypi](https://pypi.python.org/pypi/openaps):
+
+    sudo easy_install -Z openaps
+
+The following apt-get dependencies are required (they can be installed through
+variety of means, in debian/ubuntu and apt based systems the following packages
+are recommended/required:
+
+    sudo apt-get install python python-setuptools python-software-properties python-numpy
 
 This installs `openaps` system wide.
 Do not use `openaps` commands in the the openaps repo.  Only use the

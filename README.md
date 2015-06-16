@@ -46,7 +46,7 @@ The following apt-get dependencies are required (they can be installed through
 variety of means, in debian/ubuntu and apt based systems the following packages
 are recommended/required:
 
-    sudo apt-get install python python-setuptools python-software-properties python-numpy git
+    sudo apt-get install python python-dev python-setuptools python-software-properties python-numpy
 
 This installs `openaps` system wide.
 Do not use `openaps` commands in the the openaps repo.  Only use the

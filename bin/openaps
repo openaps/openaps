@@ -13,8 +13,8 @@ from openaps import cli
 from openaps import builtins
 
 
-COMMON_COMMANDS = [ 'init', 'alias', 'help', 'get', 'use', 'suggest',
-                    'enact', 'report', 'device', 'vendor' ]
+COMMON_COMMANDS = [ 'init', 'alias', 'help', 'use',
+                    'report', 'device', 'vendor' ]
 def complete_args (prefix, parsed_args, action, **kwargs):
   # argcomplete.debug("parsed_args", parsed_args)
   compline = os.environ['COMP_LINE']

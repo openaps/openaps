@@ -11,6 +11,12 @@ class BuiltinApp (cli.ConfigApp):
 builtins = {
   'init': init.init
 }
+def get_builtins ( ):
+  app = BuiltinApp([ ])
+  app.read_config( )
+  out = alias.get_alias_map(app.config)
+  out.update(**builtins)
+  return out
 class RunnableAlias (object):
   def __init__ (self, spec, parent):
     self.spec = spec

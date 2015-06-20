@@ -55,6 +55,10 @@ upgrades through git.  Running `openaps` inside of the openaps
 source directory will error in the best case, and mess up your
 `openaps` install in the worst case.
 
+##### Updating
+
+    sudo easy_install -ZU openaps
+
 ### Usage
 
     usage: openaps [-h] [-c C C] [-C CONFIG] [--version] [command] ...
@@ -126,7 +130,7 @@ by git: `cd ~/Documents`.
 Setup of new instance:  
 
     openaps init myopenaps    - this creates an instance of openaps in a new
-                         directory, called myopenaps
+                                directory, called myopenaps
     
 
     cd myopenaps - change directory to root of new repo

@@ -77,7 +77,7 @@ class UseDeviceTask (Subcommand):
     return ''.join(self.device.vendor.__doc__.split("\n\n")[:1])
   def get_description (self):
     return None
-    return ''.join(self.device.vendor.__doc__.split("\n\n")[:])
+    # return ''.join(self.device.vendor.__doc__.split("\n\n")[:])
 
   def setup_application (self):
     name = 'configure_%s_app' % self.parent.name

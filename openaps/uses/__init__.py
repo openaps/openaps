@@ -54,7 +54,11 @@ class DeviceUsageMap (CommandMapApp):
 vendor {vendor:s}
 {docs:s}
     """
-    return template.format(name=self.device.name, docs=self.device.vendor.__doc__, vendor=self.device.vendor.__name__, usages=', '.join([u.__name__ for u in self.usages]))
+    kwargs = dict( name=self.device.name
+                 , docs=self.device.vendor.__doc__
+                 , vendor=self.device.vendor.__name__
+                 , usages=', '.join([u.__name__ for u in self.usages]))
+    return template.format(**kwargs)
 
   def get_commands (self):
     return self.usages

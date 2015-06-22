@@ -48,27 +48,18 @@ class DeviceUsageMap (CommandMapApp):
     return getattr(self, 'title', '## Device %s' % self.device.name)
   def get_metavar (self):
     return 'USAGE'
-    # return '\n'.join(['  * %s' % u.__name__ for u in self.usages])
-    usages = '\n'.join(['  * %s' % u.__name__ for u in self.usages])
-    print self.device, self.device.name
-    return "usage"
-    return ', '.join(usages)
-    template = """\
-  openaps use {name:s}
-    """
-    # {usages:s}
-    return template.format(name=self.device.name,
-          docs=self.device.vendor.__doc__,
-          vendor=self.device.vendor.__name__,
-          # usages="\n".join([ '{0:s}'.format( u.__name__ ) for u in self.usages])
-        )
+
   def get_description (self):
     template = """\
 vendor {vendor:s}
 {docs:s}
     """
-    return template.format(name=self.device.name, docs=self.device.vendor.__doc__, vendor=self.device.vendor.__name__, usages=', '.join([u.__name__ for u in self.usages]))
-    return getattr(self, 'description', 'All usages? long long description %s' % self.__class__.__name__)
+    kwargs = dict( name=self.device.name
+                 , docs=self.device.vendor.__doc__
+                 , vendor=self.device.vendor.__name__
+                 , usages=', '.join([u.__name__ for u in self.usages]))
+    return template.format(**kwargs)
+
   def get_commands (self):
     return self.usages
 
@@ -90,7 +81,7 @@ class UseDeviceTask (Subcommand):
     return ''.join(self.device.vendor.__doc__.split("\n\n")[:1])
   def get_description (self):
     return None
-    return ''.join(self.device.vendor.__doc__.split("\n\n")[:])
+    # return ''.join(self.device.vendor.__doc__.split("\n\n")[:])
 
   def setup_application (self):
     name = 'configure_%s_app' % self.parent.name

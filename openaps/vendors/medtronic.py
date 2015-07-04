@@ -353,6 +353,44 @@ class iter_pump (iter_glucose):
     return self.pump.model.iter_history_pages( )
 
 
+@use ( )
+class iter_glucose_hours (MedtronicTask):
+  """ Read latest n hours of glucose data
+  """
+  def get_params (self, args):
+    return dict(hours=float(args.hours))
+  def configure_app (self, app, parser):
+    parser.add_argument('hours', type=float)
+  def range (self):
+    return self.pump.model.iter_glucose_pages( )
+  def get_record_timestamp (self, record):
+    return parse(record['date']) if 'date' in record else None
+  def main (self, args, app):
+    min_timestamp = None
+    records = [ ]
+    for rec in self.range( ):
+      timestamp = self.get_record_timestamp(rec)
+
+      if timestamp is not None and min_timestamp is None:
+        min_timestamp = timestamp - relativedelta.relativedelta(hours=self.get_params(args)['hours'])
+
+      if timestamp is None or timestamp >= min_timestamp:
+        records.append(rec)
+      else:
+        break
+    return records
+
+
+@use ( )
+class iter_pump_hours (iter_glucose_hours):
+  """ Read latest n hours of pump records
+  """
+  def range (self):
+    return self.pump.model.iter_history_pages( )
+  def get_record_timestamp (self, record):
+    return parse(record['timestamp']) if 'timestamp' in record else None
+
+
 def set_config (args, device):
   device.add_option('serial', args.serial)
 

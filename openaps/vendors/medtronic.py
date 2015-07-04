@@ -358,21 +358,34 @@ class iter_glucose_hours (MedtronicTask):
   """ Read latest n hours of glucose data
   """
   def get_params (self, args):
-    return dict(hours=float(args.hours))
+    params = dict(hours=float(args.hours))
+
+    if args.now is not None:
+      params.update(now=args.now)
+
+    return params
+
   def configure_app (self, app, parser):
-    parser.add_argument('hours', type=float)
+    parser.add_argument('hours', type=float, help='The number of hours of historical data to retrieve')
+    parser.add_argument('--now', help='A read_clock report filename from which to offset the hours')
+
   def range (self):
     return self.pump.model.iter_glucose_pages( )
+
   def get_record_timestamp (self, record):
     return parse(record['date']) if 'date' in record else None
+
   def main (self, args, app):
-    min_timestamp = None
+    params = self.get_params(args)
+    min_offset = relativedelta.relativedelta(hours=params['hours'])
+    min_timestamp = parse(json.load(argparse.FileType('r')(params['now']))) if 'now' in params else None
+
     records = [ ]
     for rec in self.range( ):
       timestamp = self.get_record_timestamp(rec)
 
       if timestamp is not None and min_timestamp is None:
-        min_timestamp = timestamp - relativedelta.relativedelta(hours=self.get_params(args)['hours'])
+        min_timestamp = timestamp - min_offset
 
       if timestamp is None or timestamp >= min_timestamp:
         records.append(rec)
@@ -387,6 +400,7 @@ class iter_pump_hours (iter_glucose_hours):
   """
   def range (self):
     return self.pump.model.iter_history_pages( )
+
   def get_record_timestamp (self, record):
     return parse(record['timestamp']) if 'timestamp' in record else None
 

@@ -360,7 +360,7 @@ class iter_glucose_hours (MedtronicTask):
   def get_params (self, args):
     params = dict(hours=float(args.hours))
 
-    if args.now is not None:
+    if 'now' in args and args.now is not None:
       params.update(now=args.now)
 
     return params
@@ -378,7 +378,7 @@ class iter_glucose_hours (MedtronicTask):
   def main (self, args, app):
     params = self.get_params(args)
     min_offset = relativedelta.relativedelta(hours=params['hours'])
-    min_timestamp = parse(json.load(argparse.FileType('r')(params['now']))) if 'now' in params else None
+    min_timestamp = parse(json.load(argparse.FileType('r')(params['now']))) - min_offset if 'now' in params else None
 
     records = [ ]
     for rec in self.range( ):

@@ -35,7 +35,12 @@ def main (args, app):
     print report.format_url( )
     repo = app.git_repo( )
     reporter = reporters.Reporter(report, device, task)
-    reporter(task.method(args, app))
-    print 'reporting', report.name
-    repo.index.add([report.name])
 
+    try:
+        output = task.method(args, app)
+    except Exception as e:
+        print '{} raised {}'.format(report.name, e)
+    else:
+        reporter(output)
+        print 'reporting', report.name
+        repo.index.add([report.name])

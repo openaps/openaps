@@ -95,7 +95,7 @@ class MedtronicTask (scan):
     now = datetime.now( )
     self.pump.power_control(minutes=minutes)
     model = self.get_model( )
-    offset = relativedelta.relativedelta(minutes=minutes)
+    offset = relativedelta.relativedelta(minutes=minutes) - relativedelta.relativedelta(minutes=1)
     out = dict(device=self.device.name
       , model=model
       , vendor=__name__

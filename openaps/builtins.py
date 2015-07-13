@@ -38,15 +38,20 @@ def get_alias (command, app):
   return runnable
 
 def dispatch (args, back):
-  app = BuiltinApp(args)
-  app.read_config( )
-  builtins.get(args.command, get_alias(args.command, app))(args)
+  app = None
+  command = builtins.get(args.command, None)
+  if command:
+    command(args)
+  else:
+    app = BuiltinApp(args)
+    app.read_config( )
+    get_alias(args.command, app)(args)
 
 def is_builtin (command):
-  app = BuiltinApp([ ])
-  app.read_config( )
   if command in builtins:
     return True
+  app = BuiltinApp([ ])
+  app.read_config( )
   if command in alias.get_alias_map(app.config):
     return True
   return False

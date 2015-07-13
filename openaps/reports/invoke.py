@@ -2,10 +2,11 @@
 """
 invoke   - generate a report
 """
-
+from __future__ import print_function
 from openaps.reports.report import Report
 from openaps import uses
 import reporters
+import sys
 import argparse
 
 def configure_app (app, parser):
@@ -32,10 +33,14 @@ def main (args, app):
       setattr(args, k, v)
     """
     # print args
-    print report.format_url( )
+    print(report.format_url( ))
     repo = app.git_repo( )
-    reporter = reporters.Reporter(report, device, task)
-    reporter(task.method(args, app))
-    print 'reporting', report.name
-    repo.index.add([report.name])
 
+    try:
+        output = task.method(args, app)
+    except Exception as e:
+        print(report.name, ' raised ', e, file=sys.stderr)
+    else:
+        reporters.Reporter(report, device, task)(output)
+        print('reporting', report.name)
+        repo.index.add([report.name])

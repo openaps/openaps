@@ -95,7 +95,7 @@ class MedtronicTask (scan):
     now = datetime.now( )
     self.pump.power_control(minutes=minutes)
     model = self.get_model( )
-    offset = relativedelta.relativedelta(minutes=minutes)
+    offset = relativedelta.relativedelta(minutes=minutes) - relativedelta.relativedelta(minutes=1)
     out = dict(device=self.device.name
       , model=model
       , vendor=__name__
@@ -351,6 +351,58 @@ class iter_pump (iter_glucose):
   """
   def range (self):
     return self.pump.model.iter_history_pages( )
+
+
+@use ( )
+class iter_glucose_hours (MedtronicTask):
+  """ Read latest n hours of glucose data
+  """
+  def get_params (self, args):
+    params = dict(hours=float(args.hours))
+
+    if 'now' in args and args.now is not None:
+      params.update(now=args.now)
+
+    return params
+
+  def configure_app (self, app, parser):
+    parser.add_argument('hours', type=float, help='The number of hours of historical data to retrieve')
+    parser.add_argument('--now', help='A read_clock report filename from which to offset the hours')
+
+  def range (self):
+    return self.pump.model.iter_glucose_pages( )
+
+  def get_record_timestamp (self, record):
+    return parse(record['date']) if 'date' in record else None
+
+  def main (self, args, app):
+    params = self.get_params(args)
+    min_offset = relativedelta.relativedelta(hours=params['hours'])
+    min_timestamp = parse(json.load(argparse.FileType('r')(params['now']))) - min_offset if 'now' in params else None
+
+    records = [ ]
+    for rec in self.range( ):
+      timestamp = self.get_record_timestamp(rec)
+
+      if timestamp is not None and min_timestamp is None:
+        min_timestamp = timestamp - min_offset
+
+      if timestamp is None or timestamp >= min_timestamp:
+        records.append(rec)
+      else:
+        break
+    return records
+
+
+@use ( )
+class iter_pump_hours (iter_glucose_hours):
+  """ Read latest n hours of pump records
+  """
+  def range (self):
+    return self.pump.model.iter_history_pages( )
+
+  def get_record_timestamp (self, record):
+    return parse(record['timestamp']) if 'timestamp' in record else None
 
 
 def set_config (args, device):

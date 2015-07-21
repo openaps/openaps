@@ -40,6 +40,7 @@ def main (args, app):
         output = task.method(args, app)
     except Exception as e:
         print(report.name, ' raised ', e, file=sys.stderr)
+        raise
     else:
         reporters.Reporter(report, device, task)(output)
         print('reporting', report.name)

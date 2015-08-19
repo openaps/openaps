@@ -6,6 +6,10 @@ from openaps.uses.use import Use
 from openaps.uses.registry import Registry
 import dexcom_reader
 from dexcom_reader import readdata
+from datetime import datetime
+import dateutil
+from dateutil import relativedelta
+from dateutil.parser import parse
 
 def set_config (args, device):
   return
@@ -17,6 +21,7 @@ use = Registry( )
 
 get_uses = use.get_uses
 
+
 @use( )
 class scan (Use):
   """ scan for usb stick """
@@ -27,6 +32,7 @@ class scan (Use):
     self.dexcom = self.port and readdata.Dexcom(self.port) or None
   def main (self, args, app):
     return self.port or ''
+
 
 @use( )
 class glucose (scan):
@@ -66,6 +72,7 @@ class glucose (scan):
       out.append(item.to_dict( ))
     return out
 
+
 @use( )
 class iter_glucose (glucose):
   """ read last <count> glucose records, default 100, eg:
@@ -88,3 +95,31 @@ class iter_glucose (glucose):
         break
     return records
 
+
+@use( )
+class iter_glucose_hours (glucose):
+  """ read last <hours> of glucose records, default 1, eg:
+
+* iter_glucose_hours     - read last 1 hour of glucose records
+* iter_glucose_hours 4.3 - read last 4.3 hours of glucose records
+  """
+  
+  def get_params (self, args):
+    return dict(hours=float(args.hours))
+  
+  def configure_app (self, app, parser):
+    parser.add_argument('hours', type=float, nargs='?', default=1,
+                        help="Number of hours of glucose records to read.")
+
+  def main (self, args, app):
+    params = self.get_params(args)
+    records = [ ]
+    for item in self.dexcom.iter_records('EGV_DATA'):
+      records.append(item.to_dict( ))
+      latest_time = dateutil.parser.parse(records[0]["system_time"])
+      earliest_time = dateutil.parser.parse(records[-1]["system_time"])
+      time_delta = (latest_time - earliest_time)
+      td = time_delta.seconds/3600.0 #convert to hours
+      if td >= self.get_params(args)['hours']:
+        break
+    return records

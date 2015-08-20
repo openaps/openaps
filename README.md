@@ -11,6 +11,8 @@ See our [wiki for more information][wiki], including how to
 [wiki]: https://github.com/openaps/openaps/wiki
 [proposal]: https://gist.github.com/bewest/a690eaf35c69be898711
 
+![openaps loop hardware](https://cloud.githubusercontent.com/assets/394179/9372378/c2023bc2-4692-11e5-8254-fe940f847536.png)
+
 This is not an artificial pancreas, but rather tools which independently allow:
 
 * monitor - Collect data about environment, and operational status of devices.

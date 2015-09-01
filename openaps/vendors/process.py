@@ -44,13 +44,15 @@ class shell (Use):
   def configure_app (self, app, parser):
     self.fields = self.device.fields.get('fields').split(' ')
     for opt in self.fields:
-      parser.add_argument(opt)
+      if opt:
+        parser.add_argument(opt)
   def main (self, args, app):
     info = self.device.fields
     command = [ info.get('cmd')
               ] + info.get('args').split(' ')
     for opt in self.fields:
-      command.append(getattr(args, opt))
+      if opt:
+        command.append(getattr(args, opt))
     command = shlex.split(' '.join(command))
     output = check_output(command)
     return output

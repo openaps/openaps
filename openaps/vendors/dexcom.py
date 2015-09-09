@@ -126,8 +126,8 @@ class iter_glucose_hours (glucose):
 
 
 @use( )
-class sensor_insertion_time (scan):
-  """ read insertion times of sensors
+class sensor_insertion_records (scan):
+  """ read insertion records of sensors
 
   """
   def prerender_stdout (self, data):
@@ -138,7 +138,6 @@ class sensor_insertion_time (scan):
     for item in data:
       line = map(str, [
         item['display_time']
-      , item['insertion_time']
       ])
       out.append(' '.join(line))
     return "\n".join(out)

@@ -135,12 +135,12 @@ class sensor_insertion_records (scan):
   def prerender_text (self, data):
     """ turn everything into a string """
     out = [ ]
-    for item in data:
-      line = map(str, [
-        item['display_time']
-      ])
-      out.append(' '.join(line))
-    return "\n".join(out)
+    # for item in data:
+    #   line = map(str, [
+    #     item['display_time']
+    #   ])
+    #   out.append(' '.join(line))
+    # return "\n".join(out)
   def prerender_JSON (self, data):
     """ since everything is a dict/strings/ints, we can pass thru to json """
     return data

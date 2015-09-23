@@ -63,6 +63,8 @@ class MedtronicTask (scan):
       self.pump.setModel(number=self.device.fields.get('model', ''))
 
   def after_main (self, args, app):
+    if self.uart:
+      self.uart.close( )
     if self.save_session:
       self.device.store(app.config)
       app.config.save( )

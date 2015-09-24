@@ -63,11 +63,11 @@ class MedtronicTask (scan):
       self.pump.setModel(number=self.device.fields.get('model', ''))
 
   def after_main (self, args, app):
-    if self.uart:
-      self.uart.close( )
     if self.save_session:
       self.device.store(app.config)
       app.config.save( )
+    if self.uart:
+      self.uart.close( )
 
   def get_session_info (self):
     expires = self.device.fields.get('expires', None)
@@ -97,7 +97,7 @@ class MedtronicTask (scan):
     now = datetime.now( )
     self.pump.power_control(minutes=minutes)
     model = self.get_model( )
-    offset = relativedelta.relativedelta(minutes=minutes) - relativedelta.relativedelta(minutes=1)
+    offset = relativedelta.relativedelta(minutes=minutes) + relativedelta.relativedelta(minutes=-1)
     out = dict(device=self.device.name
       , model=model
       , vendor=__name__

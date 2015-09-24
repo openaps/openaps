@@ -1,7 +1,7 @@
 
 from ConfigParser import SafeConfigParser
 import re
-
+import os
 
 class Config (SafeConfigParser):
   OPTCRE = re.compile(
@@ -25,9 +25,9 @@ class Config (SafeConfigParser):
     section = device.section_name( )
     self.remove_section(section)
   @classmethod
-  def Read (klass, name=None, defaults=['openaps.ini', '~/.openaps.ini', '/etc/openaps/openaps.ini']):
+  def Read (klass, name=None, defaults=["/etc/openaps/openaps.ini", os.path.expanduser("~/.openaps.ini"), 'openaps.ini']):
     config = Config( )
-    if name:
+    if name is not None:
       config.read(name)
     else:
       config.read(defaults)

@@ -93,7 +93,7 @@ class MedtronicTask (scan):
     return out
 
   def create_session (self):
-    minutes = int(self.device.fields.get('minutes', 28))
+    minutes = int(self.device.fields.get('minutes', 3))
     now = datetime.now( )
     self.pump.power_control(minutes=minutes)
     model = self.get_model( )
@@ -114,8 +114,12 @@ class MedtronicTask (scan):
     return model
   def setup_medtronic (self):
     log = logging.getLogger(decocare.__name__)
-    log.setLevel(logging.INFO)
-    log.addHandler(logging.handlers.SysLogHandler(address='/dev/log'))
+    level = getattr(logging, self.device.fields.get('logLevel', 'WARN'))
+    address = self.device.fields.get('logAddress', '/dev/log')
+    log.setLevel(level)
+    for previous in log.handlers[:]:
+      log.removeHandler(previous)
+    log.addHandler(logging.handlers.SysLogHandler(address=address))
     self.uart = stick.Stick(link.Link(self.scanner( )))
     self.uart.open( )
     serial = self.device.fields['serial']

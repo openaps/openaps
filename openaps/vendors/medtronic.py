@@ -93,7 +93,7 @@ class MedtronicTask (scan):
     return out
 
   def create_session (self):
-    minutes = int(self.device.fields.get('minutes', 10))
+    minutes = int(self.device.fields.get('minutes', 28))
     now = datetime.now( )
     self.pump.power_control(minutes=minutes)
     model = self.get_model( )

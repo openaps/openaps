@@ -35,14 +35,15 @@ class shell (Use):
   """ run a process in a subshell
   """
   def get_params (self, args):
-    self.fields = self.device.fields.get('fields').split(' ')
+    self.fields = self.device.fields.get('fields').strip( ).split(' ')
     params = dict( )
     for opt in self.fields:
-      params[opt] = getattr(args, opt)
+      if opt:
+        params[opt] = getattr(args, opt)
     return params
 
   def configure_app (self, app, parser):
-    self.fields = self.device.fields.get('fields').split(' ')
+    self.fields = self.device.fields.get('fields').strip( ).split(' ')
     for opt in self.fields:
       if opt:
         parser.add_argument(opt)

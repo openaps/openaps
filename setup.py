@@ -19,7 +19,7 @@ setup(name='openaps',
     include_package_data = True,
     install_requires = [
       'pyserial', 'python-dateutil', 'argcomplete',
-      'gitpython',
+      'gitpython', 'mock', 'nose',
       'decocare > 0.0.16', 'dexcom_reader > 0.0.5'
     ],
     dependency_links = [

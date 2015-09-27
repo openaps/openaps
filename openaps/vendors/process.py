@@ -4,7 +4,8 @@ process - a fake vendor to run arbitrary commands
 
 import sys, os
 import shlex
-from subprocess import check_output, call
+from subprocess import check_output, call, PIPE
+import subprocess
 
 import argparse
 from plugins.vendor import Vendor
@@ -36,7 +37,7 @@ class shell (Use):
   """
   def get_params (self, args):
     self.fields = self.device.fields.get('fields').strip( ).split(' ')
-    params = dict( )
+    params = dict(remainder=args.remainder)
     for opt in self.fields:
       if opt:
         params[opt] = getattr(args, opt)
@@ -47,14 +48,19 @@ class shell (Use):
     for opt in self.fields:
       if opt:
         parser.add_argument(opt)
+    parser.add_argument('remainder', nargs=argparse.REMAINDER)
   def main (self, args, app):
     info = self.device.fields
     command = [ info.get('cmd')
-              ] + info.get('args').split(' ')
+              ]
+    command.extend(info.get('args').split(' '))
     for opt in self.fields:
       if opt:
         command.append(getattr(args, opt))
+    command.extend(getattr(args, 'remainder', []))
     command = shlex.split(' '.join(command))
-    output = check_output(command)
+    proc = subprocess.Popen(command, stdin=PIPE)
+    output, stderr = proc.communicate( )
+    # output = check_output(command, shell=True)
     return output
 

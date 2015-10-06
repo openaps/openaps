@@ -8,6 +8,7 @@ import sys
 
 def configure_app (app, parser):
   parser._actions[-1].choices = None
+  parser.add_argument('--extra', '-e', default='{name}.ini', help="Name of extra ini file to use.")
   commands = vendors.get_configurable_devices(app)
   app.vendors = commands
   commands.configure_commands(parser)

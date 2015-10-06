@@ -17,6 +17,8 @@ class Configurable (object):
     if k not in self.required + self.optional:
       self.optional.append(k)
 
+  def get (self, k, *args):
+    return self.fields.get(k, *args)
   def items (self):
     return self.fields.items( )
 

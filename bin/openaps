@@ -51,6 +51,11 @@ class BaseApp (cli.Base):
   Utilities for developing an artificial pancreas system.
   openaps helps you manage and structure reports for various devices.
 
+       .-. .,-.  .-. .--. .-.  .,-. .--.
+      (   )|   )(.-' |  |(   ) |   )`--.
+       `-' |`-'  `--''  `-`-'`-|`-' `--'
+           |                   |        
+           '                   '        
 Common workflows:
 
 Getting started:

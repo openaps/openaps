@@ -29,14 +29,16 @@ def set_config (args, device):
   device.add_option('fields', ' '.join(args.require))
 
 def display_device (device):
-  return '/{cmd:s}/{args:s}'.format(**device.fields)
+  data = dict(**device.fields)
+  data.update(**device.extra.fields)
+  return '/{cmd:s}/{args:s}'.format(**data)
 
 @use( )
 class shell (Use):
   """ run a process in a subshell
   """
   def get_params (self, args):
-    self.fields = self.device.fields.get('fields').strip( ).split(' ')
+    self.fields = self.device.get('fields').strip( ).split(' ')
     params = dict(remainder=args.remainder)
     for opt in self.fields:
       if opt:
@@ -44,13 +46,15 @@ class shell (Use):
     return params
 
   def configure_app (self, app, parser):
-    self.fields = self.device.fields.get('fields').strip( ).split(' ')
+    self.fields = self.device.get('fields').strip( ).split(' ')
     for opt in self.fields:
       if opt:
         parser.add_argument(opt)
     parser.add_argument('remainder', nargs=argparse.REMAINDER)
   def main (self, args, app):
-    info = self.device.fields
+    # info = self.device.fields
+    info = dict(**self.device.fields)
+    info.update(**self.device.extra.fields)
     command = [ info.get('cmd')
               ]
     command.extend(info.get('args').split(' '))

@@ -114,7 +114,6 @@ class MedtronicTask (scan):
     return model
   def setup_medtronic (self):
     log = logging.getLogger(decocare.__name__)
-    print self.device
     level = getattr(logging, self.device.get('logLevel', 'WARN'))
     address = self.device.get('logAddress', '/dev/log')
     log.setLevel(level)

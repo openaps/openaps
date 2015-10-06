@@ -40,7 +40,8 @@ class shell (Use):
   """
   def get_params (self, args):
     self.fields = self.device.get('fields').strip( ).split(' ')
-    params = dict(remainder=args.remainder)
+    params = dict(remainder=getattr(args, 'remainder', [])
+                , json_default=getattr(args, 'json_default', True))
     for opt in self.fields:
       if opt:
         params[opt] = getattr(args, opt)
@@ -67,7 +68,8 @@ class shell (Use):
     command = [ info.get('cmd')
               ]
     command.extend(info.get('args').split(' '))
-    self.json_default = args.json_default
+    params = self.get_params(args)
+    self.json_default = params.get('json_default')
     for opt in self.fields:
       if opt:
         command.append(getattr(args, opt))

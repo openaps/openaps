@@ -19,7 +19,6 @@ class Device (Configurable):
   def read (self, args=None, config=None):
     if args:
       self.name = args.name
-      print "args", args
       if getattr(args, 'extra', None):
         self.fields['extra'] = args.extra.format(name=self.name, **self.fields)
         self.vendor.set_config(args, self.extra)

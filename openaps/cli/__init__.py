@@ -56,7 +56,7 @@ class ConfigApp (Base):
       print "Not an openaps environment, run: openaps init"
       sys.exit(1)
     self.config = config.Config.Read(cfg_file)
-
+    self.config.add_secret("serial")
   def prolog (self):
     self.read_config( )
 

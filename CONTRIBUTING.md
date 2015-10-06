@@ -26,5 +26,5 @@ After several successful pull requests, @bewest, @openaps and others
 might add you as contributor so you can create shared branches more
 easily.
 
-See http://diyps.org/ for more info.
+See [OpenAPS.org](http://OpenAPS.org/) for background on the OpenAPS movement and project.
 

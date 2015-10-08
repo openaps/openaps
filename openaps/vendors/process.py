@@ -6,6 +6,7 @@ import sys, os
 import shlex
 from subprocess import check_output, call, PIPE
 import subprocess
+import json
 
 import argparse
 from plugins.vendor import Vendor
@@ -39,13 +40,22 @@ class shell (Use):
   """
   def get_params (self, args):
     self.fields = self.device.get('fields').strip( ).split(' ')
-    params = dict(remainder=args.remainder)
+    params = dict(remainder=getattr(args, 'remainder', [])
+                , json_default=getattr(args, 'json_default', True))
     for opt in self.fields:
       if opt:
         params[opt] = getattr(args, opt)
     return params
 
+  def prerender_json (self, data):
+    """ since everything is a dict/strings/ints, we can pass thru to json
+    """
+    if self.json_default:
+      return json.loads(data)
+    else:
+      return data
   def configure_app (self, app, parser):
+    parser.add_argument('--not-json-default', dest='json_default', default=True, action='store_false', help="When the process does not produce json.")
     self.fields = self.device.get('fields').strip( ).split(' ')
     for opt in self.fields:
       if opt:
@@ -58,6 +68,8 @@ class shell (Use):
     command = [ info.get('cmd')
               ]
     command.extend(info.get('args').split(' '))
+    params = self.get_params(args)
+    self.json_default = params.get('json_default')
     for opt in self.fields:
       if opt:
         command.append(getattr(args, opt))

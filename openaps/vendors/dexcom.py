@@ -54,7 +54,7 @@ class glucose (scan):
       ])
       out.append(' '.join(line))
     return "\n".join(out)
-  def prerender_JSON (self, data):
+  def prerender_json (self, data):
     """ since everything is a dict/strings/ints, we can pass thru to json """
     return data
   def main (self, args, app):

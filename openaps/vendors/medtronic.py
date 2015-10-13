@@ -5,6 +5,7 @@ Medtronic - openaps driver for Medtronic
 from openaps.uses.use import Use
 from openaps.uses.registry import Registry
 from openaps.configurable import Configurable
+from openaps.glucose.convert import Convert as GlucoseConvert
 import decocare
 import argparse
 import json
@@ -187,6 +188,31 @@ class read_clock (MedtronicTask):
   def main (self, args, app):
     return self.pump.model.read_clock( )
 
+@use( )
+class read_bg_targets (MedtronicTask):
+  """
+    Universally, OpenAPS uses blood glucose measurements in mg/dL units.
+
+    This code converts whatever decoding-carelink gave us to mg/dL,
+    irrespective of the user-preferred units.
+
+    We then add a new field to the result, called 'user-preferred-units'.
+    This reflects what the pump-owner prefers their unit of measurement to be.
+  """
+  def main (self, args, app):
+      bg_targets = self.pump.model.read_bg_targets( )
+      assert bg_targets['units'] in ['mg/dL', 'mmol/L']
+
+      if bg_targets['units'] and bg_targets['units'] == 'mmol/L':
+          for target in bg_targets['targets']:
+              target['high'] = GlucoseConvert.mmol_l_to_mg_dl(target['high'])
+              target['low'] = GlucoseConvert.mmol_l_to_mg_dl(target['low'])
+
+      bg_targets['user_preferred_units'] = bg_targets['units']
+      bg_targets['units'] = 'mg/dL'
+
+      return bg_targets
+
 class SameNameCommand (MedtronicTask):
   def main (self, args, app):
     name = self.__class__.__name__.split('.').pop( )
@@ -243,10 +269,6 @@ class resume_pump (suspend_pump):
 @use( )
 class read_battery_status (SameNameCommand):
   """ Check battery status. """
-
-@use( )
-class read_bg_targets (SameNameCommand):
-  """ Read bg targets. """
 
 @use( )
 class read_insulin_sensitivies (SameNameCommand):
@@ -418,6 +440,3 @@ def get_uses (device, config):
   all_uses = known_uses[:] + use.get_uses(device, config)
   all_uses.sort(key=lambda usage: getattr(usage, 'sortOrder', usage.__name__))
   return all_uses
-
-
-

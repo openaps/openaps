@@ -1,9 +1,3 @@
-
-dependencies:
-  override:
-    - sudo python setup.py install
-
 test:
   override:
     - make ci-test
-

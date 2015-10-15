@@ -1,7 +1,7 @@
 from unittest import TestCase
 from mock import Mock
 
-from openaps.vendors.medtronic import read_bg_targets
+from openaps.vendors.medtronic import read_bg_targets_mg_dl as read_bg_targets
 
 
 class BgTargetsTestCase(TestCase):

@@ -207,7 +207,7 @@ class read_clock (MedtronicTask):
     return self.pump.model.read_clock( )
 
 @use( )
-class read_bg_targets (MedtronicTask):
+class read_bg_targets_mg_dl (MedtronicTask):
   """
     Universally, OpenAPS uses blood glucose measurements in mg/dL units.
 
@@ -287,6 +287,10 @@ class resume_pump (suspend_pump):
 @use( )
 class read_battery_status (SameNameCommand):
   """ Check battery status. """
+
+@use( )
+class read_bg_targets (SameNameCommand):
+  """ Read bg targets. """
 
 @use( )
 class read_insulin_sensitivies (SameNameCommand):

@@ -103,7 +103,7 @@ class iter_glucose_hours (glucose):
 * iter_glucose_hours     - read last 1 hour of glucose records
 * iter_glucose_hours 4.3 - read last 4.3 hours of glucose records
   """
-  
+
   def get_params (self, args):
     return dict(hours=float(args.hours))
   

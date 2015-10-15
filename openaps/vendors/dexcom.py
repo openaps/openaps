@@ -163,7 +163,7 @@ class sensor_insertion_records (scan):
 
 @use( )
 class meter_data (scan):
-  """ read insertion records of sensors
+  """ read calibration data
 
   """
   def prerender_stdout (self, data):

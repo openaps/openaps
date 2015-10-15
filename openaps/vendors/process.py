@@ -6,6 +6,7 @@ import sys, os
 import shlex
 from subprocess import check_output, call, PIPE
 import subprocess
+import json
 
 import argparse
 from plugins.vendor import Vendor
@@ -29,31 +30,46 @@ def set_config (args, device):
   device.add_option('fields', ' '.join(args.require))
 
 def display_device (device):
-  return '/{cmd:s}/{args:s}'.format(**device.fields)
+  data = dict(**device.fields)
+  data.update(**device.extra.fields)
+  return '/{cmd:s}/{args:s}'.format(**data)
 
 @use( )
 class shell (Use):
   """ run a process in a subshell
   """
   def get_params (self, args):
-    self.fields = self.device.fields.get('fields').strip( ).split(' ')
-    params = dict(remainder=args.remainder)
+    self.fields = self.device.get('fields').strip( ).split(' ')
+    params = dict(remainder=getattr(args, 'remainder', [])
+                , json_default=getattr(args, 'json_default', True))
     for opt in self.fields:
       if opt:
         params[opt] = getattr(args, opt)
     return params
 
+  def prerender_json (self, data):
+    """ since everything is a dict/strings/ints, we can pass thru to json
+    """
+    if self.json_default:
+      return json.loads(data)
+    else:
+      return data
   def configure_app (self, app, parser):
-    self.fields = self.device.fields.get('fields').strip( ).split(' ')
+    parser.add_argument('--not-json-default', dest='json_default', default=True, action='store_false', help="When the process does not produce json.")
+    self.fields = self.device.get('fields').strip( ).split(' ')
     for opt in self.fields:
       if opt:
         parser.add_argument(opt)
     parser.add_argument('remainder', nargs=argparse.REMAINDER)
   def main (self, args, app):
-    info = self.device.fields
+    # info = self.device.fields
+    info = dict(**self.device.fields)
+    info.update(**self.device.extra.fields)
     command = [ info.get('cmd')
               ]
     command.extend(info.get('args').split(' '))
+    params = self.get_params(args)
+    self.json_default = params.get('json_default')
     for opt in self.fields:
       if opt:
         command.append(getattr(args, opt))

@@ -200,14 +200,15 @@ class iter_sensor_insertions_hours (sensor_insertions):
 
   def main (self, args, app):
     params = self.get_params(args)
+    delta = relativedelta.relativedelta(hours=params.get('hours'))
+    now = datetime.now( )
+    since = now - delta
+
     records = [ ]
     for item in self.dexcom.iter_records('INSERTION_TIME'):
-      records.append(item.to_dict( ))
-      latest_time = dateutil.parser.parse(records[0]["system_time"])
-      earliest_time = dateutil.parser.parse(records[-1]["system_time"])
-      time_delta = (latest_time - earliest_time)
-      td = time_delta.seconds/3600.0 #convert to hours
-      if td >= self.get_params(args)['hours']:
+      if item.system_time >= since:
+        records.append(item.to_dict( ))
+      else:
         break
     return records
 

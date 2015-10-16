@@ -236,6 +236,12 @@ class SameNameCommand (MedtronicTask):
     name = self.__class__.__name__.split('.').pop( )
     return getattr(self.pump.model, name)(**self.get_params(args))
 
+class SelectedNameCommand (MedtronicTask):
+  def main (self, args, app):
+    name = self.selected
+    return getattr(self.pump.model, name)(**self.get_params(args))
+
+
 @use( )
 class read_temp_basal (SameNameCommand):
   """ Read temporary basal rates. """
@@ -289,8 +295,9 @@ class read_battery_status (SameNameCommand):
   """ Check battery status. """
 
 @use( )
-class read_bg_targets (SameNameCommand):
+class read_bg_targets_settings (SelectedNameCommand):
   """ Read bg targets. """
+  selected = 'read_bg_targets'
 
 @use( )
 class read_insulin_sensitivies (SameNameCommand):

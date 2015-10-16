@@ -113,14 +113,14 @@ class iter_glucose_hours (glucose):
 
   def main (self, args, app):
     params = self.get_params(args)
+    delta = relativedelta.relativedelta(hours=params.get('hours'))
+    now = datetime.now( )
+    since = now - delta
     records = [ ]
     for item in self.dexcom.iter_records('EGV_DATA'):
-      records.append(item.to_dict( ))
-      latest_time = dateutil.parser.parse(records[0]["system_time"])
-      earliest_time = dateutil.parser.parse(records[-1]["system_time"])
-      time_delta = (latest_time - earliest_time)
-      td = time_delta.seconds/3600.0 #convert to hours
-      if td >= self.get_params(args)['hours']:
+      if item.display_time >= since:
+        records.append(item.to_dict( ))
+      else:
         break
     return records
 

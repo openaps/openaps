@@ -125,8 +125,8 @@ class iter_glucose_hours (glucose):
     return records
 
 @use( )
-class sensor_insertion_records (scan):
-  """ read insertion records of sensors
+class sensor_insertions (scan):
+  """ read sensor insertion, removal, and expiration records of sensors
 
   """
   def prerender_stdout (self, data):
@@ -134,12 +134,15 @@ class sensor_insertion_records (scan):
   def prerender_text (self, data):
     """ turn everything into a string """
     out = [ ]
-    # for item in data:
-    #   line = map(str, [
-    #     item['display_time']
-    #   ])
-    #   out.append(' '.join(line))
-    # return "\n".join(out)
+    for item in data:
+      line = map(str, [
+        item['system_time']
+      , item['insertion_time']
+      , item['session_state']
+      , item['display_time']
+      ])
+      out.append(' '.join(line))
+    return "\n".join(out)
   def prerender_JSON (self, data):
     """ since everything is a dict/strings/ints, we can pass thru to json """
     return data
@@ -158,11 +161,59 @@ class sensor_insertion_records (scan):
       out.append(item.to_dict( ))
     return out
 
+@use( )
+class iter_sensor_insertions (sensor_insertions):
+  """ read last <count> sensor insertion, removal, and expiration records, default 10, eg:
 
+* iter_sensor_insertions   - read last 10 records
+* iter_sensor_insertions 2 - read last 2 records
+  """
+  def get_params (self, args):
+    return dict(count=int(args.count))
+  def configure_app (self, app, parser):
+    parser.add_argument('count', type=int, nargs='?', default=10,
+                        help="Number of sensor insertion, removal, and expiration records to read.")
+
+  def main (self, args, app):
+    records = [ ]
+    for item in self.dexcom.iter_records('INSERTION_TIME'):
+      records.append(item.to_dict( ))
+      # print len(records)
+      if len(records) >= self.get_params(args)['count']:
+        break
+    return records
 
 @use( )
-class meter_data (scan):
-  """ read calibration data
+class iter_sensor_insertions_hours (sensor_insertions):
+  """ read last <hours> of sensor insertion, removal, and expiration records, default 1, eg:
+
+* iter_sensor_insertions_hours     - read last 1 hour of sensor insertion, removal, and expiration records
+* iter_sensor_insertions_hours 4.3 - read last 4.3 hours of sensor insertion, removal, and expiration records
+  """
+
+  def get_params (self, args):
+    return dict(hours=float(args.hours))
+  
+  def configure_app (self, app, parser):
+    parser.add_argument('hours', type=float, nargs='?', default=1,
+                        help="Number of hours of sensor insertion, removal, and expiration records to read.")
+
+  def main (self, args, app):
+    params = self.get_params(args)
+    records = [ ]
+    for item in self.dexcom.iter_records('INSERTION_TIME'):
+      records.append(item.to_dict( ))
+      latest_time = dateutil.parser.parse(records[0]["system_time"])
+      earliest_time = dateutil.parser.parse(records[-1]["system_time"])
+      time_delta = (latest_time - earliest_time)
+      td = time_delta.seconds/3600.0 #convert to hours
+      if td >= self.get_params(args)['hours']:
+        break
+    return records
+
+@use( )
+class calibrations (scan):
+  """ read calibration entry records
 
   """
   def prerender_stdout (self, data):
@@ -170,12 +221,15 @@ class meter_data (scan):
   def prerender_text (self, data):
     """ turn everything into a string """
     out = [ ]
-    # for item in data:
-    #   line = map(str, [
-    #     item['display_time']
-    #   ])
-    #   out.append(' '.join(line))
-    # return "\n".join(out)
+    for item in data:
+      line = map(str, [
+        item['system_time']
+      , item['meter_time']
+      , item['display_time']
+      , item['meter_glucose']
+      ])
+      out.append(' '.join(line))
+    return "\n".join(out)
   def prerender_JSON (self, data):
     """ since everything is a dict/strings/ints, we can pass thru to json """
     return data
@@ -193,4 +247,54 @@ class meter_data (scan):
       # turn everything into dict
       out.append(item.to_dict( ))
     return out
+
+@use( )
+class iter_calibrations (calibrations):
+  """ read last <count> calibration records, default 10, eg:
+
+* iter_calibrations   - read last 10 calibration records
+* iter_calibrations 2 - read last 2 calibration records
+  """
+  def get_params (self, args):
+    return dict(count=int(args.count))
+  def configure_app (self, app, parser):
+    parser.add_argument('count', type=int, nargs='?', default=10,
+                        help="Number of calibration records to read.")
+
+  def main (self, args, app):
+    records = [ ]
+    for item in self.dexcom.iter_records('METER_DATA'):
+      records.append(item.to_dict( ))
+      # print len(records)
+      if len(records) >= self.get_params(args)['count']:
+        break
+    return records
+
+@use( )
+class iter_calibrations_hours (calibrations):
+  """ read last <hours> of calibration records, default 1, eg:
+
+* iter_calibrations_hours     - read last 1 hour of calibration records
+* iter_calibrations_hours 4.3 - read last 4.3 hours of calibration records
+  """
+
+  def get_params (self, args):
+    return dict(hours=float(args.hours))
+  
+  def configure_app (self, app, parser):
+    parser.add_argument('hours', type=float, nargs='?', default=1,
+                        help="Number of hours of sensor insertion, removal, and expiration records to read.")
+
+  def main (self, args, app):
+    params = self.get_params(args)
+    records = [ ]
+    for item in self.dexcom.iter_records('METER_DATA'):
+      records.append(item.to_dict( ))
+      latest_time = dateutil.parser.parse(records[0]["system_time"])
+      earliest_time = dateutil.parser.parse(records[-1]["system_time"])
+      time_delta = (latest_time - earliest_time)
+      td = time_delta.seconds/3600.0 #convert to hours
+      if td >= self.get_params(args)['hours']:
+        break
+    return records
 

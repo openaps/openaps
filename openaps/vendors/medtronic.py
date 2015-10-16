@@ -5,6 +5,7 @@ Medtronic - openaps driver for Medtronic
 from openaps.uses.use import Use
 from openaps.uses.registry import Registry
 from openaps.configurable import Configurable
+from openaps.glucose.convert import Convert as GlucoseConvert
 import decocare
 import argparse
 import json
@@ -60,15 +61,17 @@ class MedtronicTask (scan):
     if self.requires_session:
       self.check_session(app)
     else:
-      self.pump.setModel(number=self.device.fields.get('model', ''))
+      self.pump.setModel(number=self.device.get('model', ''))
 
   def after_main (self, args, app):
     if self.save_session:
       self.device.store(app.config)
       app.config.save( )
+    if self.uart:
+      self.uart.close( )
 
   def get_session_info (self):
-    expires = self.device.fields.get('expires', None)
+    expires = self.device.get('expires', None)
     now = datetime.now( )
     out = dict(device=self.device.name
       , vendor=__name__
@@ -79,23 +82,27 @@ class MedtronicTask (scan):
       out.update(**self.update_session_info(fields))
     else:
       out['expires'] = parse(expires)
-      out['model'] = self.get_model( )
+      out['model'] = self.device.get('model', None)
     return out
 
   def update_session_info (self, fields):
     out = { }
-    self.device.add_option('expires', fields['expires'].isoformat( ))
-    self.device.add_option('model', fields['model'])
+    uses_extra = self.device.get('extra', None)
+    config = self.device
+    if uses_extra:
+      config = self.device.extra
+    config.add_option('expires', fields['expires'].isoformat( ))
+    config.add_option('model', fields['model'])
     out['expires'] = fields['expires']
     out['model'] = fields['model']
     return out
 
   def create_session (self):
-    minutes = int(self.device.fields.get('minutes', 10))
+    minutes = int(self.device.get('minutes', 3))
     now = datetime.now( )
     self.pump.power_control(minutes=minutes)
     model = self.get_model( )
-    offset = relativedelta.relativedelta(minutes=minutes) - relativedelta.relativedelta(minutes=1)
+    offset = relativedelta.relativedelta(minutes=minutes) + relativedelta.relativedelta(minutes=-1)
     out = dict(device=self.device.name
       , model=model
       , vendor=__name__
@@ -106,17 +113,29 @@ class MedtronicTask (scan):
     return out
   def check_session (self, app):
     self.session = self.get_session_info( )
-    self.device.add_option('model', self.device.fields.get('model', self.get_model( )))
+    model = self.device.get('model', None)
+    if model is None:
+      model = self.get_model( )
+    self.pump.setModel(number=self.device.get('model', ''))
+    uses_extra = self.device.get('extra', None)
+    config = self.device
+    if uses_extra:
+      config = self.device.extra
+    config.add_option('model', self.device.get('model', model))
   def get_model (self):
     model = self.pump.read_model( ).getData( )
     return model
   def setup_medtronic (self):
     log = logging.getLogger(decocare.__name__)
-    log.setLevel(logging.INFO)
-    log.addHandler(logging.handlers.SysLogHandler(address='/dev/log'))
+    level = getattr(logging, self.device.get('logLevel', 'WARN'))
+    address = self.device.get('logAddress', '/dev/log')
+    log.setLevel(level)
+    for previous in log.handlers[:]:
+      log.removeHandler(previous)
+    log.addHandler(logging.handlers.SysLogHandler(address=address))
     self.uart = stick.Stick(link.Link(self.scanner( )))
     self.uart.open( )
-    serial = self.device.fields['serial']
+    serial = self.device.get('serial')
     self.pump = session.Pump(self.uart, serial)
     stats = self.uart.interface_stats( )
   def main (self, args, app):
@@ -186,6 +205,31 @@ class read_clock (MedtronicTask):
   """
   def main (self, args, app):
     return self.pump.model.read_clock( )
+
+@use( )
+class read_bg_targets_mg_dl (MedtronicTask):
+  """
+    Universally, OpenAPS uses blood glucose measurements in mg/dL units.
+
+    This code converts whatever decoding-carelink gave us to mg/dL,
+    irrespective of the user-preferred units.
+
+    We then add a new field to the result, called 'user-preferred-units'.
+    This reflects what the pump-owner prefers their unit of measurement to be.
+  """
+  def main (self, args, app):
+      bg_targets = self.pump.model.read_bg_targets( )
+      assert bg_targets['units'] in ['mg/dL', 'mmol/L']
+
+      if bg_targets['units'] and bg_targets['units'] == 'mmol/L':
+          for target in bg_targets['targets']:
+              target['high'] = GlucoseConvert.mmol_l_to_mg_dl(target['high'])
+              target['low'] = GlucoseConvert.mmol_l_to_mg_dl(target['low'])
+
+      bg_targets['user_preferred_units'] = bg_targets['units']
+      bg_targets['units'] = 'mg/dL'
+
+      return bg_targets
 
 class SameNameCommand (MedtronicTask):
   def main (self, args, app):
@@ -418,6 +462,3 @@ def get_uses (device, config):
   all_uses = known_uses[:] + use.get_uses(device, config)
   all_uses.sort(key=lambda usage: getattr(usage, 'sortOrder', usage.__name__))
   return all_uses
-
-
-

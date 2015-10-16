@@ -20,7 +20,7 @@ class Reporter (object):
   def no_op_serialize (self, data):
     return data
   def serialize (self, data):
-    name = 'prerender_' + self.report.fields['reporter']
+    name = 'prerender_' + self.report.fields['reporter'].lower( )
     render = getattr(self.task.method, name, self.no_op_serialize)
     return self.method.serialize(render(data), self)
   def __call__ (self, data):
@@ -29,7 +29,6 @@ class Reporter (object):
     self.close( )
   def close (self):
     getattr(self.method, 'close_output_stream', default_close_stream)(self)
-
 
 def get_reporter_map ( ):
   return dict([ (r.__name__.split('.').pop( ).lower( ), r) for r in get_reporters( ) ])

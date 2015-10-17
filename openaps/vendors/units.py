@@ -30,10 +30,11 @@ class ConvertInput (Use):
     params = self.get_params(args)
     program = json.load(argparse.FileType('r')(params.get('input')))
     return program
+  CONVERTERS = { 'mmol/L': GlucoseConvert.mg_dl_to_mmol_l
+               , 'mg/dL': GlucoseConvert.mmol_l_to_mg_dl }
   def set_converter (self, args):
     params = self.get_params(args)
-    converters = { 'mmol/L': GlucoseConvert.mg_dl_to_mmol_l
-                 , 'mg/dL': GlucoseConvert.mmol_l_to_mg_dl }
+    converters = self.CONVERTERS
     self.units = params.get('to')
     self.to_unit = converters.get(self.units)
 

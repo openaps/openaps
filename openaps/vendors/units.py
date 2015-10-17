@@ -53,9 +53,10 @@ class bg_targets (ConvertInput):
   def convert (self, bg_targets):
     assert bg_targets['units'] in ['mg/dL', 'mmol/L']
 
-    for target in bg_targets['targets']:
-      target['high'] = self.to_unit(target['high'])
-      target['low'] = self.to_unit(target['low'])
+    if bg_targets['units'] != self.units:
+      for target in bg_targets['targets']:
+        target['high'] = self.to_unit(target['high'])
+        target['low'] = self.to_unit(target['low'])
 
     bg_targets['user_preferred_units'] = bg_targets['units']
     bg_targets['units'] = self.units

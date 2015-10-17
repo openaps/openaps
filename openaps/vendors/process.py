@@ -55,7 +55,9 @@ class shell (Use):
     else:
       return data
   def configure_app (self, app, parser):
-    parser.add_argument('--not-json-default', dest='json_default', default=True, action='store_false', help="When the process does not produce json.")
+    parser.add_argument('--not-json-default', dest='json_default'
+          , default=True, action='store_false'
+          , help="When the process does not produce json.")
     self.fields = self.device.get('fields').strip( ).split(' ')
     for opt in self.fields:
       if opt:

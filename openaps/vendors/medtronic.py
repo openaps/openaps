@@ -206,30 +206,6 @@ class read_clock (MedtronicTask):
   def main (self, args, app):
     return self.pump.model.read_clock( )
 
-@use( )
-class read_bg_targets_mg_dl (MedtronicTask):
-  """
-    Universally, OpenAPS uses blood glucose measurements in mg/dL units.
-
-    This code converts whatever decoding-carelink gave us to mg/dL,
-    irrespective of the user-preferred units.
-
-    We then add a new field to the result, called 'user-preferred-units'.
-    This reflects what the pump-owner prefers their unit of measurement to be.
-  """
-  def main (self, args, app):
-      bg_targets = self.pump.model.read_bg_targets( )
-      assert bg_targets['units'] in ['mg/dL', 'mmol/L']
-
-      if bg_targets['units'] and bg_targets['units'] == 'mmol/L':
-          for target in bg_targets['targets']:
-              target['high'] = GlucoseConvert.mmol_l_to_mg_dl(target['high'])
-              target['low'] = GlucoseConvert.mmol_l_to_mg_dl(target['low'])
-
-      bg_targets['user_preferred_units'] = bg_targets['units']
-      bg_targets['units'] = 'mg/dL'
-
-      return bg_targets
 
 class SameNameCommand (MedtronicTask):
   def main (self, args, app):
@@ -295,7 +271,7 @@ class read_battery_status (SameNameCommand):
   """ Check battery status. """
 
 @use( )
-class read_bg_targets_settings (SelectedNameCommand):
+class read_bg_targets (SelectedNameCommand):
   """ Read bg targets. """
   selected = 'read_bg_targets'
 

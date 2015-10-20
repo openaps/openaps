@@ -54,7 +54,7 @@ class glucose (scan):
       ])
       out.append(' '.join(line))
     return "\n".join(out)
-  def prerender_JSON (self, data):
+  def prerender_json (self, data):
     """ since everything is a dict/strings/ints, we can pass thru to json """
     return data
   def main (self, args, app):
@@ -103,7 +103,7 @@ class iter_glucose_hours (glucose):
 * iter_glucose_hours     - read last 1 hour of glucose records
 * iter_glucose_hours 4.3 - read last 4.3 hours of glucose records
   """
-  
+
   def get_params (self, args):
     return dict(hours=float(args.hours))
   

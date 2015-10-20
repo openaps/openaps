@@ -51,6 +51,11 @@ class BaseApp (cli.Base):
   Utilities for developing an artificial pancreas system.
   openaps helps you manage and structure reports for various devices.
 
+       .-. .,-.  .-. .--. .-.  .,-. .--.
+      (   )|   )(.-' |  |(   ) |   )`--.
+       `-' |`-'  `--''  `-`-'`-|`-' `--'
+           |                   |        
+           '                   '        
 Common workflows:
 
 Getting started:
@@ -149,7 +154,11 @@ openaps report commands map openaps use commands to filenames:
     elif args.command in ['get', 'suggest', ]:
       exit(call(['openaps-%s' % args.command ] + args.args))
     elif args.command:
-      exit(call(['openaps-%s' % args.command ] + args.args))
+      try:
+        exit(call(['openaps-%s' % args.command ] + args.args))
+      except (OSError), e:
+        print """openaps: '{command}' is not an openaps command. See 'openaps --help'.
+        """.format(command=args.command)
 
 
 if __name__ == '__main__':

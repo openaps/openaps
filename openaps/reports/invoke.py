@@ -26,7 +26,7 @@ def main (args, app):
     # print device.name, device
     # print report.name, report.fields
     # XXX.bewest: very crude, need to prime the Use's args from the config
-    app.parser.set_defaults(**report.fields)
+    app.parser.set_defaults(**task.method.from_ini(report.fields))
     args, extra = app.parser.parse_known_args( )
     """
     for k, v in report.fields.items( ):

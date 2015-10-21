@@ -22,6 +22,12 @@ class Use (Subcommand):
     print "HAHA", args, app
     """
 
+  def to_ini (self, args):
+    return self.get_params(args)
+
+  def from_ini (self, fields):
+    return fields
+
   def get_params (self, args):
     """
     Return dictionary of all parameters collected from args.

@@ -32,6 +32,7 @@ def set_config (args, device):
 def display_device (device):
   data = dict(**device.fields)
   data.update(**device.extra.fields)
+  data.update(cmd=device.get('cmd'), args=device.get('args'))
   return '/{cmd:s}/{args:s}'.format(**data)
 
 @use( )

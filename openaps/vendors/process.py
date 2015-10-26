@@ -78,7 +78,7 @@ class shell (Use):
         command.append(getattr(args, opt))
     command.extend(getattr(args, 'remainder', []))
     command = shlex.split(' '.join(command))
-    proc = subprocess.Popen(command, stdin=PIPE, stdout=PIPE)
+    proc = subprocess.Popen(command, stdout=PIPE)
     output, stderr = proc.communicate( )
     # output = check_output(command, shell=True)
     return output

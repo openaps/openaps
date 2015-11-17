@@ -26,7 +26,7 @@ def main (args, app):
     # print device.name, device
     # print report.name, report.fields
     # XXX.bewest: very crude, need to prime the Use's args from the config
-    app.parser.set_defaults(**report.fields)
+    app.parser.set_defaults(**task.method.from_ini(report.fields))
     args, extra = app.parser.parse_known_args( )
     """
     for k, v in report.fields.items( ):
@@ -40,8 +40,14 @@ def main (args, app):
         output = task.method(args, app)
     except Exception as e:
         print(report.name, ' raised ', e, file=sys.stderr)
+        # save prior progress in git
+        app.epilog( )
+        # ensure we still blow up with non-zero exit
         raise
     else:
         reporters.Reporter(report, device, task)(output)
         print('reporting', report.name)
-        repo.index.add([report.name])
+        repo.git.add([report.name])
+        # XXX: https://github.com/gitpython-developers/GitPython/issues/265o
+        # GitPython <  0.3.7, this can corrupt the index
+        # repo.index.add([report.name])

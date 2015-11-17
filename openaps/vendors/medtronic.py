@@ -277,7 +277,12 @@ class read_bg_targets (SelectedNameCommand):
 
 @use( )
 class read_insulin_sensitivies (SameNameCommand):
-  """ Read insulin sensitivies. """
+  """ XXX: Deprecated.  Don't use.  Use read_insulin_sensitivities instead. """
+
+
+@use( )
+class read_insulin_sensitivities (SameNameCommand):
+  """ Read insulin sensitivities. """
 
 
 @use( )

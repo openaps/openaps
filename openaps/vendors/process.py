@@ -32,6 +32,7 @@ def set_config (args, device):
 def display_device (device):
   data = dict(**device.fields)
   data.update(**device.extra.fields)
+  data.update(cmd=device.get('cmd'), args=device.get('args'))
   return '/{cmd:s}/{args:s}'.format(**data)
 
 @use( )
@@ -77,7 +78,7 @@ class shell (Use):
         command.append(getattr(args, opt))
     command.extend(getattr(args, 'remainder', []))
     command = shlex.split(' '.join(command))
-    proc = subprocess.Popen(command, stdin=PIPE, stdout=PIPE)
+    proc = subprocess.Popen(command, stdout=PIPE)
     output, stderr = proc.communicate( )
     # output = check_output(command, shell=True)
     return output

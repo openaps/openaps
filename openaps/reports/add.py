@@ -23,7 +23,7 @@ def configure_parser (parser):
 def main (args, app):
   report = Report(report=args.report, device=args.device, reporter=args.reporter, use=args.use)
   task = app.actions.selected(args).usages.commands[args.device].method.commands[report.fields['use']]
-  params = task.method.get_params(args)
+  params = task.method.to_ini(args)
   for k, v in params.items( ):
     report.add_option(k, str(v))
   report.store(app.config)

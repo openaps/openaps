@@ -64,6 +64,22 @@ class bg_targets (ConvertInput):
 
     return bg_targets
 
+class insulin_sensitivities (ConvertInput):
+  """
+    Convert read_insulin_sensitivities json to preferred unit.
+  """
+  def convert (self, insulin_sensitivities):
+    assert insulin_sensitivities['units'] in ['mg/dL', 'mmol/L']
+    
+    if insulin_sensitivities ['units'] != self.units:
+    	for sens in insulin_sensitivities['sensitvity']:
+    		sens['sensitivity'] = self.to_unit(sens['sensitivity'])
+    	
+    insulin_sensitivities['user_preferred_units'] = insulin_sensitivities['units']
+    insulin_sensitivities['units'] = self.units
+    
+    return insulin_sensitivities
+    
 
 def get_uses (device, config):
   all_uses = use.get_uses(device, config)

@@ -64,6 +64,7 @@ class bg_targets (ConvertInput):
 
     return bg_targets
 
+@use( )
 class insulin_sensitivities (ConvertInput):
   """
     Convert read_insulin_sensitivities json to preferred unit.

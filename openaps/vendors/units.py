@@ -73,7 +73,7 @@ class insulin_sensitivities (ConvertInput):
     assert insulin_sensitivities['units'] in ['mg/dL', 'mmol/L']
     
     if insulin_sensitivities ['units'] != self.units:
-    	for sens in insulin_sensitivities['sensitvity']:
+    	for sens in insulin_sensitivities['sensitivity']:
     		sens['sensitivity'] = self.to_unit(sens['sensitivity'])
     	
     insulin_sensitivities['user_preferred_units'] = insulin_sensitivities['units']

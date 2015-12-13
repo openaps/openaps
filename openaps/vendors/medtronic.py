@@ -52,6 +52,7 @@ class scan (Use):
 import logging
 import logging.handlers
 class MedtronicTask (scan):
+  MAX_SESSION_DURATION = 10
   requires_session = True
   save_session = True
   record_stats = True
@@ -72,16 +73,19 @@ class MedtronicTask (scan):
 
   def get_session_info (self):
     expires = self.device.get('expires', None)
+    if expires is not None:
+      expires = parse(expires)
+
     now = datetime.now( )
     out = dict(device=self.device.name
       , vendor=__name__
       , used=now
       )
-    if expires is None or parse(expires) < now:
+    if expires is None or expires < now or (expires - now).total_seconds() > (60 * self.MAX_SESSION_DURATION):
       fields = self.create_session( )
       out.update(**self.update_session_info(fields))
     else:
-      out['expires'] = parse(expires)
+      out['expires'] = expires
       out['model'] = self.device.get('model', None)
     return out
 

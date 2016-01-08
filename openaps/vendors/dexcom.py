@@ -41,17 +41,20 @@ class glucose (scan):
   This is a good example of what is needed for new commands.
   To add additional commands, subclass from scan as shown.
   """
+  RECORD_TYPE = 'EGV_DATA'
+  TEXT_COLUMNS = [ 'display_time', 'glucose', 'trend_arrow' ]
   def prerender_stdout (self, data):
     return self.prerender_text(data)
   def prerender_text (self, data):
     """ turn everything into a string """
     out = [ ]
     for item in data:
-      line = map(str, [
-        item['display_time']
-      , item['glucose']
-      , item['trend_arrow']
-      ])
+      line = map(str, [ item[field] for field in self.TEXT_COLUMNS ])
+      # [
+      #   item['display_time']
+      # , item['glucose']
+      # , item['trend_arrow']
+      # ]
       out.append(' '.join(line))
     return "\n".join(out)
   def prerender_json (self, data):
@@ -64,15 +67,14 @@ class glucose (scan):
     Return the resulting data for this task/command.
     The data will be passed to prerender_<format> by the reporting system.
     """
-    records = self.dexcom.ReadRecords('EGV_DATA')
+    # records = self.dexcom.ReadRecords('EGV_DATA')
+    records = self.dexcom.ReadRecords(self.RECORD_TYPE)
     # return list of dicts, easier for json
     out = [ ]
     for item in records:
       # turn everything into dict
       out.append(item.to_dict( ))
     return out
-
-
 @use( )
 class iter_glucose (glucose):
   """ read last <count> glucose records, default 100, eg:
@@ -80,6 +82,7 @@ class iter_glucose (glucose):
 * iter_glucose   - read last 100 records
 * iter_glucose 2 - read last 2 records
   """
+  RECORD_TYPE = 'EGV_DATA'
   def get_params (self, args):
     return dict(count=int(args.count))
   def configure_app (self, app, parser):
@@ -88,7 +91,7 @@ class iter_glucose (glucose):
 
   def main (self, args, app):
     records = [ ]
-    for item in self.dexcom.iter_records('EGV_DATA'):
+    for item in self.dexcom.iter_records(self.RECORD_TYPE):
       records.append(item.to_dict( ))
       # print len(records)
       if len(records) >= self.get_params(args)['count']:
@@ -117,12 +120,33 @@ class iter_glucose_hours (glucose):
     now = datetime.now( )
     since = now - delta
     records = [ ]
-    for item in self.dexcom.iter_records('EGV_DATA'):
+    for item in self.dexcom.iter_records(self.RECORD_TYPE):
       if item.display_time >= since:
         records.append(item.to_dict( ))
       else:
         break
     return records
+
+
+@use( )
+class sensor (glucose):
+  """Fetch Sensor (raw) records from Dexcom receiver.
+
+  Fetches raw records.
+  """
+  RECORD_TYPE = 'SENSOR_DATA'
+  TEXT_COLUMNS = [ 'display_time', 'unfiltered', 'filtered', 'rssi' ]
+
+@use( )
+class iter_sensor (iter_glucose, sensor):
+  RECORD_TYPE = 'SENSOR_DATA'
+  TEXT_COLUMNS = [ 'display_time', 'unfiltered', 'filtered', 'rssi' ]
+
+@use( )
+class iter_sensor_hours (iter_glucose_hours, iter_sensor):
+  RECORD_TYPE = 'SENSOR_DATA'
+  TEXT_COLUMNS = [ 'display_time', 'unfiltered', 'filtered', 'rssi' ]
+
 
 @use( )
 class sensor_insertions (scan):

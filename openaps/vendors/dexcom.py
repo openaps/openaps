@@ -33,6 +33,45 @@ class scan (Use):
   def main (self, args, app):
     return self.port or ''
 
+@use( )
+class battery (scan):
+  def main (self, args, app):
+    battery = dict( level=self.dexcom.ReadBatteryLevel( )
+                  , status=self.dexcom.ReadBatteryState( )
+                  )
+    return battery
+
+@use( )
+class ReadBatteryLevel (scan):
+  def main (self, args, app):
+    return self.dexcom.ReadBatteryLevel( )
+
+@use( )
+class ReadBatteryState (scan):
+  def main (self, args, app):
+    return self.dexcom.ReadBatteryState( )
+
+@use( )
+class ReadManufacturingData (scan):
+  def main (self, args, app):
+    data = self.dexcom.ReadManufacturingData( )
+    result = data.attrib
+    return result
+
+@use( )
+class GetFirmwareHeader (scan):
+  def main (self, args, app):
+    data = self.dexcom.GetFirmwareHeader( )
+    result = data.attrib
+    return result
+
+@use( )
+class ReadTransmitterId (scan):
+  def main (self, args, app):
+    result = self.dexcom.ReadTransmitterId( )
+    return result
+
+
 
 @use( )
 class glucose (scan):
@@ -147,6 +186,66 @@ class iter_sensor_hours (iter_glucose_hours, iter_sensor):
   RECORD_TYPE = 'SENSOR_DATA'
   TEXT_COLUMNS = [ 'display_time', 'unfiltered', 'filtered', 'rssi' ]
 
+
+@use( )
+class meter_data (sensor):
+  """
+  Fetch METER_DATA records from the Dexcom receiver.
+  """
+  RECORD_TYPE = 'METER_DATA'
+  TEXT_COLUMNS = [ 'display_time', 'system_time', 'meter_time', 'meter_glucose'  ]
+
+@use( )
+class iter_meter_data (iter_sensor, meter_data):
+  RECORD_TYPE = 'METER_DATA'
+  TEXT_COLUMNS = meter_data.TEXT_COLUMNS
+
+@use( )
+class iter_meter_data_hours (iter_sensor_hours, iter_meter_data):
+  RECORD_TYPE = 'METER_DATA'
+  TEXT_COLUMNS = meter_data.TEXT_COLUMNS
+
+
+@use( )
+class insertion_time (sensor):
+  """
+  Fetch INSERTION_TIME records from the Dexcom receiver.
+
+  These are created when sensors are started.
+  """
+  RECORD_TYPE = 'INSERTION_TIME'
+  TEXT_COLUMNS = [ 'display_time', 'system_time', 'insertion_time', 'session_state' ]
+
+@use( )
+class iter_insertion_time (iter_sensor, insertion_time):
+  RECORD_TYPE = insertion_time.RECORD_TYPE
+  TEXT_COLUMNS = insertion_time.TEXT_COLUMNS
+
+@use( )
+class iter_insertion_time_hours (iter_sensor_hours, iter_insertion_time):
+  RECORD_TYPE = insertion_time.RECORD_TYPE
+  TEXT_COLUMNS = insertion_time.TEXT_COLUMNS
+
+
+
+@use( )
+class user_event_data (sensor):
+  """
+  Fetch USER_EVENT_DATA records from the Dexcom receiver.
+  """
+  RECORD_TYPE = 'USER_EVENT_DATA'
+  TEXT_COLUMNS = [ 'display_time', 'system_time', 'event_type', 'event_sub_type', 'event_value' ]
+
+
+@use( )
+class iter_user_event_data (iter_sensor, user_event_data):
+  RECORD_TYPE = user_event_data.RECORD_TYPE
+  TEXT_COLUMNS = user_event_data.TEXT_COLUMNS
+
+@use( )
+class iter_user_event_data_hours (iter_sensor_hours, iter_user_event_data):
+  RECORD_TYPE = user_event_data.RECORD_TYPE
+  TEXT_COLUMNS = user_event_data.TEXT_COLUMNS
 
 @use( )
 class sensor_insertions (scan):

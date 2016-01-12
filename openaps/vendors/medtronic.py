@@ -323,7 +323,7 @@ class set_temp_basal (InputProgramRequired):
       if not req in program:
         missing.append(req)
     if len(missing) > 0:
-      return dict(error="missing required input fields", missing=missing, input=program)
+      return dict(error="missing required input fields", missing=missing, input=dict(**program))
     return self.pump.model.set_temp_basal(**program)
 
 @use( )

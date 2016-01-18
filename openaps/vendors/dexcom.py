@@ -89,11 +89,6 @@ class glucose (scan):
     out = [ ]
     for item in data:
       line = map(str, [ item[field] for field in self.TEXT_COLUMNS ])
-      # [
-      #   item['display_time']
-      # , item['glucose']
-      # , item['trend_arrow']
-      # ]
       out.append(' '.join(line))
     return "\n".join(out)
   def prerender_json (self, data):

@@ -315,6 +315,23 @@ class InputProgramRequired (MedtronicTask):
 @use( )
 class set_temp_basal (InputProgramRequired):
   """ Set temporary basal rates.
+
+  Requires json input with the following keys defined:
+    * `temp` - the type of temporary rate, `percent` or `absolute`
+    * `rate` - The temporary rate, in units.  Examples, 0.0, 1.2, 0.1
+    * `duration` - The duration in minutes of the temporary rate.  The duration must be multiples of 30 minutes.
+
+
+  Eg, actively canceling a rate:
+  { "temp": "absolute", "rate": 0, "duration": 0 }
+
+
+  Zero basal for half hour:
+  { "temp": "absolute", "rate": 0, "duration": 30 }
+
+
+  One and a half units for one hour:
+  { "temp": "absolute", "rate": 1.5, "duration": 60 }
   """
   required_inputs = [ 'duration', 'rate' ]
   def upload_program (self, program):
@@ -329,6 +346,17 @@ class set_temp_basal (InputProgramRequired):
 @use( )
 class bolus (InputProgramRequired):
   """ Send bolus.
+
+  Requires json input with the following keys defined:
+    * `units` - Number of units to bolus.
+
+
+  Zero point one units:
+  { "units": 0.1 }
+
+
+  Two units:
+  { "units": 2 }
   """
   def upload_program (self, program):
     return self.pump.model.bolus(**program)

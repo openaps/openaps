@@ -18,6 +18,26 @@ class Config (SafeConfigParser):
   def save (self):
     with open(self.ini_name, 'wb') as configfile:
       self.write(configfile)
+  def fmt(self):
+      """Write an .ini-format representation of the configuration state."""
+      lines = [ ]
+      def write (line):
+        lines.append(line)
+      if self._defaults:
+          write("[%s]\n" % DEFAULTSECT)
+          for (key, value) in self._defaults.items():
+              write("%s = %s\n" % (key, str(value).replace('\n', '\n\t')))
+          write("\n")
+      for section in self._sections:
+          write("[%s]\n" % section)
+          for (key, value) in self._sections[section].items():
+              if key == "__name__":
+                  continue
+              if (value is not None) or (self._optcre == self.OPTCRE):
+                  key = " = ".join((key, str(value).replace('\n', '\n\t')))
+              write("%s\n" % (key))
+          write("\n")
+      return "".join(lines)
   def add_device (self, device):
     section = device.section_name( )
     self.add_section(section)

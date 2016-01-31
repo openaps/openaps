@@ -7,7 +7,7 @@ def install_show_arguments (parser):
   parser.add_argument('--json', dest='format', action='store_const', const=format_json)
 
 def format_json (report):
-  info = { report.name: report.fields, 'type': report.prefix }
+  info = { 'name': report.name, report.name: report.fields, 'type': report.prefix }
   if hasattr(report, 'extra'):
     info['extra'] = report.extra.fields
   return json.dumps(info)

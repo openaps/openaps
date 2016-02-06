@@ -20,15 +20,17 @@ class Subcommand (object):
     # call specific set up method
     getattr(self.method, name, self._no_op_setup)(self, self.parser)
   def get_help (self):
-    docs = getattr(self.method, '__doc__', "")
-    return ''.join(docs.split("\n\n")[0:1]) or None
+    docs = getattr(self.method, '__doc__', "\n\n\n") or "\n\n"
+    return ''.join(docs.split("\n\n")[0:1] or "")
   def get_description (self):
-    docs = getattr(self.method, '__doc__', "")
-    return ''.join(docs.split("\n\n")[0:1]) or None
+    docs = getattr(self.method, '__doc__', "\n\n\n") or "\n\n"
+    return ''.join(docs.split("\n\n")[0:1]) or ""
 
   def get_epilog (self):
     docs = getattr(self.method, '__doc__', "")
-    return ''.join(docs.split("\n\n")[1:]) or None
+    if docs:
+      return ''.join(docs.split("\n\n")[1:]) or ""
+    return ""
 
   def configure_subparser (self, subparser):
     parser = subparser.add_parser(self.name,

@@ -1,4 +1,7 @@
 import json
+import importlib
+import site
+
 from openaps.configurable import Configurable
 class ExtraConfig (Configurable):
   prefix = 'device'
@@ -53,6 +56,18 @@ class Device (Configurable):
       extra.save( )
     super(Device, self).store(config)
 
+  @classmethod
+  def FromImport (klass, candidate, config=None):
+    name = candidate.get('name')
+    fields = candidate.get(name)
+    # site.addsitedir(fields.get('path'))
+    # fields['vendor'] = importlib.import_module(fields['vendor'])
+    from openaps import vendors
+    vendor = vendors.lookup_dotted(fields['vendor'], config)
+    inst = klass(name, vendor)
+    inst.fields = fields
+    inst.extra.fields = candidate['extra']
+    return inst
   @classmethod
   def FromConfig (klass, vendors, config):
     devices = [ ]

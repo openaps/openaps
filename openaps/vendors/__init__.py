@@ -26,6 +26,12 @@ def get_map (config=None):
 def lookup (name, config=None):
   return get_map(config)[name]
 
+def lookup_dotted (name, config=None):
+  vendors = all_vendors(config)
+  names = [ v.__name__ for v in vendors ]
+  return dict(zip(names, vendors))[name]
+
+
 def all_vendors (config=None):
   return get_vendors( ) + find_plugins(config)
 

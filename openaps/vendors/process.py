@@ -52,7 +52,13 @@ class shell (Use):
     """ since everything is a dict/strings/ints, we can pass thru to json
     """
     if self.json_default:
-      return json.loads(data)
+      try:
+        return json.loads(data)
+      except ValueError, e:
+        print e
+        print data
+        raise
+
     else:
       return data
   def configure_app (self, app, parser):

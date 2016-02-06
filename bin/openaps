@@ -147,6 +147,7 @@ openaps report commands map openaps use commands to filenames:
   def run (self, args):
     if args.config:
       os.environ['OPENAPS_CONFIG'] = args.config
+      os.chdir(os.path.dirname(args.config))
     if args.command in ['help', None]:
       self.parser.print_help( )
     elif builtins.is_builtin(args.command):

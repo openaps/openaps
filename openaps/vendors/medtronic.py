@@ -52,6 +52,7 @@ class scan (Use):
 import logging
 import logging.handlers
 class MedtronicTask (scan):
+  MAX_SESSION_DURATION = 10
   requires_session = True
   save_session = True
   record_stats = True
@@ -72,16 +73,19 @@ class MedtronicTask (scan):
 
   def get_session_info (self):
     expires = self.device.get('expires', None)
+    if expires is not None:
+      expires = parse(expires)
+
     now = datetime.now( )
     out = dict(device=self.device.name
       , vendor=__name__
       , used=now
       )
-    if expires is None or parse(expires) < now:
+    if expires is None or expires < now or (expires - now).total_seconds() > (60 * self.MAX_SESSION_DURATION):
       fields = self.create_session( )
       out.update(**self.update_session_info(fields))
     else:
-      out['expires'] = parse(expires)
+      out['expires'] = expires
       out['model'] = self.device.get('model', None)
     return out
 
@@ -315,13 +319,48 @@ class InputProgramRequired (MedtronicTask):
 @use( )
 class set_temp_basal (InputProgramRequired):
   """ Set temporary basal rates.
+
+  Requires json input with the following keys defined:
+    * `temp` - the type of temporary rate, `percent` or `absolute`
+    * `rate` - The temporary rate, in units.  Examples, 0.0, 1.2, 0.1
+    * `duration` - The duration in minutes of the temporary rate.  The duration must be multiples of 30 minutes.
+
+
+  Eg, actively canceling a rate:
+  { "temp": "absolute", "rate": 0, "duration": 0 }
+
+
+  Zero basal for half hour:
+  { "temp": "absolute", "rate": 0, "duration": 30 }
+
+
+  One and a half units for one hour:
+  { "temp": "absolute", "rate": 1.5, "duration": 60 }
   """
+  required_inputs = [ 'duration', 'rate' ]
   def upload_program (self, program):
+    missing = [ ]
+    for req in self.required_inputs:
+      if not req in program:
+        missing.append(req)
+    if len(missing) > 0:
+      return dict(error="missing required input fields", missing=missing, input=dict(**program))
     return self.pump.model.set_temp_basal(**program)
 
 @use( )
 class bolus (InputProgramRequired):
   """ Send bolus.
+
+  Requires json input with the following keys defined:
+    * `units` - Number of units to bolus.
+
+
+  Zero point one units:
+  { "units": 0.1 }
+
+
+  Two units:
+  { "units": 2 }
   """
   def upload_program (self, program):
     return self.pump.model.bolus(**program)

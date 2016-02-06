@@ -2,7 +2,7 @@ import json
 from openaps.configurable import Configurable
 class Report (Configurable):
   prefix = 'report'
-  required = [ 'reporter', 'report', 'device', 'use' ]
+  required = [ 'report', 'reporter', 'device', 'use' ]
   optional = [ ]
   fields = { }
   url_template = "{device:s}://{reporter:s}/{use:s}/{name:s}"

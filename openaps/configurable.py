@@ -36,6 +36,12 @@ class Configurable (object):
     config.remove_device(self)
 
   @classmethod
+  def FromImport (klass, candidate, config=None):
+    name = candidate.get('name')
+    fields = candidate.get(name)
+    inst = klass(name, **fields)
+    return inst
+  @classmethod
   def FromConfig (klass, config):
     items = [ ]
     for candidate in config.sections( ):

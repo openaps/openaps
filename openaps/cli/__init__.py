@@ -39,7 +39,6 @@ class Base (object):
     self.prep_parser( )
     self.configure_parser(self.parser)
     argcomplete.autocomplete(self.parser, always_complete_options=self.always_complete_options);
-    print "XYXYXINPUTS", self.inputs
     self.args = self.parser.parse_args(self.inputs)
     self.prolog( )
     self.run(self.args)

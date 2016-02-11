@@ -36,9 +36,18 @@ setup(name='openaps',
       'bin/openaps-vendor',
       'bin/openaps-alias',
       'bin/openaps-import',
+      'bin/openaps-export',
       'bin/git-openaps-init',
       'bin/openaps-install-udev-rules',
     ],
+    entry_points = {
+      'openaps.importable': [
+        'vendors = openaps.vendors.plugins',
+        'devices = openaps.devices',
+        'reports = openaps.reports',
+        'aliases = openaps.alias',
+      ],
+    },
     classifiers = [
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',

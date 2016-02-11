@@ -31,3 +31,17 @@ class AliasManagement (CommandMapApp):
   def get_commands (self):
     return [ add, remove, show ]
 
+
+class Exported (object):
+  Configurable = Alias
+  @classmethod
+  def get_configurables(Klass, conf):
+    return Klass.Configurable.FromConfig(conf)
+  @classmethod
+  def get_names(Klass, conf):
+    return Klass.get_map(conf).keys( )
+  @classmethod
+  def get_map(Klass, conf):
+    return get_alias_map(conf)
+  Command = AliasManagement
+  Subcommand = AliasAction

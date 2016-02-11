@@ -38,3 +38,16 @@ class VendorManagementActions (CommandMapApp):
   def get_commands (self):
     return [ add, remove, show  ]
 
+class Exported (object):
+  Configurable = Vendor
+  @classmethod
+  def get_configurables(Klass, conf):
+    return get_plugins(conf)
+  @classmethod
+  def get_names(Klass, conf):
+    return get_vendor_names(conf)
+  @classmethod
+  def get_map(Klass, conf):
+    return get_vendor_map(conf)
+  Command = VendorManagementActions
+  Subcommand = VendorAction

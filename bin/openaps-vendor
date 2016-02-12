@@ -34,6 +34,6 @@ class VendorApp (cli.ConfigApp):
 
 if __name__ == '__main__':
 
-    app = VendorApp(sys.argv)
+    app = VendorApp(None)
     app( )
 

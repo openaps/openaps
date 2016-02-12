@@ -68,6 +68,6 @@ class ImportToolApp (cli.ConfigApp):
 
 if __name__ == '__main__':
 
-    app = ImportToolApp(sys.argv)
+    app = ImportToolApp(None)
     app( )
 

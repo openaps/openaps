@@ -63,8 +63,8 @@ class ConfigApp (Base):
   def epilog (self):
     self.create_git_commit( )
   def git_repo (self):
-    from git import Repo
-    self.repo = getattr(self, 'repo', Repo(os.getcwd( )))
+    from git import Repo, GitCmdObjectDB
+    self.repo = getattr(self, 'repo', Repo(os.getcwd( ), odbt=GitCmdObjectDB))
     return self.repo
 
   def create_git_commit (self):
@@ -76,5 +76,8 @@ class ConfigApp (Base):
       TODO: better change descriptions
       {2:s}
       """.format(self.parser.prog, ' '.join(sys.argv[1:]), ' '.join(sys.argv))
-      git.commit('-avm', msg)
+      # https://github.com/gitpython-developers/GitPython/issues/265
+      # git.commit('-avm', msg)
+      self.repo.index.commit(msg)
+    self.repo.git.gc( )
 

@@ -411,10 +411,16 @@ class set_temp_basal (InputProgramRequired):
 
 @use( )
 class bolus (InputProgramRequired):
-  """ Send bolus. [#warning!!!]
+  """Send bolus command. [#warning!!!]
 
-  Beware, this is a powerful command because it can give a lot of insulin.  Please be careful!
+  Beware! This is a powerful command because it can give a lot of
+  insulin.  Please be careful!
   Not a part of oref0.
+
+
+  -----------------------
+
+
   Requires json input with the following keys defined:
     * `units` - Number of units to bolus.
 

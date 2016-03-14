@@ -161,7 +161,9 @@ class Session (MedtronicTask):
 
 @use( )
 class model (MedtronicTask):
-  """ Get model number
+  """ Get model number [#oref0] [#recommended] [#safe]
+
+  This is one of the safest commands available.
   """
   def configure_app (self, app, parser):
     pass
@@ -205,7 +207,7 @@ class mytest (MedtronicTask):
 
 @use( )
 class read_clock (MedtronicTask):
-  """ Read date/time of pump
+  """ Read date/time of pump [#oref0]
   """
   def main (self, args, app):
     return self.pump.model.read_clock( )
@@ -224,15 +226,15 @@ class SelectedNameCommand (MedtronicTask):
 
 @use( )
 class read_temp_basal (SameNameCommand):
-  """ Read temporary basal rates. """
+  """ Read temporary basal rates. [#oref0] """
 
 @use( )
 class read_settings (SameNameCommand):
-  """ Read settings. """
+  """ Read settings. [#oref0] """
 
 @use( )
 class read_carb_ratios (SameNameCommand):
-  """ Read carb_ratios. """
+  """ Read carb_ratios. [#oref0] """
 
 @use( )
 class read_basal_profile_std (SameNameCommand):
@@ -248,7 +250,7 @@ class read_basal_profile_B (SameNameCommand):
 
 @use( )
 class read_selected_basal_profile (SameNameCommand):
-  """ Fetch the currently selected basal profile. """
+  """ Fetch the currently selected basal profile. [#oref0] """
 
 @use( )
 class read_current_glucose_pages (SameNameCommand):
@@ -272,11 +274,11 @@ class resume_pump (suspend_pump):
 
 @use( )
 class read_battery_status (SameNameCommand):
-  """ Check battery status. """
+  """ Check battery status. [#oref0] """
 
 @use( )
 class read_bg_targets (SelectedNameCommand):
-  """ Read bg targets. """
+  """ Read bg targets. [#oref0] """
   selected = 'read_bg_targets'
 
 @use( )
@@ -286,7 +288,7 @@ class read_insulin_sensitivies (SameNameCommand):
 
 @use( )
 class read_insulin_sensitivities (SameNameCommand):
-  """ Read insulin sensitivities. """
+  """ Read insulin sensitivities. [#oref0] """
 
 
 @use( )
@@ -316,9 +318,69 @@ class InputProgramRequired (MedtronicTask):
     program.update(timestamp=datetime.now( ), **results)
     return program
 
+def parse_clock (candidate):
+  if candidate.lower( ) in ['now']:
+    return datetime.now( )
+  return parse(candidate)
+@use( )
+class set_clock (InputProgramRequired):
+  """ Set clock.
+
+
+  -------------------
+
+
+  input should be the name of a json file, or `-` for stdin.
+  The json file should contain a key named `clock` with the new
+  requested value formatted as ISO 8601 including seconds.
+
+
+      { "clock": "2016-03-14T14:23:40" }
+
+
+  -------------------
+
+
+  `--to` switch
+  -------------------
+
+
+  Alternatively, the `--to` switch maybe used:
+  The keyword `now` may be given to automatically generate a request
+  using the system's current time.  Otherwise, the value must be
+  something that can be parsed as an ISO 8601 formatted time including
+  the seconds.
+
+
+      --to now
+      --to $(date -Iseconds)
+      --to 2016-03-14T14:29:41-0700
+
+  """
+  def get_params (self, args):
+    return dict(input=args.input, to=args.to)
+  def configure_app (self, app, parser):
+    parser.add_argument('input', nargs='?', default=None)
+    # parser.add_argument('input', nargs='?', default='-')
+    parser.add_argument('--to', default=None)
+  def upload_program (self, program):
+    if not program.get('clock', None):
+      print "Bad input"
+      raise Exception("Bad input, missing clock definition: {0}".format(program.get('clock')))
+    return self.pump.model.set_clock(**program)
+    # return dict(test_ok=dict(**program))
+  def get_program (self, args):
+    params = self.get_params(args)
+    program = dict(clock=None)
+    if params.get('to', None) is None and params.get('input'):
+      program.update(clock=parse(json.load(argparse.FileType('r')(params.get('input')))))
+    else:
+      if params.get('to'):
+        program.update(clock=parse_clock(params.get('to')))
+    return program
 @use( )
 class set_temp_basal (InputProgramRequired):
-  """ Set temporary basal rates.
+  """ Set temporary basal rates. [#oref0]
 
   Requires json input with the following keys defined:
     * `temp` - the type of temporary rate, `percent` or `absolute`
@@ -349,8 +411,10 @@ class set_temp_basal (InputProgramRequired):
 
 @use( )
 class bolus (InputProgramRequired):
-  """ Send bolus.
+  """ Send bolus. [#warning!!!]
 
+  Beware, this is a powerful command because it can give a lot of insulin.  Please be careful!
+  Not a part of oref0.
   Requires json input with the following keys defined:
     * `units` - Number of units to bolus.
 

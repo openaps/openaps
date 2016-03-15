@@ -71,6 +71,54 @@ class ReadTransmitterId (scan):
     result = self.dexcom.ReadTransmitterId( )
     return result
 
+class SameNameCommand (scan):
+  def pass_result (self, result):
+    return result
+  def main (self, args, app):
+    name = self.__class__.__name__.split('.').pop( )
+    result = getattr(self.dexcom, name)(**self.get_params(args))
+    return self.pass_result(result)
+
+@use( )
+class ReadLanguage (SameNameCommand):
+  """Read Language """
+
+
+@use( )
+class ReadRTC (SameNameCommand):
+  """Read RTC """
+
+@use( )
+class ReadSystemTime (SameNameCommand):
+  """Read System Time """
+
+@use( )
+class ReadSystemTimeOffset (SameNameCommand):
+  """Read System Time Offset"""
+  def pass_result (self, result):
+    return result.total_seconds( )
+
+@use( )
+class ReadDisplayTime (SameNameCommand):
+  """Read Display Time Offset"""
+
+@use( )
+class ReadDisplayTimeOffset (ReadSystemTimeOffset):
+  """Read Display Time Offset"""
+
+@use( )
+class ReadGlucoseUnit (SameNameCommand):
+  """Read Glucose Unit """
+
+@use( )
+class ReadClockMode (SameNameCommand):
+  """Read Clock Mode """
+
+
+@use( )
+class ReadDeviceMode (SameNameCommand):
+  """Read Device Mode """
+
 
 
 @use( )

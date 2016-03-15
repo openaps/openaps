@@ -79,5 +79,5 @@ class ConfigApp (Base):
       # https://github.com/gitpython-developers/GitPython/issues/265
       # git.commit('-avm', msg)
       self.repo.index.commit(msg)
-    self.repo.git.gc( )
+    self.repo.git.gc(auto=True)
 

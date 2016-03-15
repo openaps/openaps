@@ -16,7 +16,7 @@ By proceeding using these tools or any piece within, you agree to the
 copyright (see LICENSE.txt for more information) and release any
 contributors from liability. 
 
-Check out [the openaps docs] (https://openaps.gitbooks.io/building-an-open-artificial-pancreas-system/content/index.html) to help get you started.
+Check out [the openaps docs][the openaps docs] to help get you started.
 
 *Note:* This is intended to be a set of tools to support a self-driven DIY
 implementation and any person choosing to use these tools is solely
@@ -38,6 +38,7 @@ contribute in other ways.
 [GettingStarted]: https://github.com/openaps/openaps/wiki/GettingStarted
 [wiki]: https://github.com/openaps/openaps/wiki
 [proposal]: https://gist.github.com/bewest/a690eaf35c69be898711
+[the openaps docs]: https://github.com/openaps/docs
 
 ![openaps loop hardware](https://cloud.githubusercontent.com/assets/394179/9372378/c2023bc2-4692-11e5-8254-fe940f847536.png)
 

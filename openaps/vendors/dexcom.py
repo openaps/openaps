@@ -6,6 +6,7 @@ from openaps.uses.use import Use
 from openaps.uses.registry import Registry
 import dexcom_reader
 from dexcom_reader import readdata
+from datetime import timedelta
 from datetime import datetime
 import dateutil
 from dateutil import relativedelta
@@ -64,6 +65,58 @@ class GetFirmwareHeader (scan):
     data = self.dexcom.GetFirmwareHeader( )
     result = data.attrib
     return result
+
+def parse_clock (candidate):
+  if candidate.lower( ) in ['now']:
+    return datetime.now( )
+  return parse(candidate)
+
+@use( )
+class UpdateTime (scan):
+  """Update receiver time """
+  def get_params (self, args):
+    return dict(input=args.input, to=args.to)
+  def configure_app (self, app, parser):
+    parser.add_argument('input', nargs='?', default=None)
+    parser.add_argument('--to', default=None)
+  def upload_program (self, program):
+    if not program.get('clock', None) or 'offset' not in program:
+      print "Bad input"
+      raise Exception("Bad input, missing clock definition: {0}".format(program.get('clock')))
+    result = self.dexcom.WriteDisplayTimeOffset(offset=program['offset'])
+    new_offset = self.dexcom.ReadDisplayTimeOffset( )
+    return dict(requested=dict(**program), result=result, offset=new_offset.total_seconds( ))
+  def get_program (self, args):
+    params = self.get_params(args)
+    program = dict(clock=None)
+    if params.get('to', None) is None and params.get('input'):
+      program.update(clock=parse(json.load(argparse.FileType('r')(params.get('input')))))
+    else:
+      if params.get('to'):
+        program.update(clock=parse_clock(params.get('to')))
+    current_utc = self.dexcom.ReadSystemTime( )
+    offset = program['clock'] - current_utc
+    program.update(offset=offset.total_seconds( ))
+
+    return program
+  def main (self, args, app):
+    program = self.get_program(args)
+    print "program", program
+    results = self.upload_program(program)
+    program.update(enacted_at=datetime.now( ), **results)
+    return program
+@use( )
+class DescribeClocks (scan):
+  """Describe all the clocks """
+  def main (self, args, app):
+    system = dict(offset=self.dexcom.ReadSystemTimeOffset( ).total_seconds( )
+                 , utc=self.dexcom.ReadSystemTime( ))
+    # system.update
+    display = dict(offset=self.dexcom.ReadDisplayTimeOffset( ).total_seconds( )
+                  , clock=self.dexcom.ReadDisplayTime( ))
+    rtc = dict(epoch=self.dexcom.ReadRTC( ))
+    clocks = dict(system=system, display=display, rtc=rtc)
+    return clocks
 
 @use( )
 class ReadTransmitterId (scan):
@@ -130,6 +183,11 @@ class ReadHardwareBoardId (SameNameCommand):
 @use( )
 class ReadSetupWizardState (SameNameCommand):
   """Read Setup wizard state """
+
+@use( )
+class ReadChargerCurrentSetting (SameNameCommand):
+  """Read Charger current setting """
+
 
 
 

@@ -119,6 +119,20 @@ class ReadClockMode (SameNameCommand):
 class ReadDeviceMode (SameNameCommand):
   """Read Device Mode """
 
+@use( )
+class ReadBlindedMode (SameNameCommand):
+  """Read Blinded Mode """
+
+@use( )
+class ReadHardwareBoardId (SameNameCommand):
+  """Read Hardware board ID  """
+
+@use( )
+class ReadSetupWizardState (SameNameCommand):
+  """Read Setup wizard state """
+
+
+
 
 
 @use( )

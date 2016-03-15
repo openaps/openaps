@@ -101,10 +101,33 @@ class UpdateTime (scan):
     return program
   def main (self, args, app):
     program = self.get_program(args)
-    print "program", program
     results = self.upload_program(program)
     program.update(enacted_at=datetime.now( ), **results)
     return program
+
+@use( )
+class WriteChargerCurrentSetting (scan):
+  MAP = [ 'Off', 'Power100mA', 'Power500mA', 'PowerMax', 'PowerSuspended' ]
+  def get_params (self, args):
+    return dict(status=args.status)
+  def configure_app (self, app, parser):
+
+    parser.add_argument('--status', dest='status', choices=self.MAP)
+    for key in self.MAP:
+      flag = "--{0}".format(key)
+      parser.add_argument(flag, dest='status', action='store_const', const=key)
+
+  def main (self, args, app):
+    params = self.get_params(args)
+    status = params.get('status')
+    requested = dict(**params)
+    if not status:
+      raise Exception("requested ChargeCurrent setting unknown: {0}".format(status))
+    result = self.dexcom.WriteChargerCurrentSetting(status)
+    updated = self.dexcom.ReadChargerCurrentSetting( )
+    result.update(enacted_at=datetime.now( ), status=updated, requested=requested)
+    return result
+
 @use( )
 class DescribeClocks (scan):
   """Describe all the clocks """

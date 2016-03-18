@@ -12,6 +12,17 @@ from openaps.reports import Report
 from openaps.vendors import Vendor
 from openaps.alias import Alias
 from openaps import uses
+
+import pkg_resources
+
+def get_importable ( ):
+  mods = dict( )
+  for entry in pkg_resources.iter_entry_points('openaps.importable'):
+    mod = entry.load( )
+    name = mod.Exported.Configurable.prefix
+    mods[name] = mod.Exported.Configurable
+  return mods
+
 class ImportToolApp (cli.ConfigApp):
   """ openaps-import - import openaps configuration
   Import configuration.
@@ -23,11 +34,13 @@ class ImportToolApp (cli.ConfigApp):
   """
 
   name = 'import'
-  MAP = dict(vendor=Vendor, device=Device, report=Report, alias=Alias)
+  MAP = get_importable( )
+  # MAP = dict(vendor=Vendor, device=Device, report=Report, alias=Alias)
   def configure_parser (self, parser):
     self.read_config( )
     # parser.add_argument('--ini')
     # parser.add_argument('--json')
+    parser.add_argument('--list', '-l', default=False, action='store_true', help="Just list types")
     parser.add_argument('input', default='-', nargs='?', type=argparse.FileType('r'), help="Read from stdin  ")
 
   def prolog (self):
@@ -57,6 +70,10 @@ class ImportToolApp (cli.ConfigApp):
     return inst
   def run (self, args):
     # print self.inputs
+    if args.list:
+      for key in self.MAP.keys( ):
+        print key
+      return self.MAP
     candidates = json.load(args.input)
     if not isinstance(candidates, list):
       candidates = [ candidates ]

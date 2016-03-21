@@ -70,6 +70,12 @@ class ConfigApp (Base):
   def create_git_commit (self):
     self.git_repo( )
     if self.repo.is_dirty( ) or self.repo.index.diff(None):
+      # replicate commit -a, automatically add any changed paths
+      # should help
+      # https://github.com/openaps/openaps/issues/87
+      diffs = self.repo.index.diff(None)
+      for diff in diffs:
+        self.repo.git.add([diff.b_path], write_extension_data=False)
       git = self.repo.git
       msg = """{0:s} {1:s}
 

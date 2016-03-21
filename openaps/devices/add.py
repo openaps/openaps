@@ -25,6 +25,4 @@ def main (args, app):
   # app.config.write(sys.stdout)
   app.config.save( )
   print "added", device.format_url( )
-  repo = app.git_repo( )
-  repo.git.add(['openaps.ini'], write_extension_data=False)
 

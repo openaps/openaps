@@ -82,8 +82,6 @@ class ImportToolApp (cli.ConfigApp):
       incoming.store(self.config)
       self.config.save( )
       print incoming.format_url( )
-    repo = self.git_repo( )
-    repo.git.add(['openaps.ini'])
 
 if __name__ == '__main__':
 

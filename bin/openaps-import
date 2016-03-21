@@ -70,6 +70,8 @@ class ImportToolApp (cli.ConfigApp):
     return inst
   def run (self, args):
     # print self.inputs
+    repo = self.git_repo( )
+    repo.git.add(['openaps.ini'])
     if args.list:
       for key in self.MAP.keys( ):
         print key

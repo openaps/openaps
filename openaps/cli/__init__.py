@@ -19,9 +19,12 @@ class Base (object):
     return "\n\n".join(klass.__doc__.split("\n\n")[1:])
 
   def prep_parser (self):
+    prog = None
+    if self.inputs:
+      prog = self.inputs[0]
     epilog = textwrap.dedent(self._get_epilog( ))
     description = self._get_description( )
-    self.parser = argparse.ArgumentParser(
+    self.parser = argparse.ArgumentParser(prog=prog,
                   description=description
                 , epilog=epilog
                 , formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -32,6 +35,10 @@ class Base (object):
   def prolog (self):
     pass
 
+  def get_described_parser (self):
+    self.prep_parser( )
+    self.configure_parser(self.parser)
+    return self.parser
   def epilog (self):
     pass
 
@@ -55,6 +62,8 @@ class ConfigApp (Base):
     if not os.path.exists(cfg_file):
       print "Not an openaps environment, run: openaps init"
       sys.exit(1)
+    if os.getcwd( ) != os.path.dirname(cfg_file):
+      os.chdir(os.path.dirname(cfg_file))
     self.config = config.Config.Read(cfg_file)
 
   def prolog (self):

@@ -158,13 +158,14 @@ openaps report commands map openaps use commands to filenames:
       try:
         exit(call(['openaps-%s' % args.command ] + args.args))
       except (OSError), e:
+        print e
         print """openaps: '{command}' is not an openaps command. See 'openaps --help'.
         """.format(command=args.command)
 
 
 if __name__ == '__main__':
 
-    app = BaseApp(sys.argv)
+    app = BaseApp(None)
     app( )
     sys.exit(0)
 

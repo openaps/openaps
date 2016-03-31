@@ -49,3 +49,14 @@ def get_configurable_devices (ctx):
   vendors = VendorConfigurations(ctx)
   return vendors
 
+
+class Exported (object):
+  Configurable = Vendor
+  @classmethod
+  def get_configurables(Klass, conf):
+    return find_plugins(conf)
+  @classmethod
+  def get_map(Klass, conf):
+    return get_map(conf)
+  Command = VendorConfigurations
+  Subcommand = ChangeVendorApp

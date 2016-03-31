@@ -33,5 +33,5 @@ class AliasApp (cli.ConfigApp):
 
 if __name__ == '__main__':
 
-    app = AliasApp(sys.argv)
+    app = AliasApp(None)
     app( )

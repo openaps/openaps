@@ -78,6 +78,6 @@ class ReportToolApp (cli.ConfigApp):
 
 if __name__ == '__main__':
 
-    app = ReportToolApp(sys.argv)
+    app = ReportToolApp(None)
     app( )
 

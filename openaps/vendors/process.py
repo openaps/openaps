@@ -61,6 +61,16 @@ class shell (Use):
 
     else:
       return data
+  def from_ini (self, fields):
+    if 'remainder' in fields:
+      fields.update(remainder=fields.get('remainder', [ ]).strip( ).split(' '))
+    return fields
+  def to_ini (self, args):
+    params = self.get_params(args)
+    if 'remainder' in params:
+      params.update(remainder=' '.join(params.get('remainder', [ ])))
+    return params
+
   def configure_app (self, app, parser):
     parser.add_argument('--not-json-default', dest='json_default'
           , default=True, action='store_false'

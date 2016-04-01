@@ -20,9 +20,9 @@ class Formatter (object):
 
     line = [ 'openaps', 'use', usage.name, report.fields.get('use') ]
     params = [ ]
-    for param in usage.extra.fields.get('fields').split(' '):
-      params.append(report.fields.get(param))
-    params.append(report.fields.get('remainder'))
+    for param in usage.extra.fields.get('fields', '').split(' '):
+      params.append(report.fields.get(param, ''))
+    params.append(report.fields.get('remainder', ''))
     return ' '.join(line + params)
 def configure_app (app, parser):
   parser.set_defaults(report='*')

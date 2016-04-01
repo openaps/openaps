@@ -7,6 +7,7 @@ from openaps.devices.device import Device
 from openaps.reports.report import Report
 
 from openaps.cli import helpers
+import argparse
 
 class Formatter (object):
   def __init__ (self, app):
@@ -20,9 +21,20 @@ class Formatter (object):
 
     line = [ 'openaps', 'use', usage.name, report.fields.get('use') ]
     params = [ ]
-    for param in usage.extra.fields.get('fields', '').split(' '):
-      params.append(report.fields.get(param, ''))
-    params.append(report.fields.get('remainder', ''))
+
+    for act in task.method.parser._actions:
+      if act.dest in report.fields:
+        if act.option_strings:
+
+          if report.fields.get(act.dest):
+            if type(act) in [argparse._StoreTrueAction, argparse._StoreFalseAction ]:
+              params.append(act.option_strings[0])
+            else:
+              params.append(act.option_strings[0] + ' "' + report.fields.get(act.dest) + '"')
+        else:
+          params.append(report.fields.get(act.dest))
+
+
     return ' '.join(line + params)
 def configure_app (app, parser):
   parser.set_defaults(report='*')

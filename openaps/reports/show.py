@@ -28,7 +28,13 @@ class Formatter (object):
 
           if report.fields.get(act.dest):
             if type(act) in [argparse._StoreTrueAction, argparse._StoreFalseAction ]:
-              params.append(act.option_strings[0])
+              expected = act.const
+              found = report.fields.get(act.dest)
+              if type(act) is argparse._StoreFalseAction:
+                found = not found
+
+              if expected != found:
+                params.append(act.option_strings[0])
             else:
               params.append(act.option_strings[0] + ' "' + report.fields.get(act.dest) + '"')
         else:

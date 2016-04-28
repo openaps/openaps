@@ -42,3 +42,16 @@ def configure_commands (parser, parent=None):
 
     return commands
 
+
+class Exported (object):
+  Configurable = Device
+  @classmethod
+  def get_configurables(Klass, conf):
+    return get_devices(conf)
+  @classmethod
+  def get_names(Klass, conf):
+    return get_device_names(conf)
+  @classmethod
+  def get_map(Klass, conf):
+    return get_device_map(conf)
+  Command = DeviceConfig

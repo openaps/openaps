@@ -59,6 +59,6 @@ class UseToolApp (cli.ConfigApp):
 
 if __name__ == '__main__':
 
-    app = UseToolApp(sys.argv)
+    app = UseToolApp(None)
     app( )
 

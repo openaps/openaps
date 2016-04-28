@@ -38,3 +38,17 @@ class ReportManagementActions (CommandMapApp):
   def get_commands (self):
     return [ add, remove, show, invoke ]
 
+
+class Exported (object):
+  Configurable = Report
+  @classmethod
+  def get_configurables(Klass, conf):
+    return get_devices(conf)
+  @classmethod
+  def get_names(Klass, conf):
+    return get_report_names(conf)
+  @classmethod
+  def get_map(Klass, conf):
+    return get_report_map(conf)
+  Command = ReportManagementActions
+  Subcommand = ReportAction

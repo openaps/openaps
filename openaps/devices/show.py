@@ -7,6 +7,7 @@ from openaps.cli import helpers
 from openaps.devices.device import Device
 from openaps import vendors
 
+
 def configure_app (app, parser):
   parser.set_defaults(name='*')
   parser._actions[-1].nargs = '?'

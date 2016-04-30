@@ -6,6 +6,7 @@ from openaps.uses.use import Use
 from openaps.uses.registry import Registry
 import dexcom_reader
 from dexcom_reader import readdata
+from dexcom_reader import database_records
 from datetime import timedelta
 from datetime import datetime
 import dateutil
@@ -280,6 +281,24 @@ class iter_glucose (glucose):
     return records
 
 
+import collections
+_EGVRecord = collections.namedtuple('EGV', database_records.EGVRecord.BASE_FIELDS + database_records.EGVRecord.FIELDS)
+class EGVRecord (_EGVRecord):
+  def to_dict (self):
+    kwds = self._asdict( )
+    kwds['display_time'] = self.display_time.isoformat( )
+    return kwds
+_SensorRecord = collections.namedtuple('Sensor', database_records.SensorRecord.BASE_FIELDS + database_records.SensorRecord.FIELDS)
+class SensorRecord (_SensorRecord):
+  def to_dict (self):
+    kwds = self._asdict( )
+    kwds['display_time'] = self.display_time.isoformat( )
+    return kwds
+def fix_display_time (display_time=None, **kwds):
+  if display_time:
+    kwds['display_time'] = parse(display_time)
+  return kwds
+
 @use( )
 class oref0_glucose (glucose):
   """ Get Dexcom glucose formatted for Nightscout, merged with raw data.  [#oref0]
@@ -295,6 +314,12 @@ class oref0_glucose (glucose):
                         help="Number of hours of glucose records to read.")
     parser.add_argument('--threshold', type=int,  default=100,
                         help="Number of hours of glucose records to read.")
+    parser.add_argument('--no-raw',  action='store_true', default=False,
+                        help="Skip raw data.")
+    parser.add_argument('--glucose', default=None,
+                        help="File to read glucose from instead of device.")
+    parser.add_argument('--sensor', default=None,
+                        help="File to read sensor (raw) from instead of device.")
 
   def adjust_dates (self, item):
     dt = parse(item['display_time'])
@@ -302,6 +327,24 @@ class oref0_glucose (glucose):
     date = (time.mktime(dt.timetuple( ))* 1000 ) + (dt.microsecond / 1000.0)
     item.update(dateString=item['display_time'], date=date)
     return item
+
+  def get_glucose_data (self, params, args):
+    if args.glucose:
+      # return [EGVRecord(**item) for item in json.load(argparse.FileType('r')(args.glucose))]
+      results = [ ]
+      for item in json.load(argparse.FileType('r')(args.glucose)):
+        record = EGVRecord(**fix_display_time(**item))
+        results.append(record)
+      return results
+    return itertools.takewhile(self.comparison, self.dexcom.iter_records('EGV_DATA'))
+  def get_sensor_data (self, params, args):
+    if args.no_raw:
+      return [ ]
+    else:
+      if args.sensor:
+        return [SensorRecord(**fix_display_time(**item)) for item in json.load(argparse.FileType('r')(args.sensor))]
+      else:
+        return itertools.takewhile(self.comparison, self.dexcom.iter_records('SENSOR_DATA'))
 
   def main (self, args, app):
     params = self.get_params(args)
@@ -311,30 +354,34 @@ class oref0_glucose (glucose):
     records = [ ]
     def cb (elem):
       return elem.display_time >= since
-    iter_glucose = itertools.takewhile(cb, self.dexcom.iter_records('EGV_DATA'))
-    iter_sensor = itertools.takewhile(cb, self.dexcom.iter_records('SENSOR_DATA'))
+    self.comparison = cb
+    # iter_glucose = itertools.takewhile(cb, self.dexcom.iter_records('EGV_DATA'))
+    # iter_sensor = itertools.takewhile(cb, self.dexcom.iter_records('SENSOR_DATA'))
+    iter_glucose = self.get_glucose_data(params, args)
+    iter_sensor  = self.get_sensor_data(params, args)
     template = dict(device="openaps://{}".format(self.device.name), type='sgv')
     for egv, raw in itertools.izip_longest(iter_glucose, iter_sensor):
       item = dict(**template)
       if egv:
         item.update(sgv=egv.glucose, direction=egv.trend_arrow, **egv.to_dict( ))
         # https://github.com/nightscout/cgm-remote-monitor/blob/dev/lib/mqtt.js#L233-L296
-        delta = abs((raw.display_time - egv.display_time).total_seconds( ))
-        if delta < args.threshold:
-          item.update(filtered=raw.filtered, unfiltered=raw.unfiltered, rssi=raw.rssi)
-        else:
-          # create two items instead of one
-          if raw:
+        if raw:
+          delta = abs((raw.display_time - egv.display_time).total_seconds( ))
+          if delta < args.threshold:
+            item.update(filtered=raw.filtered, unfiltered=raw.unfiltered, rssi=raw.rssi)
+          else:
+            # create two items instead of one
+            # if raw:
             self.adjust_dates(item)
             records.append(item)
-            item = dict(**template)
+            item = dict(sgv=-1, **template)
             item.update(**raw.to_dict( ))
 
         self.adjust_dates(item)
         records.append(item)
           # item = dict( )
       elif raw:
-        item.update(type='sgv', sgv=None, **raw.to_dict( ))
+        item.update(type='sgv', sgv=-1, **raw.to_dict( ))
         self.adjust_dates(item)
         records.append(item)
 

@@ -385,13 +385,6 @@ class oref0_glucose (glucose):
         self.adjust_dates(item)
         records.append(item)
 
-    """
-    for item in self.dexcom.iter_records(self.RECORD_TYPE):
-      if item.display_time >= since:
-        records.append(item.to_dict( ))
-      else:
-        break
-    """
     return records
 
 @use( )

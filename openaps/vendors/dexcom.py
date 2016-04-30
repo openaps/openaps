@@ -11,6 +11,10 @@ from datetime import datetime
 import dateutil
 from dateutil import relativedelta
 from dateutil.parser import parse
+import json
+import itertools
+import time
+import argparse
 
 def set_config (args, device):
   return
@@ -275,6 +279,73 @@ class iter_glucose (glucose):
         break
     return records
 
+
+@use( )
+class oref0_glucose (glucose):
+  """ Get Dexcom glucose formatted for Nightscout, merged with raw data.  [#oref0]
+
+  """
+
+  TEXT_COLUMNS = glucose.TEXT_COLUMNS + [  ]
+  def get_params (self, args):
+    return dict(hours=float(args.hours))
+
+  def configure_app (self, app, parser):
+    parser.add_argument('--hours', type=float, nargs='?', default=1,
+                        help="Number of hours of glucose records to read.")
+    parser.add_argument('--threshold', type=int,  default=100,
+                        help="Number of hours of glucose records to read.")
+
+  def adjust_dates (self, item):
+    dt = parse(item['display_time'])
+    # http://stackoverflow.com/questions/5022447/converting-date-from-python-to-javascript
+    date = (time.mktime(dt.timetuple( ))* 1000 ) + (dt.microsecond / 1000.0)
+    item.update(dateString=item['display_time'], date=date)
+    return item
+
+  def main (self, args, app):
+    params = self.get_params(args)
+    delta = relativedelta.relativedelta(hours=params.get('hours'))
+    now = datetime.now( )
+    since = now - delta
+    records = [ ]
+    def cb (elem):
+      return elem.display_time >= since
+    iter_glucose = itertools.takewhile(cb, self.dexcom.iter_records('EGV_DATA'))
+    iter_sensor = itertools.takewhile(cb, self.dexcom.iter_records('SENSOR_DATA'))
+    template = dict(device="openaps://{}".format(self.device.name), type='sgv')
+    for egv, raw in itertools.izip_longest(iter_glucose, iter_sensor):
+      item = dict(**template)
+      if egv:
+        item.update(sgv=egv.glucose, direction=egv.trend_arrow, **egv.to_dict( ))
+        # https://github.com/nightscout/cgm-remote-monitor/blob/dev/lib/mqtt.js#L233-L296
+        delta = abs((raw.display_time - egv.display_time).total_seconds( ))
+        if delta < args.threshold:
+          item.update(filtered=raw.filtered, unfiltered=raw.unfiltered, rssi=raw.rssi)
+        else:
+          # create two items instead of one
+          if raw:
+            self.adjust_dates(item)
+            records.append(item)
+            item = dict(**template)
+            item.update(**raw.to_dict( ))
+
+        self.adjust_dates(item)
+        records.append(item)
+          # item = dict( )
+      elif raw:
+        item.update(type='sgv', sgv=None, **raw.to_dict( ))
+        self.adjust_dates(item)
+        records.append(item)
+
+    """
+    for item in self.dexcom.iter_records(self.RECORD_TYPE):
+      if item.display_time >= since:
+        records.append(item.to_dict( ))
+      else:
+        break
+    """
+    return records
 
 @use( )
 class iter_glucose_hours (glucose):

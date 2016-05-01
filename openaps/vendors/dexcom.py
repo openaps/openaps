@@ -307,7 +307,26 @@ class oref0_glucose (glucose):
 
   TEXT_COLUMNS = glucose.TEXT_COLUMNS + [  ]
   def get_params (self, args):
-    return dict(hours=float(args.hours))
+    params = dict(hours=float(args.hours), threshold=args.threshold)
+    return params
+  def to_ini (self, args):
+    params = self.get_params(args)
+
+    if args.glucose:
+      params['glucose'] = args.glucose
+    if args.sensor:
+      params['sensor'] = args.sensor
+    if args.no_raw:
+      params['no_raw'] = True
+    return params
+  def from_ini (self, fields):
+    fields['glucose'] = fields.get('glucose', None) or None
+    fields['sensor'] = fields.get('sensor', None) or None
+    if 'no_raw' not in fields:
+      fields['no_raw'] = False
+    else:
+      fields['no_raw'] = True
+    return fields
 
   def configure_app (self, app, parser):
     parser.add_argument('--hours', type=float, nargs='?', default=1,
@@ -365,7 +384,8 @@ class oref0_glucose (glucose):
     for egv, raw in itertools.izip_longest(iter_glucose, iter_sensor):
       item = dict(**template)
       if egv:
-        trend = getattr(egv, 'full_trend', self.arrow_to_trend(egv.trend_arrow))
+        # trend = getattr(egv, 'full_trend', self.arrow_to_trend(egv.trend_arrow))
+        trend = self.arrow_to_trend(egv.trend_arrow)
         item.update(sgv=egv.glucose, direction=self.trend_to_direction(trend, egv.trend_arrow), **egv.to_dict( ))
         # https://github.com/nightscout/cgm-remote-monitor/blob/dev/lib/mqtt.js#L233-L296
         if raw:

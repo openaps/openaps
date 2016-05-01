@@ -282,7 +282,7 @@ class iter_glucose (glucose):
 
 
 import collections
-_EGVRecord = collections.namedtuple('EGV', database_records.EGVRecord.BASE_FIELDS + database_records.EGVRecord.FIELDS)
+_EGVRecord = collections.namedtuple('EGV', database_records.EGVRecord.BASE_FIELDS + database_records.EGVRecord.FIELDS + [ 'full_trend'])
 class EGVRecord (_EGVRecord):
   def to_dict (self):
     kwds = self._asdict( )
@@ -333,6 +333,8 @@ class oref0_glucose (glucose):
       # return [EGVRecord(**item) for item in json.load(argparse.FileType('r')(args.glucose))]
       results = [ ]
       for item in json.load(argparse.FileType('r')(args.glucose)):
+        if not 'full_trend' in item:
+          item['full_trend'] = self.arrow_to_trend(item['trend_arrow'])
         record = EGVRecord(**fix_display_time(**item))
         results.append(record)
       return results
@@ -363,7 +365,8 @@ class oref0_glucose (glucose):
     for egv, raw in itertools.izip_longest(iter_glucose, iter_sensor):
       item = dict(**template)
       if egv:
-        item.update(sgv=egv.glucose, direction=egv.trend_arrow, **egv.to_dict( ))
+        trend = getattr(egv, 'full_trend', self.arrow_to_trend(egv.trend_arrow))
+        item.update(sgv=egv.glucose, direction=self.trend_to_direction(trend, egv.trend_arrow), **egv.to_dict( ))
         # https://github.com/nightscout/cgm-remote-monitor/blob/dev/lib/mqtt.js#L233-L296
         if raw:
           delta = abs((raw.display_time - egv.display_time).total_seconds( ))
@@ -386,6 +389,49 @@ class oref0_glucose (glucose):
         records.append(item)
 
     return records
+
+  @staticmethod
+  def arrow_to_trend (arrow):
+    VALUES = dexcom_reader.constants.TREND_ARROW_VALUES
+    if arrow in VALUES:
+      return VALUES.index(arrow)
+  @classmethod
+  def trend_to_direction (Klass, trend, arrow):
+    dexcom_reader.constants.TREND_ARROW_VALUES
+    TREND_ARROW_VALUES = [None, 'DOUBLE_UP', 'SINGLE_UP', '45_UP', 'FLAT',
+                          '45_DOWN', 'SINGLE_DOWN', 'DOUBLE_DOWN', 'NOT_COMPUTABLE',
+                          'OUT_OF_RANGE']
+    DIRECTIONS = Klass.NS_DIRECTIONS
+
+    # NAMES = [ name for name, v in DIRECTIONS.items( ) ]
+    NAMES = Klass.NS_NAMES
+    return NAMES[trend]
+
+  NS_NAMES = [
+      None
+    , 'DoubleUp'
+    , 'SingleUp'
+    , 'FortyFiveUp'
+    , 'Flat'
+    , 'FortyFiveDown'
+    , 'SingleDown'
+    , 'DoubleDown'
+    , 'NOT COMPUTABLE'
+    , 'RATE OUT OF RANGE'
+    ]
+  NS_DIRECTIONS = {
+    None: 0
+    , 'DoubleUp': 1
+    , 'SingleUp': 2
+    , 'FortyFiveUp': 3
+    , 'Flat': 4
+    , 'FortyFiveDown': 5
+    , 'SingleDown': 6
+    , 'DoubleDown': 7
+    , 'NOT COMPUTABLE': 8
+    , 'RATE OUT OF RANGE': 9
+  }
+
 
 @use( )
 class iter_glucose_hours (glucose):

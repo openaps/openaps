@@ -32,6 +32,7 @@ get_uses = use.get_uses
 class scan (Use):
   """ scan for usb stick """
   def scanner (self):
+    return self.device.get('usbPort', readdata.Dexcom.FindDevice( ))
     return readdata.Dexcom.FindDevice( )
   def before_main (self, args, app):
     self.port = self.scanner( )

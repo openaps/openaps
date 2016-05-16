@@ -333,7 +333,7 @@ class oref0_glucose (glucose):
     parser.add_argument('--hours', type=float, nargs='?', default=1,
                         help="Number of hours of glucose records to read.")
     parser.add_argument('--threshold', type=int,  default=100,
-                        help="Number of hours of glucose records to read.")
+                        help="Merge EGV and Sensor records occuring within THRESHOLD seconds of each other.")
     parser.add_argument('--no-raw',  action='store_true', default=False,
                         help="Skip raw data.")
     parser.add_argument('--glucose', default=None,

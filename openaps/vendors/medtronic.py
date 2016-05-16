@@ -205,6 +205,61 @@ class mytest (MedtronicTask):
   def main (self, args, app):
     return self.pump.model.my_read_settings( )
 
+class key_presser (MedtronicTask):
+  def run_presses (self, recipe):
+    results = [ ]
+    for press in recipe:
+
+      pressed = self.pump.model.press_key(press)
+      results.append(pressed)
+    successes = filter(lambda x: x['received'], results)
+    completed = len(successes) == len(recipe)
+    response = dict(results=results, completed=completed)
+
+    return response
+
+@use( )
+class press_keys (key_presser):
+  """ Press keys
+  """
+
+  def from_ini (self, fields):
+    fields['input'] = fields.get('input', '').upper( ).split(' ')
+    return fields
+  def to_ini (self, args):
+    params = self.get_params(args)
+    params['input'] = ' '.join(params.get('input', [])).upper( )
+    return params
+  def configure_app (self, app, parser):
+    keys = 'ESC ACT UP DOWN EASY'.split(' ')
+    keys.extend([k.lower( ) for k in keys[:]])
+    parser.add_argument('input', nargs=argparse.REMAINDER,  choices=keys)
+    return parser
+
+  def get_params (self, args):
+    # return dict(input=args.input)
+    return dict(input=[k.upper( ) for k in args.input])
+
+
+  def main (self, args, app):
+    params = self.get_params(args)
+    recipe = params.get('input', [ ])
+
+    results = self.run_presses(recipe)
+
+    return results
+
+@use( )
+class test_oref0_compat_menu (key_presser):
+  recipe = [ 'DOWN', 'ESC' ] + ([ 'DOWN' ] * 13 )
+  def main (self, args, app):
+
+    results = self.run_presses(self.recipe)
+
+    return results
+
+
+
 @use( )
 class read_clock (MedtronicTask):
   """ Read date/time of pump [#oref0]

@@ -36,7 +36,10 @@ class scan (Use):
     return readdata.Dexcom.FindDevice( )
   def before_main (self, args, app):
     self.port = self.scanner( )
-    self.dexcom = self.port and readdata.Dexcom(self.port) or None
+    # set model = G5 in config
+    model = self.device.get('model', 'G4').upper( )
+    G5 = model == 'G5'
+    self.dexcom = self.port and readdata.GetDevice(self.port, G5=G5) or None
   def main (self, args, app):
     return self.port or ''
 

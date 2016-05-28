@@ -44,6 +44,23 @@ class scan (Use):
     return self.port or ''
 
 @use( )
+class config (Use):
+  def configure_app (self, app, parser):
+    parser.add_argument('-M', '--model', default=None)
+    parser.add_argument('-5', '--G5', dest='model', const='G5', action='store_const', default=None)
+  def main (self, args, app):
+    results = dict(**self.device.extra.fields)
+    dirty = False
+    if args.model:
+      results.update(model=args.model)
+      self.device.extra.add_option('model', args.model.upper( ))
+      dirty = True
+
+    if dirty:
+      self.device.store(app.config)
+      app.config.save( )
+    return results
+@use( )
 class battery (scan):
   def main (self, args, app):
     battery = dict( level=self.dexcom.ReadBatteryLevel( )

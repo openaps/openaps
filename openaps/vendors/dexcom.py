@@ -680,7 +680,7 @@ class calibrations (scan):
     Return the resulting data for this task/command.
     The data will be passed to prerender_<format> by the reporting system.
     """
-    records = self.dexcom.ReadRecords('METER_DATA')
+    records = self.dexcom.ReadRecords('CAL_SET')
     # return list of dicts, easier for json
     out = [ ]
     for item in records:
@@ -703,7 +703,7 @@ class iter_calibrations (calibrations):
 
   def main (self, args, app):
     records = [ ]
-    for item in self.dexcom.iter_records('METER_DATA'):
+    for item in self.dexcom.iter_records('CAL_SET'):
       records.append(item.to_dict( ))
       # print len(records)
       if len(records) >= self.get_params(args)['count']:
@@ -732,7 +732,7 @@ class iter_calibrations_hours (calibrations):
     since = now - delta
 
     records = [ ]
-    for item in self.dexcom.iter_records('METER_DATA'):
+    for item in self.dexcom.iter_records('CAL_SET'):
       if item.system_time >= since:
         records.append(item.to_dict( ))
       else:

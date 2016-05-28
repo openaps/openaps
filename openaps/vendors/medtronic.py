@@ -66,13 +66,24 @@ class MedtronicTask (scan):
 
   def after_main (self, args, app):
     if self.save_session:
-      self.device.store(app.config)
-      app.config.save( )
+
+      with open(self.device.get('session', '{0}-session.json'.format(self.device.name)), 'w+') as io:
+        json.dump(self.update_session_info(self.session), io)
+
     if self.uart:
       self.uart.close( )
 
   def get_session_info (self):
-    expires = self.device.get('expires', None)
+
+    session = dict( )
+    with open(self.device.get('session', '{0}-session.json'.format(self.device.name)), 'a+') as io:
+      try:
+        session = json.load(io)
+      except (ValueError), e:
+        pass
+
+    expires = session.get('expires', None)
+
     if expires is not None:
       expires = parse(expires)
 
@@ -83,11 +94,15 @@ class MedtronicTask (scan):
       )
     if expires is None or expires < now or (expires - now).total_seconds() > (60 * self.MAX_SESSION_DURATION):
       fields = self.create_session( )
-      out.update(**self.update_session_info(fields))
+      out.update(**fields)
+
     else:
       out['expires'] = expires
-      out['model'] = self.device.get('model', None)
-    return out
+
+      out['model'] = session.get('model', self.device.get('model', None))
+    session.update(**out)
+    return session
+
 
   def update_session_info (self, fields):
     out = { }
@@ -95,9 +110,8 @@ class MedtronicTask (scan):
     config = self.device
     if uses_extra:
       config = self.device.extra
-    config.add_option('expires', fields['expires'].isoformat( ))
-    config.add_option('model', fields['model'])
-    out['expires'] = fields['expires']
+
+    out['expires'] = fields['expires'].isoformat( )
     out['model'] = fields['model']
     return out
 
@@ -117,15 +131,13 @@ class MedtronicTask (scan):
     return out
   def check_session (self, app):
     self.session = self.get_session_info( )
-    model = self.device.get('model', None)
+    model = self.session.get('model', None)
+
     if model is None:
       model = self.get_model( )
-    self.pump.setModel(number=self.device.get('model', ''))
-    uses_extra = self.device.get('extra', None)
-    config = self.device
-    if uses_extra:
-      config = self.device.extra
-    config.add_option('model', self.device.get('model', model))
+      self.session.update(model=model)
+    self.pump.setModel(number=model)
+
   def get_model (self):
     model = self.pump.read_model( ).getData( )
     return model

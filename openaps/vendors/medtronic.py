@@ -19,7 +19,7 @@ def configure_use_app (app, parser):
   # parser.add_argument('foobar', help="LOOK AT ME")
 
 def configure_add_app (app, parser):
-  parser.add_argument('serial')
+  parser.add_argument('serial', nargs='?', default='')
 
 def configure_app (app, parser):
   if app.parent.name == 'add':
@@ -73,14 +73,18 @@ class MedtronicTask (scan):
     if self.uart:
       self.uart.close( )
 
-  def get_session_info (self):
-
+  def read_session_file (self):
     session = dict( )
     with open(self.device.get('session', '{0}-session.json'.format(self.device.name)), 'a+') as io:
       try:
         session = json.load(io)
       except (ValueError), e:
         pass
+    return session
+
+  def get_session_info (self):
+
+    session = self.read_session_file( )
 
     expires = session.get('expires', None)
 
@@ -156,6 +160,46 @@ class MedtronicTask (scan):
     stats = self.uart.interface_stats( )
   def main (self, args, app):
     return self.scanner( )
+
+@use( )
+class config (MedtronicTask):
+  requires_session = False
+
+  def before_main (self, args, app):
+    # self.setup_medtronic( )
+    self.session = self.read_session_file( )
+
+  def configure_app (self, app, parser):
+    parser.add_argument('-M', '--model', default=None)
+    parser.add_argument('-S', '--serial', default='')
+    parser.add_argument('-R', '--reset-expires', action='store_true', default=False)
+    # parser.add_argument('-5', '--G5', dest='model', const='G5', action='store_const', default=None)
+  def main (self, args, app):
+    results = dict(**self.device.extra.fields)
+    results.update(self.session)
+    dirty = False
+    if args.model:
+      results.update(model=args.model)
+      self.session.update(model=args.model)
+      self.device.extra.add_option('model', args.model.upper( ))
+      dirty = True
+    if args.serial:
+      results.update(serial=args.serial)
+      self.device.extra.add_option('serial', args.serial.upper( ))
+      dirty = True
+    self.save_session = False
+    if args.reset_expires:
+      print "resetting {0} session".format(self.device.name)
+      self.session.update(model='', expires=datetime.now( ))
+      self.save_session = True
+
+
+    self.uart = None
+    if dirty:
+      # self.session.update(expires=self.session.get('expires', datetime.now( )))
+      self.device.store(app.config)
+      app.config.save( )
+    return results
 
 class Session (MedtronicTask):
   """ session for pump

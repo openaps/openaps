@@ -1,8 +1,14 @@
 
 import base, text, stdout, JSON
+import os
 
 def default_prep_stream (reporter):
-  return open(reporter.report.name, 'w')
+  name = reporter.report.name
+  if not os.path.exists(name):
+    directory = os.path.dirname(name)
+    if directory and not os.path.exists(directory):
+      os.makedirs(directory)
+  return open(name, 'w')
 def default_close_stream (reporter):
   reporter.output.close( )
 

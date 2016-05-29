@@ -63,6 +63,7 @@ class MedtronicTask (scan):
       self.check_session(app)
     else:
       self.pump.setModel(number=self.device.get('model', ''))
+    self.save_session = self.requires_session
 
   def after_main (self, args, app):
     if self.save_session:

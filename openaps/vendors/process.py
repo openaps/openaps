@@ -62,6 +62,7 @@ class shell (Use):
     else:
       return data
   def from_ini (self, fields):
+    fields.update(json_default=fields.get('json_default', 'True') == 'True')
     if 'remainder' in fields:
       fields.update(remainder=fields.get('remainder', [ ]).strip( ).split(' '))
     return fields

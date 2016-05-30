@@ -21,18 +21,27 @@ class Formatter (object):
 
     line = [ 'openaps', 'use', usage.name, report.fields.get('use') ]
     params = [ ]
+    config = task.method.from_ini(dict(**report.fields))
 
     for act in task.method.parser._actions:
-      if act.dest in report.fields:
+      # if act.dest in report.fields:
+      if act.dest in config:
         if act.option_strings:
 
           if report.fields.get(act.dest):
             if type(act) in [argparse._StoreTrueAction, argparse._StoreFalseAction ]:
               expected = act.const
-              found = report.fields.get(act.dest)
+              expected = act.default
+              found = config.get(act.dest)
               if type(act) is argparse._StoreFalseAction:
+                expected = True
                 found = not found
 
+              if expected != found:
+                params.append(act.option_strings[0])
+            elif type(act) in [argparse._StoreConstAction, ]:
+              expected = act.default
+              found = config.get(act.dest)
               if expected != found:
                 params.append(act.option_strings[0])
             else:

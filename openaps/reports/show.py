@@ -35,7 +35,7 @@ class Formatter (object):
               found = config.get(act.dest)
               if type(act) is argparse._StoreFalseAction:
                 expected = True
-                found = not found
+                found = found
 
               if expected != found:
                 params.append(act.option_strings[0])

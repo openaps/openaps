@@ -44,6 +44,14 @@ class Formatter (object):
               found = config.get(act.dest)
               if expected != found:
                 params.append(act.option_strings[0])
+            elif type(act) in [argparse._AppendAction, ]:
+              if config.get(act.dest) != act.default:
+                for item in config.get(act.dest):
+                  params.append(act.option_strings[0] + ' ' + item + '')
+              pass
+            elif type(act) in [argparse._StoreAction, ]:
+              if config.get(act.dest) != act.default:
+                params.append(act.option_strings[0] + ' "' + report.fields.get(act.dest) + '"')
             else:
               params.append(act.option_strings[0] + ' "' + report.fields.get(act.dest) + '"')
         else:

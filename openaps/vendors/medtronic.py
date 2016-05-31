@@ -67,7 +67,7 @@ class MedtronicTask (scan):
 
   def after_main (self, args, app):
     if self.save_session:
-      self.write_session_file(self.update_session_info(self.session), io)
+      self.write_session_file(self.update_session_info(self.session))
 
     if self.uart:
       self.uart.close( )

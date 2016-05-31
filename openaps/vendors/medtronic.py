@@ -67,12 +67,14 @@ class MedtronicTask (scan):
 
   def after_main (self, args, app):
     if self.save_session:
-
-      with open(self.device.get('session', '{0}-session.json'.format(self.device.name)), 'w+') as io:
-        json.dump(self.update_session_info(self.session), io)
+      self.write_session_file(self.update_session_info(self.session), io)
 
     if self.uart:
       self.uart.close( )
+
+  def write_session_file (self, session):
+    with open(self.device.get('session', '{0}-session.json'.format(self.device.name)), 'w+') as io:
+      json.dump(session, io)
 
   def read_session_file (self):
     session = dict( )

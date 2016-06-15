@@ -336,17 +336,19 @@ class GapFiller (object):
 
   def itertool (self, app, count=None, **params):
     self.count = count
+    self.since = None
     self.records = [ ]
     rel = dict(hours=params.get('hours', 0), minutes=params.get('minutes', 0), seconds=params.get('seconds', 0), microseconds=params.get('microseconds', 0))
     for x in rel.keys( ):
       if rel[x] is None:
         rel.pop(x)
 
-    delta = relativedelta.relativedelta(**rel)
-    now = datetime.now( )
-    if params.get('gaps'):
-      now = self.get_gaps(params.get('gaps'))
-    self.since = now - delta
+    if len(rel) > 0:
+      delta = relativedelta.relativedelta(**rel)
+      now = datetime.now( )
+      if params.get('gaps'):
+        now = self.get_gaps(params.get('gaps'))
+      self.since = now - delta
     return self
   def get_gaps (self, gaps):
     oldest = None
@@ -363,7 +365,10 @@ class GapFiller (object):
   def __call__ (self, item):
     return not self.excludes(item) and self.includes(item)
   def includes (self, elem):
-    return self.getDate(elem) >= self.since
+    if self.since:
+      return self.getDate(elem) >= self.since
+    else:
+      return True
   def excludes (self, item):
     if self.count:
       if len(self.records) >= self.count:

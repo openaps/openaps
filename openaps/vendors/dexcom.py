@@ -437,6 +437,14 @@ def fix_display_time (display_time=None, **kwds):
     kwds['display_time'] = parse(display_time)
   return kwds
 
+def adjust_nightscout_dates (item):
+  dt = parse(item['display_time'])
+  # http://stackoverflow.com/questions/5022447/converting-date-from-python-to-javascript
+  date = (time.mktime(dt.timetuple( ))* 1000 ) + (dt.microsecond / 1000.0)
+  item.update(dateString=item['display_time'], date=date)
+  return item
+
+
 @use( )
 class oref0_glucose (glucose):
   """ Get Dexcom glucose formatted for Nightscout, merged with raw data.  [#oref0]
@@ -483,6 +491,7 @@ class oref0_glucose (glucose):
     self.fill = GapFiller(self)
 
   def adjust_dates (self, item):
+    return adjust_nightscout_dates(item)
     dt = parse(item['display_time'])
     # http://stackoverflow.com/questions/5022447/converting-date-from-python-to-javascript
     date = (time.mktime(dt.timetuple( ))* 1000 ) + (dt.microsecond / 1000.0)
@@ -791,63 +800,37 @@ class iter_sensor_insertions_hours (sensor_insertions):
     return records
 
 @use( )
-class calibrations (scan):
+class calibrations (glucose):
   """ read calibration entry records
 
   """
-  def prerender_stdout (self, data):
-    return self.prerender_text(data)
-  def prerender_text (self, data):
-    """ turn everything into a string """
-    out = [ ]
-    for item in data:
-      line = map(str, [
-        item['system_time']
-      , item['meter_time']
-      , item['display_time']
-      , item['meter_glucose']
-      ])
-      out.append(' '.join(line))
-    return "\n".join(out)
-  def prerender_json (self, data):
-    """ since everything is a dict/strings/ints, we can pass thru to json """
-    return data
-  def main (self, args, app):
-    """
-    Implement a main method that takes args and app as parameters.
-    Use self.dexcom.Read... to get data.
-    Return the resulting data for this task/command.
-    The data will be passed to prerender_<format> by the reporting system.
-    """
-    records = self.dexcom.ReadRecords('CAL_SET')
-    # return list of dicts, easier for json
-    out = [ ]
-    for item in records:
-      # turn everything into dict
-      out.append(item.to_dict( ))
-    return out
+  RECORD_TYPE = 'CAL_SET'
+  TEXT_COLUMNS = database_records.Calibration.BASE_FIELDS + database_records.Calibration.FIELDS
+
+
+
 
 @use( )
-class iter_calibrations (calibrations):
+class iter_calibrations (calibrations, iter_glucose):
   """ read last <count> calibration records, default 10, eg:
 
 * iter_calibrations   - read last 10 calibration records
 * iter_calibrations 2 - read last 2 calibration records
   """
-  def get_params (self, args):
-    return dict(count=int(args.count))
-  def configure_app (self, app, parser):
-    parser.add_argument('count', type=int, nargs='?', default=10,
-                        help="Number of calibration records to read.")
+  RECORD_TYPE = 'CAL_SET'
 
+@use( )
+class nightscout_calibrations (iter_calibrations):
+  """ read calibration records, reformatted for Nightscout and oref0.
+
+  """
   def main (self, args, app):
-    records = [ ]
-    for item in self.dexcom.iter_records('CAL_SET'):
-      records.append(item.to_dict( ))
-      # print len(records)
-      if len(records) >= self.get_params(args)['count']:
-        break
-    return records
+    results = super(iter_calibrations, self).main(args, app)
+    template = dict(device="openaps://{}".format(self.device.name), type='cal')
+    for datum in results:
+      datum = adjust_nightscout_dates(datum)
+      datum.update(dateString=datum.get('display_time'), **template)
+    return results
 
 @use( )
 class iter_calibrations_hours (calibrations):

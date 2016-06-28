@@ -466,17 +466,15 @@ class oref0_glucose (glucose):
   def to_ini (self, args):
     params = self.get_params(args)
 
-    if args.glucose:
-      params['glucose'] = args.glucose
-    if args.sensor:
-      params['sensor'] = args.sensor
+    params['glucose'] = none_to_ini(args.glucose)
+    params['sensor'] = none_to_ini(args.sensor)
     if args.no_raw:
       params['no_raw'] = True
     params = self.fill.to_ini(params, args)
     return params
   def from_ini (self, fields):
-    fields['glucose'] = fields.get('glucose', None) or None
-    fields['sensor'] = fields.get('sensor', None) or None
+    fields['glucose'] = none_from_ini(fields.get('glucose', None))
+    fields['sensor'] = none_from_ini(fields.get('sensor', None))
     fields['no_raw'] = False
     if 'no_raw' in fields and fields.get('no_raw', 'True') == 'True':
       fields['no_raw'] = True

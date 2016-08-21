@@ -475,9 +475,7 @@ class oref0_glucose (glucose):
   def from_ini (self, fields):
     fields['glucose'] = none_from_ini(fields.get('glucose', None))
     fields['sensor'] = none_from_ini(fields.get('sensor', None))
-    fields['no_raw'] = False
-    if 'no_raw' in fields and fields.get('no_raw', 'True') == 'True':
-      fields['no_raw'] = True
+    fields['no_raw'] = 'no_raw' in fields and fields.get('no_raw', 'True') == 'True'
     fields = self.fill.from_ini(fields)
     return fields
 

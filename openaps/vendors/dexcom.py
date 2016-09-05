@@ -16,6 +16,7 @@ import json
 import itertools
 import time
 import argparse
+import socket
 
 def set_config (args, device):
   return
@@ -530,7 +531,7 @@ class oref0_glucose (glucose):
 
     iter_glucose = self.get_glucose_data(params, args)
     iter_sensor  = self.get_sensor_data(params, args)
-    template = dict(device="openaps://{}".format(self.device.name), type='sgv')
+    template = dict(device="openaps://{}/{}".format(socket.gethostname(),self.device.name), type='sgv')
     for egv, raw in itertools.izip_longest(iter_glucose, iter_sensor):
       item = dict(**template)
       if egv:
@@ -613,7 +614,7 @@ class iter_glucose_hours (glucose):
 
   def get_params (self, args):
     return dict(hours=float(args.hours))
-  
+
   def configure_app (self, app, parser):
     parser.add_argument('hours', type=float, nargs='?', default=1,
                         help="Number of hours of glucose records to read.")
@@ -781,7 +782,7 @@ class iter_sensor_insertions_hours (sensor_insertions):
 
   def get_params (self, args):
     return dict(hours=float(args.hours))
-  
+
   def configure_app (self, app, parser):
     parser.add_argument('hours', type=float, nargs='?', default=1,
                         help="Number of hours of sensor insertion, removal, and expiration records to read.")
@@ -843,7 +844,7 @@ class iter_calibrations_hours (calibrations):
 
   def get_params (self, args):
     return dict(hours=float(args.hours))
-  
+
   def configure_app (self, app, parser):
     parser.add_argument('hours', type=float, nargs='?', default=1,
                         help="Number of hours of sensor insertion, removal, and expiration records to read.")
@@ -861,4 +862,3 @@ class iter_calibrations_hours (calibrations):
       else:
         break
     return records
-

@@ -20,6 +20,7 @@ def configure_use_app (app, parser):
 
 def configure_add_app (app, parser):
   parser.add_argument('serial', nargs='?', default='')
+  parser.add_argument('radio_locale', nargs='?', default='US')
 
 def configure_app (app, parser):
   if app.parent.name == 'add':
@@ -661,7 +662,13 @@ class iter_pump_hours (iter_glucose_hours):
 
 
 def set_config (args, device):
+  if args.radio_locale:
+    radio_locale = args.radio_locale.upper( )
+  else:
+    radio_locale = 'US'
+
   device.add_option('serial', args.serial)
+  device.add_option('radio_locale', radio_locale)
 
 def display_device (device):
   return ''

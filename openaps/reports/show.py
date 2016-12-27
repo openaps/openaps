@@ -24,6 +24,12 @@ class Formatter (object):
     config = task.method.from_ini(dict(**report.fields))
 
     for act in task.method.parser._actions:
+      def accrue (switch):
+        if switch.startswith('-'):
+          params.insert(0, switch)
+        else:
+          params.append(switch)
+
       # if act.dest in report.fields:
       if act.dest in config:
         if act.option_strings:
@@ -38,24 +44,24 @@ class Formatter (object):
                 found = found
 
               if expected != found:
-                params.append(act.option_strings[0])
+                accrue(act.option_strings[0])
             elif type(act) in [argparse._StoreConstAction, ]:
               expected = act.default
               found = config.get(act.dest)
               if expected != found:
-                params.append(act.option_strings[0])
+                accrue(act.option_strings[0])
             elif type(act) in [argparse._AppendAction, ]:
               if config.get(act.dest) != act.default:
                 for item in config.get(act.dest):
-                  params.append(act.option_strings[0] + ' ' + item + '')
+                  accrue(act.option_strings[0] + ' ' + item + '')
               pass
             elif type(act) in [argparse._StoreAction, ]:
               if config.get(act.dest) != act.default:
-                params.append(act.option_strings[0] + ' "' + report.fields.get(act.dest) + '"')
+                accrue(act.option_strings[0] + ' "' + report.fields.get(act.dest) + '"')
             else:
-              params.append(act.option_strings[0] + ' "' + report.fields.get(act.dest) + '"')
+              accrue(act.option_strings[0] + ' "' + report.fields.get(act.dest) + '"')
         else:
-          params.append(report.fields.get(act.dest))
+          accrue(report.fields.get(act.dest))
 
 
     return ' '.join(line + params)

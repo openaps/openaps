@@ -16,6 +16,7 @@ import json
 import itertools
 import time
 import argparse
+import socket
 
 def set_config (args, device):
   return
@@ -278,6 +279,107 @@ class glucose (scan):
       # turn everything into dict
       out.append(item.to_dict( ))
     return out
+
+def none_to_ini (field):
+  if field in [ '', 'None', None ]:
+    field = ''
+  return field
+
+def none_from_ini (field):
+  if field in [ '', 'None', None ]:
+    field = None
+  return field
+
+
+class GapFiller (object):
+  @classmethod
+  def add_argument (cls, parser):
+    parser.add_argument('-G', '--gaps', help='')
+    parser.add_argument('-n', '--count', type=int, default=None, help='')
+    parser.add_argument('-D', '--date', action="append", default=["display_time"], help='Date field selector')
+    parser.add_argument('--hours', type=float, nargs='?', default=None,
+                        help="Number of hours of glucose records to read.")
+    parser.add_argument('--minutes', type=float, nargs='?', default=None,
+                        help="Number of minutes of glucose records to read.")
+    parser.add_argument('--seconds', type=float, nargs='?', default=None,
+                        help="Number of seconds of glucose records to read.")
+    parser.add_argument('--microseconds', type=int, nargs='?', default=None,
+                        help="Number of milliseconds seconds of glucose records to read.")
+    # parser.add_argument('--since', default='now', help='Get all records since this date with the delta applied.')
+  @classmethod
+  def to_ini (cls, params, args):
+    gaps = params.get('gaps', '')
+    if gaps in [ '', 'None', None ]:
+      gaps = ''
+
+    for field in ['count', 'microseconds', 'seconds', 'minutes', 'hours']:
+      params[field] = none_to_ini(params.get(field))
+    params.update(gaps=gaps, date=' '.join(params.get('date', [ ])))
+    return params
+  @classmethod
+  def from_ini (cls, fields):
+    gaps = fields.get('gaps', '')
+    if gaps in [ '', 'None' ]:
+      gaps = None
+    fields.update(gaps=gaps, date=fields.get('date', 'display_time').split(' '))
+    for field in ['count', 'microseconds', 'seconds', 'minutes', 'hours']:
+      fields[field] = none_from_ini(fields.get(field))
+      if field in [ 'microseconds', 'count', ]:
+        if fields[field]:
+          fields[field] = int(fields[field])
+      if field in [ 'seconds', 'hours', 'minutes', ]:
+        if fields[field]:
+          fields[field] = float(fields[field])
+    return fields
+  def __init__ (self, app):
+    self.method = app
+    # print app, app.__dict__
+
+  def itertool (self, app, count=None, **params):
+    self.count = count
+    self.since = None
+    self.records = [ ]
+    rel = dict(hours=params.get('hours', 0), minutes=params.get('minutes', 0), seconds=params.get('seconds', 0), microseconds=params.get('microseconds', 0))
+    for x in rel.keys( ):
+      if rel[x] is None:
+        rel.pop(x)
+
+    if len(rel) > 0:
+      delta = relativedelta.relativedelta(**rel)
+      now = datetime.now( )
+      if params.get('gaps'):
+        now = self.get_gaps(params.get('gaps'))
+      self.since = now - delta
+    return self
+  def get_gaps (self, gaps):
+    oldest = None
+    if gaps:
+      gaps = json.load(argparse.FileType('r')(gaps))
+      oldest = parse(gaps[0].get('prev'))
+      for gap in gaps:
+        current = parse(gap.get('prev'))
+        if current < oldest:
+          oldest = current
+    return oldest.replace(tzinfo=None)
+
+
+  def __call__ (self, item):
+    return not self.excludes(item) and self.includes(item)
+  def includes (self, elem):
+    if self.since:
+      return self.getDate(elem) >= self.since
+    else:
+      return True
+  def excludes (self, item):
+    if self.count:
+      if len(self.records) >= self.count:
+        return True
+    return False
+
+
+  def getDate (self, item):
+    return self.method.get_item_date(item)
+
 @use( )
 class iter_glucose (glucose):
   """ read last <count> glucose records, default 100, eg:
@@ -287,14 +389,35 @@ class iter_glucose (glucose):
   """
   RECORD_TYPE = 'EGV_DATA'
   def get_params (self, args):
-    return dict(count=int(args.count))
+    params = dict(**vars(args))
+    if 'action' in params:
+      params.pop('action')
+    return params
   def configure_app (self, app, parser):
     parser.add_argument('count', type=int, nargs='?', default=100,
                         help="Number of glucose records to read.")
+    GapFiller.add_argument(parser)
+    self.fill = GapFiller(self)
+
+  def to_ini (self, args):
+    params = self.get_params(args)
+    params = self.fill.to_ini(params, args)
+    return params
+  def from_ini (self, fields):
+    fields = self.fill.from_ini(fields)
+    return fields
+
+  def get_item_date (self, elem):
+    return getattr(elem, self.dateSelector)
 
   def main (self, args, app):
-    records = [ ]
-    for item in self.dexcom.iter_records(self.RECORD_TYPE):
+    # records = [ ]
+    params = self.get_params(args)
+    self.dateSelector = params.get('date')[0]
+    self.comparison = self.fill.itertool(app, **params)
+    candidates = itertools.takewhile(self.comparison, self.dexcom.iter_records(self.RECORD_TYPE))
+    records = self.fill.records
+    for item in candidates:
       records.append(item.to_dict( ))
       # print len(records)
       if len(records) >= self.get_params(args)['count']:
@@ -320,6 +443,14 @@ def fix_display_time (display_time=None, **kwds):
     kwds['display_time'] = parse(display_time)
   return kwds
 
+def adjust_nightscout_dates (item):
+  dt = parse(item['display_time'])
+  # http://stackoverflow.com/questions/5022447/converting-date-from-python-to-javascript
+  date = (time.mktime(dt.timetuple( ))* 1000 ) + (dt.microsecond / 1000.0)
+  item.update(dateString=item['display_time'], date=date)
+  return item
+
+
 @use( )
 class oref0_glucose (glucose):
   """ Get Dexcom glucose formatted for Nightscout, merged with raw data.  [#oref0]
@@ -328,30 +459,28 @@ class oref0_glucose (glucose):
 
   TEXT_COLUMNS = glucose.TEXT_COLUMNS + [  ]
   def get_params (self, args):
-    params = dict(hours=float(args.hours), threshold=args.threshold)
+    # params = dict(hours=float(args.hours), threshold=args.threshold)
+    params = dict(**vars(args))
+    if 'action' in params:
+      params.pop('action')
     return params
   def to_ini (self, args):
     params = self.get_params(args)
 
-    if args.glucose:
-      params['glucose'] = args.glucose
-    if args.sensor:
-      params['sensor'] = args.sensor
+    params['glucose'] = none_to_ini(args.glucose)
+    params['sensor'] = none_to_ini(args.sensor)
     if args.no_raw:
       params['no_raw'] = True
+    params = self.fill.to_ini(params, args)
     return params
   def from_ini (self, fields):
-    fields['glucose'] = fields.get('glucose', None) or None
-    fields['sensor'] = fields.get('sensor', None) or None
-    if 'no_raw' not in fields:
-      fields['no_raw'] = False
-    else:
-      fields['no_raw'] = True
+    fields['glucose'] = none_from_ini(fields.get('glucose', None))
+    fields['sensor'] = none_from_ini(fields.get('sensor', None))
+    fields['no_raw'] = 'no_raw' in fields and fields.get('no_raw', 'True') == 'True'
+    fields = self.fill.from_ini(fields)
     return fields
 
   def configure_app (self, app, parser):
-    parser.add_argument('--hours', type=float, nargs='?', default=1,
-                        help="Number of hours of glucose records to read.")
     parser.add_argument('--threshold', type=int,  default=100,
                         help="Merge EGV and Sensor records occuring within THRESHOLD seconds of each other.")
     parser.add_argument('--no-raw',  action='store_true', default=False,
@@ -360,8 +489,11 @@ class oref0_glucose (glucose):
                         help="File to read glucose from instead of device.")
     parser.add_argument('--sensor', default=None,
                         help="File to read sensor (raw) from instead of device.")
+    GapFiller.add_argument(parser)
+    self.fill = GapFiller(self)
 
   def adjust_dates (self, item):
+    return adjust_nightscout_dates(item)
     dt = parse(item['display_time'])
     # http://stackoverflow.com/questions/5022447/converting-date-from-python-to-javascript
     date = (time.mktime(dt.timetuple( ))* 1000 ) + (dt.microsecond / 1000.0)
@@ -388,20 +520,18 @@ class oref0_glucose (glucose):
       else:
         return itertools.takewhile(self.comparison, self.dexcom.iter_records('SENSOR_DATA'))
 
+  def get_item_date (self, elem):
+    return getattr(elem, self.dateSelector)
   def main (self, args, app):
     params = self.get_params(args)
-    delta = relativedelta.relativedelta(hours=params.get('hours'))
-    now = datetime.now( )
-    since = now - delta
-    records = [ ]
-    def cb (elem):
-      return elem.display_time >= since
-    self.comparison = cb
-    # iter_glucose = itertools.takewhile(cb, self.dexcom.iter_records('EGV_DATA'))
-    # iter_sensor = itertools.takewhile(cb, self.dexcom.iter_records('SENSOR_DATA'))
+    self.dateSelector = params.get('date')[0]
+
+    self.comparison = self.fill.itertool(app, **params)
+    records = self.fill.records
+
     iter_glucose = self.get_glucose_data(params, args)
     iter_sensor  = self.get_sensor_data(params, args)
-    template = dict(device="openaps://{}".format(self.device.name), type='sgv')
+    template = dict(device="openaps://{}/{}".format(socket.gethostname(),self.device.name), type='sgv')
     for egv, raw in itertools.izip_longest(iter_glucose, iter_sensor):
       item = dict(**template)
       if egv:
@@ -484,7 +614,7 @@ class iter_glucose_hours (glucose):
 
   def get_params (self, args):
     return dict(hours=float(args.hours))
-  
+
   def configure_app (self, app, parser):
     parser.add_argument('hours', type=float, nargs='?', default=1,
                         help="Number of hours of glucose records to read.")
@@ -652,7 +782,7 @@ class iter_sensor_insertions_hours (sensor_insertions):
 
   def get_params (self, args):
     return dict(hours=float(args.hours))
-  
+
   def configure_app (self, app, parser):
     parser.add_argument('hours', type=float, nargs='?', default=1,
                         help="Number of hours of sensor insertion, removal, and expiration records to read.")
@@ -672,63 +802,37 @@ class iter_sensor_insertions_hours (sensor_insertions):
     return records
 
 @use( )
-class calibrations (scan):
+class calibrations (glucose):
   """ read calibration entry records
 
   """
-  def prerender_stdout (self, data):
-    return self.prerender_text(data)
-  def prerender_text (self, data):
-    """ turn everything into a string """
-    out = [ ]
-    for item in data:
-      line = map(str, [
-        item['system_time']
-      , item['meter_time']
-      , item['display_time']
-      , item['meter_glucose']
-      ])
-      out.append(' '.join(line))
-    return "\n".join(out)
-  def prerender_json (self, data):
-    """ since everything is a dict/strings/ints, we can pass thru to json """
-    return data
-  def main (self, args, app):
-    """
-    Implement a main method that takes args and app as parameters.
-    Use self.dexcom.Read... to get data.
-    Return the resulting data for this task/command.
-    The data will be passed to prerender_<format> by the reporting system.
-    """
-    records = self.dexcom.ReadRecords('CAL_SET')
-    # return list of dicts, easier for json
-    out = [ ]
-    for item in records:
-      # turn everything into dict
-      out.append(item.to_dict( ))
-    return out
+  RECORD_TYPE = 'CAL_SET'
+  TEXT_COLUMNS = database_records.Calibration.BASE_FIELDS + database_records.Calibration.FIELDS
+
+
+
 
 @use( )
-class iter_calibrations (calibrations):
+class iter_calibrations (calibrations, iter_glucose):
   """ read last <count> calibration records, default 10, eg:
 
 * iter_calibrations   - read last 10 calibration records
 * iter_calibrations 2 - read last 2 calibration records
   """
-  def get_params (self, args):
-    return dict(count=int(args.count))
-  def configure_app (self, app, parser):
-    parser.add_argument('count', type=int, nargs='?', default=10,
-                        help="Number of calibration records to read.")
+  RECORD_TYPE = 'CAL_SET'
 
+@use( )
+class nightscout_calibrations (iter_calibrations):
+  """ read calibration records, reformatted for Nightscout and oref0.
+
+  """
   def main (self, args, app):
-    records = [ ]
-    for item in self.dexcom.iter_records('CAL_SET'):
-      records.append(item.to_dict( ))
-      # print len(records)
-      if len(records) >= self.get_params(args)['count']:
-        break
-    return records
+    results = super(iter_calibrations, self).main(args, app)
+    template = dict(device="openaps://{}".format(self.device.name), type='cal')
+    for datum in results:
+      datum = adjust_nightscout_dates(datum)
+      datum.update(dateString=datum.get('display_time'), **template)
+    return results
 
 @use( )
 class iter_calibrations_hours (calibrations):
@@ -740,7 +844,7 @@ class iter_calibrations_hours (calibrations):
 
   def get_params (self, args):
     return dict(hours=float(args.hours))
-  
+
   def configure_app (self, app, parser):
     parser.add_argument('hours', type=float, nargs='?', default=1,
                         help="Number of hours of sensor insertion, removal, and expiration records to read.")
@@ -758,4 +862,3 @@ class iter_calibrations_hours (calibrations):
       else:
         break
     return records
-

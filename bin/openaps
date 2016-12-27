@@ -19,6 +19,7 @@ def complete_args (prefix, parsed_args, action, **kwargs):
   # argcomplete.debug("parsed_args", parsed_args)
   compline = os.environ['COMP_LINE']
   argcomplete.debug("compline", compline)
+
   point = int(os.environ['COMP_POINT'])
   # argcomplete.debug("COMP_POINT", point)
   argcomplete.debug("parsed_args", parsed_args)

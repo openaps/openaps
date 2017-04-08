@@ -9,6 +9,7 @@ from openaps.glucose.convert import Convert as GlucoseConvert
 import decocare
 import argparse
 import json
+import sys
 from decocare import stick, session, link, commands, history
 from datetime import datetime
 from dateutil import relativedelta
@@ -422,10 +423,16 @@ class InputProgramRequired (MedtronicTask):
   def get_params (self, args):
     return dict(input=args.input)
   def configure_app (self, app, parser):
-    parser.add_argument('input', default='-')
+    parser.add_argument(
+                'input',
+                nargs='?',
+                type=argparse.FileType('r'),
+                default=sys.stdin,
+                help='JSON-encoded command'
+            )
   def get_program (self, args):
     params = self.get_params(args)
-    program = json.load(argparse.FileType('r')(params.get('input')))
+    program = json.load(params.get('input'))
     return program
   def main (self, args, app):
     program = self.get_program(args)

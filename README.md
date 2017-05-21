@@ -1,7 +1,7 @@
 
 # openaps utility belt
 
-These are the [core utilities][proposal] needed to develop an open source
+These are the core utilities needed to develop a self-built open source
 artificial pancreas.
 
 This is part of a series of tools to support a self-driven DIY
@@ -16,14 +16,13 @@ By proceeding using these tools or any piece within, you agree to the
 copyright (see LICENSE.txt for more information) and release any
 contributors from liability. 
 
-Check out [the openaps docs][the openaps docs] to help get you started.
+Check out [the OpenAPS documentation](https://github.com/openaps/docs) to help get you started.
 
 *Note:* This is intended to be a set of tools to support a self-driven DIY
 implementation and any person choosing to use these tools is solely
 responsible for testing and implement these tools independently or
-together as a system.  The [DIY part of OpenAPS is important]
-(http://bit.ly/1NBbZtO). While formal training or experience as an
-engineer or a developer is not required, what *is* required is a growth
+together as a system.  The [DIY part of OpenAPS is important](http://bit.ly/1NBbZtO). 
+While formal training or experience as an engineer or a developer is not required, what *is* required is a growth
 mindset to learn what are essentially "building blocks" to implement an
 OpenAPS instance. This is not a "set and forget" system; it requires
 diligent and consistent testing and monitoring to ensure each piece of
@@ -35,12 +34,7 @@ forward", and individuals who are implementing these tools are asked to
 contribute by asking questions, helping improve documentation, and
 contribute in other ways.
 
-[GettingStarted]: https://github.com/openaps/openaps/wiki/GettingStarted
-[wiki]: https://github.com/openaps/openaps/wiki
-[proposal]: https://gist.github.com/bewest/a690eaf35c69be898711
-[the openaps docs]: https://github.com/openaps/docs
-
-![openaps loop hardware](https://cloud.githubusercontent.com/assets/394179/9372378/c2023bc2-4692-11e5-8254-fe940f847536.png)
+![openaps example rig hardware setup](/OpenAPS_rig_with_phone_watch.jpg)
 
 This is not an artificial pancreas, but rather tools which independently allow:
 
@@ -68,8 +62,7 @@ are recommended/required:
 
 #### From source
 
-See [GettingStarted][GettingStarted] for more important information
-about versions of software dependencies, but to install from source
+To install from source
 clone this repo, and issue:
 
     sudo python setup.py develop

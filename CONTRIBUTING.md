@@ -1,7 +1,7 @@
 
-# Contributing to openaps
+# Contributing to OpenAPS
 
-Thanks for being a part of openaps.
+Thanks for being a part of OpenAPS
 
 OpenAPS is a series of tools to support a self-driven DIY
 implementation based on the OpenAPS reference design. The tools may be
@@ -18,8 +18,8 @@ contributors from liability.
 *Note:* This is intended to be a set of tools to support a self-driven DIY
 implementation and any person choosing to use these tools is solely
 responsible for testing and implement these tools independently or
-together as a system.  The [DIY part of OpenAPS is important]
-(http://bit.ly/1NBbZtO). While formal training or experience as an
+together as a system.  The [DIY part of OpenAPS is important](http://bit.ly/1NBbZtO). 
+While formal training or experience as an
 engineer or a developer is not required, what *is* required is a growth
 mindset to learn what are essentially "building blocks" to implement an
 OpenAPS instance. This is not a "set and forget" system; it requires
@@ -33,7 +33,7 @@ contribute by asking questions, helping improve documentation, and
 contribute in other ways.
 
 Please submit issues and pull requests so that all users can share
-knowledge. If you're unfamiliar with GitHub and/or coding, [check out these other ways to get involved with OpenAPS.](https://openaps.gitbooks.io/building-an-open-artificial-pancreas-system/content/docs/Overview/contribute.html)
+knowledge. If you're unfamiliar with GitHub and/or coding, [check out these other ways to get involved with OpenAPS.](http://openaps.readthedocs.io/en/latest/docs/introduction/contribute.html)
 
 For hacking on openaps, here are some tips to help your patches reach
 more people more quickly.  The `master` branch is special, it should

@@ -47,7 +47,7 @@ def main (args, app):
     else:
         reporters.Reporter(report, device, task)(output)
         print('reporting', report.name)
-        
+
         gitEnabled = 'true'
         if app.config.has_option('DEFAULT', 'git'):
           gitEnabled = app.config.get('DEFAULT', 'git')

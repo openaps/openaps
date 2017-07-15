@@ -47,7 +47,11 @@ def main (args, app):
     else:
         reporters.Reporter(report, device, task)(output)
         print('reporting', report.name)
-        if not app.config.get('DEFAULT','git') == 'false':
+        
+        gitEnabled = 'true'
+        if app.config.has_option('DEFAULT', 'git'):
+          gitEnabled = app.config.get('DEFAULT', 'git')
+        if not gitEnabled == 'false':
           repo.git.add([report.name], write_extension_data=False)
         # XXX: https://github.com/gitpython-developers/GitPython/issues/265o
         # GitPython <  0.3.7, this can corrupt the index

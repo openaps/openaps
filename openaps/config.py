@@ -1,5 +1,8 @@
 
-from ConfigParser import DEFAULTSECT, SafeConfigParser
+try:
+  from configparser import DEFAULTSECT, SafeConfigParser  # Python 3
+except ImportError:
+  from ConfigParser import DEFAULTSECT, SafeConfigParser  # Python 2
 import re
 import os
 

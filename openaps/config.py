@@ -1,5 +1,5 @@
 
-from ConfigParser import SafeConfigParser
+from ConfigParser import DEFAULTSECT, SafeConfigParser
 import re
 import os
 

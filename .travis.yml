@@ -2,6 +2,9 @@ language: python
 python:
   - "2.7"
   - "3.6"
+matrix:
+  allow_failures:
+    - python: "3.6"
 before_install:
   - pip install -e .
 install:
@@ -13,4 +16,3 @@ before_script:
   # exit-zero treats all errors as warnings.  The GitHub editor is 127 chars wide
   - flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 script: make ci-test
-

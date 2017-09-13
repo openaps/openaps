@@ -1,11 +1,12 @@
+from __future__ import absolute_import
 
 
-import add, remove, show
+from . import add, remove, show
 
 from openaps.cli.subcommand import Subcommand
 from openaps.cli.commandmapapp import CommandMapApp
 
-from vendor import Vendor
+from .vendor import Vendor
 
 def get_plugins (conf):
   return Vendor.FromConfig(conf)

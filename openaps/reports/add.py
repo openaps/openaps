@@ -2,10 +2,12 @@
 """
 add    - add a new report configuration
 """
+from __future__ import print_function
+from __future__ import absolute_import
 from openaps import uses
 from openaps.devices.device import Device
-from report import Report
-import reporters
+from .report import Report
+from . import reporters
 import sys
 
 def configure_app (app, parser):
@@ -28,5 +30,5 @@ def main (args, app):
     report.add_option(k, str(v))
   report.store(app.config)
   app.config.save( )
-  print "added", report.format_url( )
+  print("added", report.format_url( ))
 

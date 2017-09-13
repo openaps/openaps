@@ -2,6 +2,7 @@
 """
 add    - add a new device configuration
 """
+from __future__ import print_function
 from openaps import vendors
 from openaps.devices.device import Device
 import sys
@@ -24,5 +25,5 @@ def main (args, app):
   # print device, device.items( )
   # app.config.write(sys.stdout)
   app.config.save( )
-  print "added", device.format_url( )
+  print("added", device.format_url( ))
 

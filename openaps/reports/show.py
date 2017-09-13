@@ -2,6 +2,7 @@
 """
 show   - show all reports
 """
+from __future__ import print_function
 
 from openaps.devices.device import Device
 from openaps.reports.report import Report
@@ -78,7 +79,7 @@ def main (args, app):
   for device in Report.FromConfig(app.config):
     if args.report in [ '*', device.name ]:
       if args.cli_only:
-        print format_cli(device)
+        print(format_cli(device))
       else:
-        print args.format(device)
+        print(args.format(device))
 

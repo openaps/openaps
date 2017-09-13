@@ -3,9 +3,10 @@
 invoke   - generate a report
 """
 from __future__ import print_function
+from __future__ import absolute_import
 from openaps.reports.report import Report
 from openaps import uses
-import reporters
+from . import reporters
 import sys
 import argparse
 

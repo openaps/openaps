@@ -2,6 +2,7 @@
 """
 show   - show all devices
 """
+from __future__ import print_function
 
 from openaps.cli import helpers
 from openaps.devices.device import Device
@@ -18,5 +19,5 @@ def main (args, app):
   # print args
   for device in Device.FromConfig(vendors, app.config):
     if args.name in [ '*', device.name ]:
-      print args.format(device)
+      print(args.format(device))
 

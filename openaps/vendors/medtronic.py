@@ -2,6 +2,7 @@
 """
 Medtronic - openaps driver for Medtronic
 """
+from __future__ import print_function
 from openaps.uses.use import Use
 from openaps.uses.registry import Registry
 from openaps.configurable import Configurable
@@ -82,7 +83,7 @@ class MedtronicTask (scan):
     with open(self.device.get('session', '{0}-session.json'.format(self.device.name)), 'a+') as io:
       try:
         session = json.load(io)
-      except (ValueError), e:
+      except (ValueError) as e:
         pass
     return session
 
@@ -193,7 +194,7 @@ class config (MedtronicTask):
       dirty = True
     self.save_session = False
     if args.reset_expires:
-      print "resetting {0} session".format(self.device.name)
+      print("resetting {0} session".format(self.device.name))
       self.session.update(model='', expires=datetime.now( ))
       self.save_session = True
 
@@ -480,7 +481,7 @@ class set_clock (InputProgramRequired):
     parser.add_argument('--to', default=None)
   def upload_program (self, program):
     if not program.get('clock', None):
-      print "Bad input"
+      print("Bad input")
       raise Exception("Bad input, missing clock definition: {0}".format(program.get('clock')))
     return self.pump.model.set_clock(**program)
     # return dict(test_ok=dict(**program))

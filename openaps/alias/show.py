@@ -2,9 +2,11 @@
 """
 show   - show all aliases
 """
+from __future__ import print_function
+from __future__ import absolute_import
 
 from openaps.cli import helpers
-from alias import Alias
+from .alias import Alias
 
 def configure_app (app, parser):
   parser.set_defaults(name='*')
@@ -16,5 +18,5 @@ def configure_app (app, parser):
 def main (args, app):
   for device in Alias.FromConfig(app.config):
     if args.name in [ '*', device.name ]:
-      print args.format(device)
+      print(args.format(device))
 

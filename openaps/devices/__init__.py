@@ -1,13 +1,15 @@
+from __future__ import print_function
+from __future__ import absolute_import
 
 
-import add, remove, show
+from . import add, remove, show
 
 from openaps.cli.subcommand import Subcommand
 from openaps import vendors
-from device import Device
+from .device import Device
 
 def setup_application (app, parser):
-  print "YYY CONFIG", app.config
+  print("YYY CONFIG", app.config)
   pass
 
 def get_devices (conf):

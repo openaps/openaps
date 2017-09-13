@@ -1,5 +1,6 @@
+from __future__ import absolute_import
 
-from subcommand import Subcommand
+from .subcommand import Subcommand
 
 class CommandMapApp (object):
 

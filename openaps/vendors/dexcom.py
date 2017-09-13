@@ -2,6 +2,7 @@
 """
 Dexcom - openaps driver for dexcom
 """
+from __future__ import print_function
 from openaps.uses.use import Use
 from openaps.uses.registry import Registry
 import dexcom_reader
@@ -108,7 +109,7 @@ class UpdateTime (scan):
     parser.add_argument('--to', default=None)
   def upload_program (self, program):
     if not program.get('clock', None) or 'offset' not in program:
-      print "Bad input"
+      print("Bad input")
       raise Exception("Bad input, missing clock definition: {0}".format(program.get('clock')))
     result = self.dexcom.WriteDisplayTimeOffset(offset=program['offset'])
     new_offset = self.dexcom.ReadDisplayTimeOffset( )

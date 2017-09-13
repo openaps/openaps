@@ -1,10 +1,11 @@
+from __future__ import absolute_import
 
-import add, remove, show
+from . import add, remove, show
 
 from openaps.cli.subcommand import Subcommand
 from openaps.cli.commandmapapp import CommandMapApp
 
-from alias import Alias
+from .alias import Alias
 
 def get_alias_map (conf):
   aliases = { }

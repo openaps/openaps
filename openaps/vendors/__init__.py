@@ -1,10 +1,11 @@
+from __future__ import absolute_import
 
-import dexcom, medtronic, process, units
+from . import dexcom, medtronic, process, units
 
 from openaps.cli.subcommand import Subcommand
 from openaps.cli.commandmapapp import CommandMapApp
 
-from plugins.vendor import Vendor
+from .plugins.vendor import Vendor
 
 class ChangeVendorApp (Subcommand):
   """

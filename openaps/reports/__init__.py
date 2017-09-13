@@ -1,10 +1,11 @@
+from __future__ import absolute_import
 
-import add, remove, show, invoke
+from . import add, remove, show, invoke
 
 from openaps.cli.subcommand import Subcommand
 from openaps.cli.commandmapapp import CommandMapApp
 
-from report import Report
+from .report import Report
 
 def get_devices (conf):
   return Report.FromConfig(conf)

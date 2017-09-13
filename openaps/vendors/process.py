@@ -1,6 +1,8 @@
 """
 process - a fake vendor to run arbitrary commands
 """
+from __future__ import print_function
+from __future__ import absolute_import
 
 import sys, os
 import shlex
@@ -9,7 +11,7 @@ import subprocess
 import json
 
 import argparse
-from plugins.vendor import Vendor
+from .plugins.vendor import Vendor
 from openaps.uses.use import Use
 from openaps.uses.registry import Registry
 
@@ -54,9 +56,9 @@ class shell (Use):
     if self.json_default:
       try:
         return json.loads(data)
-      except ValueError, e:
-        print e
-        print data
+      except ValueError as e:
+        print(e)
+        print(data)
         raise
 
     else:

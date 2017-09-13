@@ -3,9 +3,11 @@
 Show/list vendor plugins
 
 """
+from __future__ import print_function
+from __future__ import absolute_import
 
 from openaps.cli import helpers
-from vendor import Vendor
+from .vendor import Vendor
 
 def configure_app (app, parser):
   parser.set_defaults(name='*')
@@ -16,5 +18,5 @@ def configure_app (app, parser):
 def main (args, app):
   for plugin in Vendor.FromConfig(app.config):
     if args.name in [ '*', plugin.name ]:
-      print args.format(plugin)
+      print(args.format(plugin))
 

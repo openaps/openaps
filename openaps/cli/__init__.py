@@ -60,7 +60,7 @@ class ConfigApp (Base):
   def read_config (self):
     cfg_file = os.environ.get('OPENAPS_CONFIG', 'openaps.ini')
     if not os.path.exists(cfg_file):
-      print "Not an openaps environment, run: openaps init"
+      print "Not an openaps environment. If you have a myopenaps directory, run `cd ~/myopenaps`. If not, run: openaps init"
       sys.exit(1)
     pwd = os.getcwd( )
     cfg_dir = os.path.dirname(cfg_file)

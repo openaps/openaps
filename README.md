@@ -1,6 +1,10 @@
 
 # openaps utility belt
 
+(**Note**: this toolkit was used for device communications for OpenAPS-related implementations from 2015-2018, up to version 0.6.2 with oref0. Beginning in oref0 0.7.0 a different device toolkit is being used - please refer to [the OpenAPS documentation](http://openaps.readthedocs.io/en/latest/index.html) for install instructions and more details regarding the new device toolkit.)
+
+***
+
 These are the core utilities needed to develop a self-built open source
 artificial pancreas.
 

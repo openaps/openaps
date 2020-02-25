@@ -19,7 +19,7 @@ setup(name='openaps',
     include_package_data = True,
     install_requires = [
       'pyserial', 'python-dateutil', 'argcomplete',
-      'zipp <= 1.2.0',
+      'zipp <= 1.2.0', 'gitdb2 <= 2.0.6',
       'gitpython <= 2.1.11', 'mock <= 3.0.5', 'nose',
       'decocare > 0.0.26', 'dexcom_reader >= 0.1.8'
     ],

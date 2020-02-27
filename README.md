@@ -55,7 +55,7 @@ setuptools.
 
 The following apt-get dependencies are required (they can be installed through
 variety of means, in debian/ubuntu and apt based systems the following packages
-are recommended/required:
+are recommended/required):
 
     sudo apt-get install python python-dev python-setuptools python-software-properties python-numpy
 
@@ -74,7 +74,7 @@ To [install from pypi](https://pypi.python.org/pypi/openaps):
     sudo pip install -U openaps
 
 This installs `openaps` system wide.
-Do not use `openaps` commands in the the openaps repo.  Only use the
+Do not use `openaps` commands in the openaps repo.  Only use the
 `openaps` directory for hacking on the core library, or for managing
 upgrades through git.  Running `openaps` inside of the openaps
 source directory will error in the best case, and mess up your

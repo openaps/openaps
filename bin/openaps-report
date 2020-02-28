@@ -1,16 +1,15 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 # PYTHON_ARGCOMPLETE_OK
-
+import argparse
 import sys
-import argparse, argcomplete
-import openaps
 
-from openaps import cli
-from openaps import devices
-from openaps import reports
-from openaps import uses
-class ReportToolApp (cli.ConfigApp):
-  """ openaps-report - configure reports
+import argcomplete
+import openaps
+from openaps import cli, devices, reports, uses
+
+
+class ReportToolApp(cli.ConfigApp):
+    """ openaps-report - configure reports
 
   Manage which devices produce which reports.
 
@@ -40,44 +39,49 @@ class ReportToolApp (cli.ConfigApp):
 
     openaps report invoke basals
                    <action> <name>
-    
-
-  """
-
-  name = 'report'
-  def configure_parser (self, parser):
-    self.read_config( )
-    available = devices.get_device_map(self.config)
-    self.devices = available
-    choices = available.keys( )
-    choices.sort( )
-    self.parser.add_argument('--version', action='version', version='%s %s' % ('%(prog)s', openaps.__version__))
-
-    self.configure_reports( )
-
-  def configure_reports (self):
-    self.actions = reports.ReportManagementActions(parent=self)
-    self.actions.configure_commands(self.parser)
-  def configure_devices (self):
-    allowed = [ ]
-    self.commands = uses.UseDeviceCommands(self.devices, parent=self)
-    self.commands.configure_commands(self.parser)
-  def prolog (self):
-    super(ReportToolApp, self).prolog( )
-
-  def epilog (self):
-    super(ReportToolApp, self).epilog( )
-
-  def run (self, args):
-    # print self.inputs
-    # print args
-    app = self.actions.selected(args)
-    output = app(args, self)
-    # print output
 
 
-if __name__ == '__main__':
+    """
+
+    name = "report"
+
+    def configure_parser(self, parser):
+        self.read_config()
+        available = devices.get_device_map(self.config)
+        self.devices = available
+        choices = sorted(list(available.keys()))
+        self.parser.add_argument(
+            "--version",
+            action="version",
+            version="{} {}".format("%(prog)s", openaps.__version__),
+        )
+
+        self.configure_reports()
+
+    def configure_reports(self):
+        self.actions = reports.ReportManagementActions(parent=self)
+        self.actions.configure_commands(self.parser)
+
+    def configure_devices(self):
+        allowed = []
+        self.commands = uses.UseDeviceCommands(self.devices, parent=self)
+        self.commands.configure_commands(self.parser)
+
+    def prolog(self):
+        super().prolog()
+
+    def epilog(self):
+        super().epilog()
+
+    def run(self, args):
+        # print(self.inputs)
+        # print(args)
+        app = self.actions.selected(args)
+        output = app(args, self)
+        # print(output)
+
+
+if __name__ == "__main__":
 
     app = ReportToolApp(None)
-    app( )
-
+    app()

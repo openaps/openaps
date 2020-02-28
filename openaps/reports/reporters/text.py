@@ -1,3 +1,2 @@
-
-def serialize (blob, reporter):
-  return str(blob)
+def serialize(blob, reporter):
+    return str(blob)

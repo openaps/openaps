@@ -2,7 +2,7 @@
 TESTS = $(wildcard openaps/*.py openaps/*/*.py)
 
 test:
-	python -m nose
+	python -m pytest
 	openaps -h
 	# python -m doctest discover
 	# do the test dance

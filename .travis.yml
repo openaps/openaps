@@ -1,9 +1,9 @@
+dist: xenial
 sudo: false
 language: python
 python:
-  - "2.7"
-foo:
-  - pip install -e .
+  - "3.5"  # Need to support debian stretch for edison 32-bit installs
 install:
-  - python setup.py install
-script: make ci-test
+  - pip install .[testing]
+script:
+  - make ci-test

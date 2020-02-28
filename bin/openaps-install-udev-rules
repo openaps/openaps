@@ -1,12 +1,12 @@
-#! /bin/bash
+#!/bin/bash
 
 vendor=${1-'all'}
 function print_dist_data ( ) {
 package=$1
 filename=$2
-cat <<EOF | python -
+cat <<EOF | python3 -
 import pkg_resources
-print pkg_resources.resource_string("$package", "$filename")
+print(pkg_resources.resource_string("$package", "$filename"))
 EOF
 }
 
@@ -40,9 +40,9 @@ esac
 ) | while read module file ; do
   filename=$(basename $file)
   installed="/etc/udev/rules.d/$filename"
-  cat <<EOF | python - > $installed && echo -n installed' ' || echo -n failed' '
+  cat <<EOF | python3 - > $installed && echo -n installed' ' || echo -n failed' '
 import pkg_resources
-print pkg_resources.resource_string("$module", "$file")
+print(pkg_resources.resource_string("$module", "$file"))
 EOF
   echo $installed
 done

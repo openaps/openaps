@@ -1,4 +1,4 @@
-class Display(object):
+class Display:
     """
         Round Glucose values for display, so that they are consistent in
         all OpenAPS apps
@@ -9,11 +9,12 @@ class Display(object):
             print(Display.display('mmol/L', 5.5))
             print(Display.display('mg/dL', 100))
     """
+
     @classmethod
     def display(klass, unit, val):
-        assert unit in ['mmol/L', 'mg/dL']
+        assert unit in ["mmol/L", "mg/dL"]
 
-        if unit == 'mg/dL':
+        if unit == "mg/dL":
             return int(round(val))
-        elif unit == 'mmol/L':
+        elif unit == "mmol/L":
             return round(val, 1)

@@ -10,6 +10,6 @@ def main (args, app):
     if args.name == device.name:
       app.config.remove_device(device)
       app.config.save( )
-      print 'removed', device.format_url( )
+      print ('removed', device.format_url( ))
       break
 

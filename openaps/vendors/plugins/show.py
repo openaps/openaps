@@ -16,5 +16,5 @@ def configure_app (app, parser):
 def main (args, app):
   for plugin in Vendor.FromConfig(app.config):
     if args.name in [ '*', plugin.name ]:
-      print args.format(plugin)
+      print (args.format(plugin))
 

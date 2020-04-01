@@ -13,5 +13,5 @@ def main (args, app):
   new_alias = Alias(name=args.name, command=args.command)
   new_alias.store(app.config)
   app.config.save( )
-  print "added", new_alias.format_url( )
+  print ("added", new_alias.format_url( ))
 

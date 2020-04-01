@@ -9,6 +9,6 @@ def main (args, app):
     if args.report == report.name:
       report.remove(app.config)
       app.config.save( )
-      print 'removed', report.format_url( )
+      print ('removed', report.format_url( ))
       break
 

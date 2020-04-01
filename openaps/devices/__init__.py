@@ -7,7 +7,7 @@ from openaps import vendors
 from device import Device
 
 def setup_application (app, parser):
-  print "YYY CONFIG", app.config
+  print ("YYY CONFIG", app.config)
   pass
 
 def get_devices (conf):

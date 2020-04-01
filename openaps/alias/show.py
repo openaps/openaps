@@ -16,5 +16,5 @@ def configure_app (app, parser):
 def main (args, app):
   for device in Alias.FromConfig(app.config):
     if args.name in [ '*', device.name ]:
-      print args.format(device)
+      print (args.format(device))
 

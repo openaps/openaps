@@ -8,6 +8,6 @@ def main (args, app):
     if args.name == alias.name:
       alias.remove(app.config)
       app.config.save( )
-      print 'removed', alias.format_url( )
+      print ('removed', alias.format_url( ))
       break
 

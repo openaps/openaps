@@ -28,5 +28,5 @@ def main (args, app):
     report.add_option(k, str(v))
   report.store(app.config)
   app.config.save( )
-  print "added", report.format_url( )
+  print ("added", report.format_url( ))
 

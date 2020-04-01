@@ -108,7 +108,7 @@ class UpdateTime (scan):
     parser.add_argument('--to', default=None)
   def upload_program (self, program):
     if not program.get('clock', None) or 'offset' not in program:
-      print "Bad input"
+      print ("Bad input")
       raise Exception("Bad input, missing clock definition: {0}".format(program.get('clock')))
     result = self.dexcom.WriteDisplayTimeOffset(offset=program['offset'])
     new_offset = self.dexcom.ReadDisplayTimeOffset( )
@@ -333,7 +333,7 @@ class GapFiller (object):
     return fields
   def __init__ (self, app):
     self.method = app
-    # print app, app.__dict__
+    # print (app, app.__dict__)
 
   def itertool (self, app, count=None, **params):
     self.count = count
@@ -419,7 +419,7 @@ class iter_glucose (glucose):
     records = self.fill.records
     for item in candidates:
       records.append(item.to_dict( ))
-      # print len(records)
+      # print (len(records))
       if len(records) >= self.get_params(args)['count']:
         break
     return records
@@ -767,7 +767,7 @@ class iter_sensor_insertions (sensor_insertions):
     records = [ ]
     for item in self.dexcom.iter_records('INSERTION_TIME'):
       records.append(item.to_dict( ))
-      # print len(records)
+      # print (len(records))
       if len(records) >= self.get_params(args)['count']:
         break
     return records

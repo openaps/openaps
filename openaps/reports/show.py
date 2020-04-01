@@ -78,7 +78,7 @@ def main (args, app):
   for device in Report.FromConfig(app.config):
     if args.report in [ '*', device.name ]:
       if args.cli_only:
-        print format_cli(device)
+        print (format_cli(device))
       else:
-        print args.format(device)
+        print (args.format(device))
 

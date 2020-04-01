@@ -15,8 +15,8 @@ def configure_app (app, parser):
   helpers.install_show_arguments(parser)
 
 def main (args, app):
-  # print args
+  # print (args)
   for device in Device.FromConfig(vendors, app.config):
     if args.name in [ '*', device.name ]:
-      print args.format(device)
+      print (args.format(device))
 

@@ -52,15 +52,15 @@ class Base (object):
     self.epilog( )
 
   def run (self, args):
-    print self.inputs
-    print args
+    print (self.inputs)
+    print (args)
 
 from openaps import config
 class ConfigApp (Base):
   def read_config (self):
     cfg_file = os.environ.get('OPENAPS_CONFIG', 'openaps.ini')
     if not os.path.exists(cfg_file):
-      print "Not an openaps environment, run: openaps init"
+      print ("Not an openaps environment, run: openaps init")
       sys.exit(1)
     pwd = os.getcwd( )
     cfg_dir = os.path.dirname(cfg_file)

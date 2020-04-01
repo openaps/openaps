@@ -54,9 +54,9 @@ class shell (Use):
     if self.json_default:
       try:
         return json.loads(data)
-      except ValueError, e:
-        print e
-        print data
+      except ValueError as e:
+        print (e)
+        print (data)
         raise
 
     else:

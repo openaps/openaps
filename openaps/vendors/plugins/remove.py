@@ -9,6 +9,6 @@ def main (args, app):
     if args.name == plugin.name:
       plugin.remove(app.config)
       app.config.save( )
-      print 'removed', plugin.format_url( )
+      print ('removed', plugin.format_url( ))
       break
 

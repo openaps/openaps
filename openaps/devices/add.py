@@ -21,8 +21,8 @@ def main (args, app):
   device = Device(args.name, vendor)
   device.read(args=args)
   app.config.add_device(device)
-  # print device, device.items( )
+  # print (device, device.items( ))
   # app.config.write(sys.stdout)
   app.config.save( )
-  print "added", device.format_url( )
+  print ("added", device.format_url( ))
 

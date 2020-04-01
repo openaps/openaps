@@ -25,12 +25,12 @@ class RunnableAlias (object):
     if self.spec is None:
       return None
     spec_command = shlex.split(self.spec.fields.get('command'))
-    # print 'YY', spec_command + args.args
+    # print ('YY', spec_command + args.args)
     cmd = ['openaps-%s' % spec_command[0]] + spec_command[1:]
     if spec_command[0].startswith('!'):
       prog = shlex.split(spec_command[0][1:])
       cmd = prog + spec_command[1:]
-    # print 'XX', cmd + args.args
+    # print ('XX', cmd + args.args)
     exit(call(cmd + args.args))
 def get_alias (command, app):
   spec = alias.get_alias_map(app.config).get(command, None)

@@ -19,7 +19,7 @@ class Use (Subcommand):
   def main (self, args, app):
     """
     Put main app logic here.
-    print "HAHA", args, app
+    print ("HAHA", args, app)
     """
 
   def to_ini (self, args):

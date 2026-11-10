@@ -1,0 +1,12 @@
+#! /bin/bash
+
+name=$1
+mkdir $name
+
+(
+test -n $name && cd $name
+touch openaps.ini
+echo "[DEFAULT]" >> openaps.ini
+echo "git = false" >> openaps.ini
+
+)

@@ -72,13 +72,27 @@ class ConfigApp (Base):
     self.read_config( )
 
   def epilog (self):
-    self.create_git_commit( )
+    gitEnabled = 'true'
+    if self.config.has_option('DEFAULT', 'git'):
+      gitEnabled = self.config.get('DEFAULT', 'git')
+    if not gitEnabled == 'false':
+      self.create_git_commit( )
   def git_repo (self):
+    gitEnabled = 'true'
+    if self.config.has_option('DEFAULT', 'git'):
+      gitEnabled = self.config.get('DEFAULT', 'git')
+    if gitEnabled == 'false':
+      return
     from git import Repo, GitCmdObjectDB
     self.repo = getattr(self, 'repo', Repo(os.getcwd( ), odbt=GitCmdObjectDB))
     return self.repo
 
   def create_git_commit (self):
+    gitEnabled = 'true'
+    if self.config.has_option('DEFAULT', 'git'):
+      gitEnabled = self.config.get('DEFAULT', 'git')
+    if gitEnabled == 'false':
+      return
     self.git_repo( )
     if self.repo.is_dirty( ) or self.repo.index.diff(None):
       # replicate commit -a, automatically add any changed paths

@@ -39,6 +39,7 @@ setup(name='openaps',
       'bin/openaps-import',
       # 'bin/openaps-export',
       'bin/git-openaps-init',
+      'bin/nogit-openaps-init',
       'bin/openaps-install-udev-rules',
     ],
     entry_points = {
